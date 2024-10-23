@@ -1,6 +1,7 @@
 package main;
 
 import entity.Player;
+import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,13 +15,15 @@ public class GamePanel extends JPanel implements Runnable {
     final int scale = 3;  // Scale factor to enlarge tiles.
 
     public final int tileSize = originalTileSize * scale;  // Final tile size (48x48).
-    final int maxScreenCol = 16;  // Number of tile columns on the screen.
-    final int maxScreenRow = 12;  // Number of tile rows on the screen.
-    final int screenWidth = tileSize * maxScreenCol;  // Screen width in pixels (768px).
-    final int screenHeight = tileSize * maxScreenRow;  // Screen height in pixels (576px).
+    public final int maxScreenCol = 16;  // Number of tile columns on the screen.
+    public final int maxScreenRow = 12;  // Number of tile rows on the screen.
+    public final int screenWidth = tileSize * maxScreenCol;  // Screen width in pixels (768px).
+    public final int screenHeight = tileSize * maxScreenRow;  // Screen height in pixels (576px).
 
-    // FPS
     int FPS = 60;  // Target frames per second for the game loop.
+
+    // Manages and draws game tiles.
+    TileManager tileM = new TileManager(this);
 
     // KeyHandler to capture player inputs.
     KeyHandler keyH = new KeyHandler();
@@ -124,6 +127,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Cast Graphics to Graphics2D for more advanced drawing options.
         Graphics2D g2 = (Graphics2D) g;
+
+        // Draws the tiles onto the Graphics2D context.
+        tileM.draw(g2);
 
         // Draw the player using the current Graphics2D context.
         player.draw(g2);
