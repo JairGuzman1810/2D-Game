@@ -6,10 +6,10 @@ import java.awt.image.BufferedImage;
 // It contains the common attributes of an entity, such as position (x, y) and speed.
 public class Entity {
 
-    // x and y represent the entity's current position in the game world.
-    public int x, y;
+    // The entity's position in the game world (worldX, worldY)
+    public int worldX, worldY;
 
-    // speed represents how fast the entity moves per frame.
+    // The speed of the entity, determining how fast it moves per frame.
     public int speed;
 
     // BufferedImages representing different frames of the player's movement in each direction.
@@ -25,4 +25,3 @@ public class Entity {
     public int spriteNum = 1;
 
 }
-

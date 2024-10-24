@@ -9,30 +9,44 @@ import java.awt.*;
 // GamePanel handles the main game loop, updates, and rendering.
 // It extends JPanel and implements Runnable to manage the game loop in a separate thread.
 public class GamePanel extends JPanel implements Runnable {
-
     // SCREEN SETTINGS
     final int originalTileSize = 16;  // Base tile size in pixels (16x16).
     final int scale = 3;  // Scale factor to enlarge tiles.
 
-    public final int tileSize = originalTileSize * scale;  // Final tile size (48x48).
-    public final int maxScreenCol = 16;  // Number of tile columns on the screen.
-    public final int maxScreenRow = 12;  // Number of tile rows on the screen.
-    public final int screenWidth = tileSize * maxScreenCol;  // Screen width in pixels (768px).
-    public final int screenHeight = tileSize * maxScreenRow;  // Screen height in pixels (576px).
+    // The final tile size after scaling (48x48 pixels).
+    public final int tileSize = originalTileSize * scale;
 
-    int FPS = 60;  // Target frames per second for the game loop.
+    // Maximum number of tile columns and rows displayed on the screen at once.
+    public final int maxScreenCol = 16;  // 16 columns of tiles on the screen.
+    public final int maxScreenRow = 12;  // 12 rows of tiles on the screen.
 
-    // Manages and draws game tiles.
+    // The total screen width and height in pixels, calculated based on the number of tiles.
+    public final int screenWidth = tileSize * maxScreenCol;  // 768 pixels wide (16 * 48).
+    public final int screenHeight = tileSize * maxScreenRow;  // 576 pixels high (12 * 48).
+
+    // WORLD SETTINGS
+    // The total number of tile columns and rows in the entire game world.
+    public final int maxWorldCol = 50;  // 50 columns of tiles in the world.
+    public final int maxWorldRow = 50;  // 50 rows of tiles in the world.
+
+    // The total world width and height in pixels, based on the number of world tiles.
+    public final int worldWidth = tileSize * maxWorldCol;  // 2400 pixels wide (50 * 48).
+    public final int worldHeight = tileSize * maxWorldRow;  // 2400 pixels high (50 * 48).
+
+    // Frames per second (FPS) target for smooth gameplay.
+    int FPS = 60;  // The game loop will aim to run at 60 frames per second.
+
+    // TileManager handles the loading and drawing of the tiles in the game world.
     TileManager tileM = new TileManager(this);
 
-    // KeyHandler to capture player inputs.
+    // KeyHandler captures and manages player keyboard inputs for movement.
     KeyHandler keyH = new KeyHandler();
 
-    // Game loop thread to run the game independently of the UI thread.
+    // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
-    // Player object representing the player character.
-    Player player = new Player(this, keyH);
+    // The Player object that represents the player character in the game.
+    public Player player = new Player(this, keyH);
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
