@@ -38,14 +38,88 @@ public class CollisionChecker {
         // Check for collision in the updated tile positions.
         if (isTileCollidable(entityLeftCol, entityTopRow) || isTileCollidable(entityRightCol, entityTopRow)
                 || isTileCollidable(entityLeftCol, entityBottomRow) || isTileCollidable(entityRightCol, entityBottomRow)) {
-            entity.collisionOn = true;
+            entity.collisionOn = true; // Mark entity as collided if any of the relevant tiles are collidable.
         }
     }
 
-    // Helper method to check if a tile is collidable.
+    // Helper method to check if a tile is collidable based on its column and row position in the tile map.
+    // Returns true if the tile has collision properties, meaning it's a solid object.
     private boolean isTileCollidable(int col, int row) {
-        int tileNum = gp.tileM.mapTileNum[col][row];
-        return gp.tileM.tiles[tileNum].collision;
+        int tileNum = gp.tileM.mapTileNum[col][row]; // Get the tile number from the tile map.
+        return gp.tileM.tiles[tileNum].collision; // Return whether the tile has collision properties.
     }
 
+    // Method to check if an entity has collided with any in-game object.
+    // It returns the index of the object the entity collides with, or 999 if no collision occurred.
+    public int checkObject(Entity entity, boolean player) {
+        int index = 999; // Initialize index to 999, indicating no collision by default.
+
+        // Loop through all objects in the game to check for potential collisions.
+        for (int i = 0; i < gp.obj.length; i++) {
+            if (gp.obj[i] != null) {
+                // Get entity's solid area position
+                entity.solidArea.x = entity.worldX + entity.solidArea.x;
+                entity.solidArea.y = entity.worldY + entity.solidArea.y;
+                // Get the object's solid area position
+                gp.obj[i].solidArea.x = gp.obj[i].worldX + gp.obj[i].solidArea.x;
+                gp.obj[i].solidArea.y = gp.obj[i].worldY + gp.obj[i].solidArea.y;
+
+                // Check collision based on the entity's movement direction.
+                switch (entity.direction) {
+                    case "up" -> {
+                        entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
+                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) { // Check for collision.
+                            if (gp.obj[i].collision) { // If the object has collision properties, mark entity as collided.
+                                entity.collisionOn = true;
+                            }
+                            if (player) { // If the entity is the player, return the object's index.
+                                index = i;
+                            }
+                        }
+                    }
+                    case "down" -> {
+                        entity.solidArea.y += entity.speed; // Move entity's solid area down based on speed.
+                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) { // Check for collision.
+                            if (gp.obj[i].collision) { // If the object has collision properties, mark entity as collided.
+                                entity.collisionOn = true;
+                            }
+                            if (player) { // If the entity is the player, return the object's index.
+                                index = i;
+                            }
+                        }
+                    }
+                    case "left" -> {
+                        entity.solidArea.x -= entity.speed; // Move entity's solid area left based on speed.
+                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) { // Check for collision.
+                            if (gp.obj[i].collision) { // If the object has collision properties, mark entity as collided.
+                                entity.collisionOn = true;
+                            }
+                            if (player) { // If the entity is the player, return the object's index.
+                                index = i;
+                            }
+                        }
+                    }
+                    case "right" -> {
+                        entity.solidArea.x += entity.speed; // Move entity's solid area right based on speed.
+                        if (entity.solidArea.intersects(gp.obj[i].solidArea)) { // Check for collision.
+                            if (gp.obj[i].collision) { // If the object has collision properties, mark entity as collided.
+                                entity.collisionOn = true;
+                            }
+                            if (player) { // If the entity is the player, return the object's index.
+                                index = i;
+                            }
+                        }
+                    }
+                }
+
+                // Reset the solid areas back to their default positions after checking for collisions.
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                gp.obj[i].solidArea.x = gp.obj[i].solidAreaDefaultX;
+                gp.obj[i].solidArea.y = gp.obj[i].solidAreaDefaultY;
+            }
+        }
+
+        return index; // Return the index of the object collided with, or 999 if no collision.
+    }
 }

@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // The Player class extends the Entity class, inheriting common attributes like position and speed.
-// It adds specific logic for handling player movement, drawing, and now, collision detection.
+// It adds specific logic for handling player movement, drawing, and now, collision detection and object interaction.
 public class Player extends Entity {
 
     // A logger to handle logging messages, such as errors during image loading.
@@ -28,6 +28,9 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
 
+    // This counter tracks how many keys the player has picked up.
+    int hasKey = 0;
+
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -41,6 +44,8 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;  // Offset of the solid area within the player's sprite.
         solidArea.y = 16; // Offset within the sprite.
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;  // Width of the collision area.
         solidArea.height = 32; // Height of the collision area.
 
@@ -78,7 +83,7 @@ public class Player extends Entity {
         }
     }
 
-    // Update method, called every frame, processes key inputs, moves the player, and handles collisions.
+    // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
         // Skip update if no movement keys are pressed.
         if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed) {
@@ -100,6 +105,11 @@ public class Player extends Entity {
         collisionOn = false; // Reset collision state.
         gp.cChecker.checkTile(this); // Check if the player is colliding with any tiles.
 
+        // Check for collisions with objects (like keys or doors).
+        // objIndex will hold the index of the object the player collides with.
+        int objIndex = gp.cChecker.checkObject(this, true);
+        pickUpObject(objIndex); // Call the method to handle object interaction.
+
         // If no collision detected, move the player in the current direction.
         if (!collisionOn) {
             switch (direction) {
@@ -117,6 +127,32 @@ public class Player extends Entity {
         if (spriteCounter > 12) {
             spriteNum = (spriteNum == 1) ? 2 : 1;
             spriteCounter = 0;
+        }
+    }
+
+    // Handles object interaction.
+    // If the player collides with an object (like a key or a door), this method will handle it.
+    public void pickUpObject(int i) {
+        if (i != 999) { // 999 indicates no object was found at the collision point.
+            // Retrieve the object's name to determine its type.
+            String objectName = gp.obj[i].name;
+
+            // Handle different object types.
+            switch (objectName) {
+                case "Key":
+                    hasKey++; // Increment the key count when the player picks up a key.
+                    gp.obj[i] = null; // Remove the object from the game once picked up.
+                    System.out.println("Key: " + hasKey); // Output the number of keys the player has.
+                    break;
+                case "Door":
+                    // If the player has a key, unlock the door.
+                    if (hasKey > 0) {
+                        gp.obj[i] = null; // Remove the door (unlocked).
+                        hasKey--; // Decrement the key count.
+                    }
+                    System.out.println("Key: " + hasKey); // Output the remaining number of keys.
+                    break;
+            }
         }
     }
 

@@ -29,6 +29,10 @@ public class Entity {
     // This defines the area around the entity that is checked for collisions.
     public Rectangle solidArea;
 
+    // These variables store the default x and y coordinates of the solid area within the entity.
+    // They are used to reset the solid area position if needed, for example, after a collision detection update.
+    public int solidAreaDefaultX, solidAreaDefaultY;
+
     // A flag that indicates whether a collision has occurred (true) or not (false).
     public boolean collisionOn = false;
 }

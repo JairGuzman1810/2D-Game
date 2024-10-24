@@ -20,8 +20,18 @@ public class SuperObject {
     // The object's position in the game world.
     public int worldX, worldY;
 
+    // Rectangle representing the solid area for collision detection.
+    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+
+    // Default position for the solid area (X coordinate).
+    public int solidAreaDefaultX = 0;
+
+    // Default position for the solid area (Y coordinate).
+    public int solidAreaDefaultY = 0;
+
     // Draws the object on the screen relative to the player's position.
     public void draw(Graphics2D g2, GamePanel gp) {
+        // Calculate the object's position on the screen based on the player's position.
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
@@ -30,6 +40,7 @@ public class SuperObject {
                 worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
                 worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                 worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+            // Draw the object's image on the screen at the calculated position.
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
         }
     }
