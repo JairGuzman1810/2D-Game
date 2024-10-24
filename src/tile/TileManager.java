@@ -22,10 +22,10 @@ public class TileManager {
     GamePanel gp;
 
     // Array of tiles that can be used in the game.
-    Tile[] tiles;
+    public Tile[] tiles;
 
     // 2D array representing the map layout, where each element corresponds to a tile type.
-    int[][] mapTileNum;
+    public int[][] mapTileNum;
 
     // Constructor that initializes the TileManager with a reference to GamePanel.
     // It also prepares the tile images and loads the map layout.
@@ -46,18 +46,24 @@ public class TileManager {
 
             tiles[1] = new Tile();
             tiles[1].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/wall.png")));
+            tiles[1].collision = true;
 
             tiles[2] = new Tile();
             tiles[2].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/water.png")));
+            tiles[2].collision = true;
+
 
             tiles[3] = new Tile();
             tiles[3].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/earth.png")));
 
             tiles[4] = new Tile();
             tiles[4].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/tree.png")));
+            tiles[4].collision = true;
+
 
             tiles[5] = new Tile();
             tiles[5].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/sand.png")));
+
         } catch (IOException e) {
             // Log an error if image loading fails.
             logger.log(Level.SEVERE, "Failed to load tile image", e);

@@ -45,6 +45,9 @@ public class GamePanel extends JPanel implements Runnable {
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
+    // Manages collision detection between the player and game world objects.
+    public CollisionChecker cChecker = new CollisionChecker(this);
+
     // The Player object that represents the player character in the game.
     public Player player = new Player(this, keyH);
 

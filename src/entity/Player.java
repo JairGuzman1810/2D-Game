@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // The Player class extends the Entity class, inheriting common attributes like position and speed.
-// It adds specific logic for handling player movement and drawing the player on the screen.
+// It adds specific logic for handling player movement, drawing, and now, collision detection.
 public class Player extends Entity {
 
     // A logger to handle logging messages, such as errors during image loading.
@@ -36,6 +36,13 @@ public class Player extends Entity {
         // Calculate and set the player's position at the center of the screen.
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+
+        // Define the solid area for the player, which will be used for collision detection.
+        solidArea = new Rectangle();
+        solidArea.x = 8;  // Offset of the solid area within the player's sprite.
+        solidArea.y = 16; // Offset within the sprite.
+        solidArea.width = 32;  // Width of the collision area.
+        solidArea.height = 32; // Height of the collision area.
 
         // Set the player's initial position and speed.
         setDefaultValues();
@@ -71,26 +78,36 @@ public class Player extends Entity {
         }
     }
 
-    // Update method, called every frame, processes key inputs and moves the player accordingly.
+    // Update method, called every frame, processes key inputs, moves the player, and handles collisions.
     public void update() {
         // Skip update if no movement keys are pressed.
         if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed) {
             return;
         }
 
-        // Check and update the player's direction and position based on key inputs.
+        // Check and update the player's direction based on key inputs.
         if (keyH.upPressed) {
             direction = "up";
-            worldY -= speed; // Move up in the world (Y-axis).
         } else if (keyH.downPressed) {
             direction = "down";
-            worldY += speed; // Move down.
         } else if (keyH.leftPressed) {
             direction = "left";
-            worldX -= speed; // Move left on the X-axis.
         } else {
             direction = "right";
-            worldX += speed; // Move right.
+        }
+
+        // Check for tile collision.
+        collisionOn = false; // Reset collision state.
+        gp.cChecker.checkTile(this); // Check if the player is colliding with any tiles.
+
+        // If no collision detected, move the player in the current direction.
+        if (!collisionOn) {
+            switch (direction) {
+                case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
+                case "down" -> worldY += speed; // Move down.
+                case "left" -> worldX -= speed; // Move left on the X-axis.
+                case "right" -> worldX += speed; // Move right.
+            }
         }
 
         // Increment spriteCounter to control the animation frame rate.
