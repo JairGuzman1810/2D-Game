@@ -1,6 +1,7 @@
 package main;
 
 import entity.Player;
+import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
@@ -48,8 +49,14 @@ public class GamePanel extends JPanel implements Runnable {
     // Manages collision detection between the player and game world objects.
     public CollisionChecker cChecker = new CollisionChecker(this);
 
+    //  Handles placing objects in the world
+    public AssetSetter aSetter = new AssetSetter(this);
+
     // The Player object that represents the player character in the game.
     public Player player = new Player(this, keyH);
+
+    // Array to hold the game objects, such as keys, doors, and chests
+    public SuperObject[] obj = new SuperObject[10];
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
@@ -67,6 +74,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Make the panel focusable to allow it to receive key inputs.
         this.setFocusable(true);
+    }
+
+    // Method to set up the initial game state, including placing objects
+    public void setupGame() {
+        aSetter.setObject(); // Calls the AssetSetter to place objects
     }
 
     // Method to start the game thread, which runs the game loop.
@@ -147,6 +159,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Draws the tiles onto the Graphics2D context.
         tileM.draw(g2);
+
+        // Draw all the objects in the obj array
+        for (SuperObject superObject : obj) {
+            if (superObject != null) {
+                superObject.draw(g2, this); // Calls the draw method for each object
+            }
+        }
 
         // Draw the player using the current Graphics2D context.
         player.draw(g2);
