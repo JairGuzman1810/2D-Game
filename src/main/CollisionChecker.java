@@ -14,71 +14,38 @@ public class CollisionChecker {
     }
 
     // Method to check if an entity has collided with a tile on the map.
-    // Takes an entity as a parameter and updates its collision status if necessary.
     public void checkTile(Entity entity) {
-        // Calculate the X coordinates of the entity's solid area's left and right edges.
+        // Calculate the entity's solid area's bounds.
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
-
-        // Calculate the Y coordinates of the entity's solid area's top and bottom edges.
         int entityTopWorldY = entity.worldY + entity.solidArea.y;
         int entityBottomWorldY = entity.worldY + entity.solidArea.y + entity.solidArea.height;
 
-        // Convert the world coordinates to column and row numbers on the map grid.
+        // Determine the entity's current tile position.
         int entityLeftCol = entityLeftWorldX / gp.tileSize;
         int entityRightCol = entityRightWorldX / gp.tileSize;
         int entityTopRow = entityTopWorldY / gp.tileSize;
         int entityBottomRow = entityBottomWorldY / gp.tileSize;
 
-        // Variables to hold the tile numbers for collision checks.
-        int tileNum1, tileNum2;
-
-        // Check the entity's current direction to determine which tiles to check for collision.
+        // Adjust the row or column based on the entity's direction and speed.
         switch (entity.direction) {
-            case "up" -> {
-                // Check the tiles above the entity by adjusting the top Y-coordinate.
-                entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
+            case "up" -> entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
+            case "down" -> entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
+            case "left" -> entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
+            case "right" -> entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
+        }
 
-                // If either of the tiles has a collision flag, set the entity's collision status to true.
-                if (gp.tileM.tiles[tileNum1].collision || gp.tileM.tiles[tileNum2].collision) {
-                    entity.collisionOn = true;
-                }
-            }
-            case "down" -> {
-                // Check the tiles below the entity by adjusting the bottom Y-coordinate.
-                entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-                tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-
-                // If either of the tiles has a collision flag, set the entity's collision status to true.
-                if (gp.tileM.tiles[tileNum1].collision || gp.tileM.tiles[tileNum2].collision) {
-                    entity.collisionOn = true;
-                }
-            }
-            case "left" -> {
-                // Check the tiles to the left of the entity by adjusting the left X-coordinate.
-                entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-
-                // If either of the tiles has a collision flag, set the entity's collision status to true.
-                if (gp.tileM.tiles[tileNum1].collision || gp.tileM.tiles[tileNum2].collision) {
-                    entity.collisionOn = true;
-                }
-            }
-            case "right" -> {
-                // Check the tiles to the right of the entity by adjusting the right X-coordinate.
-                entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-
-                // If either of the tiles has a collision flag, set the entity's collision status to true.
-                if (gp.tileM.tiles[tileNum1].collision || gp.tileM.tiles[tileNum2].collision) {
-                    entity.collisionOn = true;
-                }
-            }
+        // Check for collision in the updated tile positions.
+        if (isTileCollidable(entityLeftCol, entityTopRow) || isTileCollidable(entityRightCol, entityTopRow)
+                || isTileCollidable(entityLeftCol, entityBottomRow) || isTileCollidable(entityRightCol, entityBottomRow)) {
+            entity.collisionOn = true;
         }
     }
+
+    // Helper method to check if a tile is collidable.
+    private boolean isTileCollidable(int col, int row) {
+        int tileNum = gp.tileM.mapTileNum[col][row];
+        return gp.tileM.tiles[tileNum].collision;
+    }
+
 }
