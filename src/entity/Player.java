@@ -152,6 +152,10 @@ public class Player extends Entity {
                     }
                     System.out.println("Key: " + hasKey); // Output the remaining number of keys.
                     break;
+                case "Boots":
+                    speed += (int) 1.5; // Increase the player's speed by 2 when picking up boots.
+                    gp.obj[i] = null; // Remove the boots from the game once picked up.
+                    break;
             }
         }
     }
