@@ -4,6 +4,7 @@ import object.OBJ_Key;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 
 // The UI class manages the display of various UI elements, including messages, keys, and end-game screens.
 public class UI {
@@ -28,6 +29,12 @@ public class UI {
 
     // Boolean flag to indicate if the game has finished.
     public boolean gameFinished = false;
+
+    // Tracks the player's total time in the game and displays it on the screen
+    double playTime;
+
+    // Decimal format for displaying play time with two decimal places
+    DecimalFormat dFormat = new DecimalFormat("#0.00");
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -76,6 +83,20 @@ public class UI {
             // Draw the treasure-found message on the screen.
             g2.drawString(text, x, y);
 
+            // Display play time at the end of the game in seconds with two decimal precision
+            text = "Your Time is: " + dFormat.format(playTime) + "!"; // Format and display total play time
+
+            // Get the width of the text for centering it on the screen.
+            textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+
+            // Calculate the x and y positions for centering the text.
+            x = gp.screenWidth / 2 - textLength / 2;
+            y = gp.screenHeight / 2 + (gp.tileSize * 4);
+
+            // Draw the treasure-found message on the screen.
+            g2.drawString(text, x, y);
+
+
             // Change the font to a larger, bold font for the congratulations message.
             g2.setFont(arial_80B);
             g2.setColor(Color.yellow);
@@ -104,6 +125,12 @@ public class UI {
             // Draw the key image and the player's key count on the screen.
             g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
             g2.drawString("x " + gp.player.hasKey, 74, 65);
+
+            // Increment play time every frame by calculating elapsed time in seconds
+            playTime += (double) 1 / 60; // Assuming 60 FPS, add time increment in seconds per frame
+            
+            // Render the current play time on screen during active gameplay
+            g2.drawString("Time: " + dFormat.format(playTime), gp.tileSize * 11, 65);
 
             // If a message is active, display it on the screen.
             if (messageOn) {
