@@ -29,7 +29,7 @@ public class Player extends Entity {
     public final int screenY;
 
     // This counter tracks how many keys the player has picked up.
-    int hasKey = 0;
+    public int hasKey = 0;
 
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -131,7 +131,7 @@ public class Player extends Entity {
     }
 
     // Handles object interaction.
-// If the player collides with an object (like a key or a door), this method will handle it.
+    // If the player collides with an object (like a key, door, or chest), this method manages the interaction.
     public void pickUpObject(int i) {
         // Check if an object was found at the collision point (999 indicates no object).
         if (i != 999) {
@@ -150,8 +150,8 @@ public class Player extends Entity {
                     // Remove the key object from the game (set it to null).
                     gp.obj[i] = null;
 
-                    // Output the number of keys the player has collected.
-                    System.out.println("Key: " + hasKey);
+                    // Show a message indicating the player picked up a key.
+                    gp.ui.showMessage("You got a key!");
                     break;
 
                 case "Boots":
@@ -163,6 +163,9 @@ public class Player extends Entity {
 
                     // Remove the boots from the game once picked up.
                     gp.obj[i] = null;
+
+                    // Show a message indicating the player's speed has increased.
+                    gp.ui.showMessage("Speed up!");
                     break;
 
                 case "Door":
@@ -176,10 +179,25 @@ public class Player extends Entity {
 
                         // Decrease the player's key count after unlocking the door.
                         hasKey--;
+
+                        // Show a message indicating the door has been opened.
+                        gp.ui.showMessage("You opened the door!");
+
+                    } else {
+                        // Show a message indicating that a key is needed to unlock the door.
+                        gp.ui.showMessage("You need a key!");
                     }
 
-                    // Output the remaining number of keys the player has.
-                    System.out.println("Key: " + hasKey);
+                    break;
+
+                case "Chest":
+                    // If the player reaches the chest, finish the game.
+                    gp.ui.gameFinished = true;
+
+                    // Stop the background music and play the victory fanfare.
+                    gp.stopMusic();
+                    gp.playSE(4); // Index 4 refers to the "fanfare" sound.
+
                     break;
             }
         }

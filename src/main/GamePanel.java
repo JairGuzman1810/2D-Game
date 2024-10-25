@@ -40,14 +40,19 @@ public class GamePanel extends JPanel implements Runnable {
     // KeyHandler captures and manages player keyboard inputs for movement.
     KeyHandler keyH = new KeyHandler();
 
-    // Sound system to manage background music and sound effects.
-    Sound sound = new Sound();
+    // Sound system to manage background music
+    Sound music = new Sound();
+
+    // Sound system to manage sound effects.
+    Sound se = new Sound();
 
     // Manages collision detection between the player and game world objects.
     public CollisionChecker cChecker = new CollisionChecker(this);
 
     //  Handles placing objects in the world
     public AssetSetter aSetter = new AssetSetter(this);
+
+    public UI ui = new UI(this);
 
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
@@ -175,25 +180,28 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw the player using the current Graphics2D context.
         player.draw(g2);
 
+        // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
+        ui.draw(g2);
+
         // Dispose of the Graphics2D object to free resources.
         g2.dispose();
     }
 
     // Plays background music using the specified sound index.
     public void playMusic(int i) {
-        sound.setFile(i);
-        sound.play();
-        sound.loop(); // Loops the music indefinitely.
+        music.setFile(i);
+        music.play();
+        music.loop(); // Loops the music indefinitely.
     }
 
     // Stops the currently playing background music.
     public void stopMusic() {
-        sound.stop();
+        music.stop();
     }
 
     // Plays a one-time sound effect using the specified sound index.
     public void playSE(int i) {
-        sound.setFile(i);
-        sound.play(); // Plays the sound effect without looping.
+        se.setFile(i);
+        se.play(); // Plays the sound effect without looping.
     }
 }

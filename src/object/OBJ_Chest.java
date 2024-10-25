@@ -6,7 +6,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// OBJ_Chest defines the chest object in the game, which can store items.
+// OBJ_Chest defines the chest object in the game, which acts as the game’s treasure.
+// When interacted with, it triggers the end game sequence.
 public class OBJ_Chest extends SuperObject {
 
     // Logger for logging errors during image loading.
