@@ -30,21 +30,18 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxWorldCol = 50;  // 50 columns of tiles in the world.
     public final int maxWorldRow = 50;  // 50 rows of tiles in the world.
 
-    // The total world width and height in pixels, based on the number of world tiles.
-    public final int worldWidth = tileSize * maxWorldCol;  // 2400 pixels wide (50 * 48).
-    public final int worldHeight = tileSize * maxWorldRow;  // 2400 pixels high (50 * 48).
-
     // Frames per second (FPS) target for smooth gameplay.
     int FPS = 60;  // The game loop will aim to run at 60 frames per second.
 
+    //SYSTEM
     // TileManager handles the loading and drawing of the tiles in the game world.
     TileManager tileM = new TileManager(this);
 
     // KeyHandler captures and manages player keyboard inputs for movement.
     KeyHandler keyH = new KeyHandler();
 
-    // Game thread that runs the game loop. This separates game logic from the UI thread.
-    Thread gameThread;
+    // Sound system to manage background music and sound effects.
+    Sound sound = new Sound();
 
     // Manages collision detection between the player and game world objects.
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -52,6 +49,10 @@ public class GamePanel extends JPanel implements Runnable {
     //  Handles placing objects in the world
     public AssetSetter aSetter = new AssetSetter(this);
 
+    // Game thread that runs the game loop. This separates game logic from the UI thread.
+    Thread gameThread;
+
+    //ENTITY AND OBJECT
     // The Player object that represents the player character in the game.
     public Player player = new Player(this, keyH);
 
@@ -78,7 +79,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Method to set up the initial game state, including placing objects
     public void setupGame() {
-        aSetter.setObject(); // Calls the AssetSetter to place objects
+        // Calls the AssetSetter to place objects
+        aSetter.setObject();
+
+        // Start playing background music (index 0 in the sound array).
+        playMusic(0);
     }
 
     // Method to start the game thread, which runs the game loop.
@@ -172,5 +177,23 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Dispose of the Graphics2D object to free resources.
         g2.dispose();
+    }
+
+    // Plays background music using the specified sound index.
+    public void playMusic(int i) {
+        sound.setFile(i);
+        sound.play();
+        sound.loop(); // Loops the music indefinitely.
+    }
+
+    // Stops the currently playing background music.
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    // Plays a one-time sound effect using the specified sound index.
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play(); // Plays the sound effect without looping.
     }
 }

@@ -131,34 +131,60 @@ public class Player extends Entity {
     }
 
     // Handles object interaction.
-    // If the player collides with an object (like a key or a door), this method will handle it.
+// If the player collides with an object (like a key or a door), this method will handle it.
     public void pickUpObject(int i) {
-        if (i != 999) { // 999 indicates no object was found at the collision point.
+        // Check if an object was found at the collision point (999 indicates no object).
+        if (i != 999) {
             // Retrieve the object's name to determine its type.
             String objectName = gp.obj[i].name;
 
-            // Handle different object types.
+            // Handle different object types based on the name.
             switch (objectName) {
                 case "Key":
-                    hasKey++; // Increment the key count when the player picks up a key.
-                    gp.obj[i] = null; // Remove the object from the game once picked up.
-                    System.out.println("Key: " + hasKey); // Output the number of keys the player has.
+                    // Play the sound effect for picking up a key.
+                    gp.playSE(1); // Index 1 refers to the "coin" sound (interpreted as key pickup).
+
+                    // Increment the player's key count.
+                    hasKey++;
+
+                    // Remove the key object from the game (set it to null).
+                    gp.obj[i] = null;
+
+                    // Output the number of keys the player has collected.
+                    System.out.println("Key: " + hasKey);
                     break;
+
+                case "Boots":
+                    // Play the sound effect for picking up boots (power-up).
+                    gp.playSE(2); // Index 2 refers to the "power-up" sound.
+
+                    // Increase the player's speed when boots are collected.
+                    speed += (int) 1.5;
+
+                    // Remove the boots from the game once picked up.
+                    gp.obj[i] = null;
+                    break;
+
                 case "Door":
                     // If the player has a key, unlock the door.
                     if (hasKey > 0) {
-                        gp.obj[i] = null; // Remove the door (unlocked).
-                        hasKey--; // Decrement the key count.
+                        // Play the sound effect for unlocking the door.
+                        gp.playSE(3); // Index 3 refers to the "unlock" sound.
+
+                        // Remove the door (unlocked) from the game.
+                        gp.obj[i] = null;
+
+                        // Decrease the player's key count after unlocking the door.
+                        hasKey--;
                     }
-                    System.out.println("Key: " + hasKey); // Output the remaining number of keys.
-                    break;
-                case "Boots":
-                    speed += (int) 1.5; // Increase the player's speed by 2 when picking up boots.
-                    gp.obj[i] = null; // Remove the boots from the game once picked up.
+
+                    // Output the remaining number of keys the player has.
+                    System.out.println("Key: " + hasKey);
                     break;
             }
         }
     }
+
 
     // The draw method draws the player's current sprite based on direction and animation frame.
     public void draw(Graphics2D g2) {
