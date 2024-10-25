@@ -31,6 +31,9 @@ public class Player extends Entity {
     // This counter tracks how many keys the player has picked up.
     public int hasKey = 0;
 
+    // Tracks idle frames to set player to standstill position after a delay.
+    int standCounter = 0;
+
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -85,9 +88,18 @@ public class Player extends Entity {
 
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
-        // Skip update if no movement keys are pressed.
+        // Check if no movement keys are pressed to keep the player idle
         if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed) {
-            return;
+            // Increment the stand counter each frame when idle
+            standCounter++;
+
+            // If the player has been idle for 20 frames, switch to the standstill sprite
+            if (standCounter == 20) {
+                spriteNum = 1; // Set sprite to represent the standing still position
+                standCounter = 0; // Reset the stand counter for future idle checks
+            }
+
+            return; // Exit update early if the player is idle
         }
 
         // Check and update the player's direction based on key inputs.
