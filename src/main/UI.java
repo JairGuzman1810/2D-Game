@@ -45,7 +45,7 @@ public class UI {
         arial_80B = new Font("Arial", Font.BOLD, 80);
 
         // Load the key image from the key object.
-        OBJ_Key key = new OBJ_Key();
+        OBJ_Key key = new OBJ_Key(gp);
         keyImage = key.image;
     }
 
@@ -128,7 +128,7 @@ public class UI {
 
             // Increment play time every frame by calculating elapsed time in seconds
             playTime += (double) 1 / 60; // Assuming 60 FPS, add time increment in seconds per frame
-            
+
             // Render the current play time on screen during active gameplay
             g2.drawString("Time: " + dFormat.format(playTime), gp.tileSize * 11, 65);
 

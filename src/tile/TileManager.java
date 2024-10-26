@@ -1,6 +1,7 @@
 package tile;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,30 +40,28 @@ public class TileManager {
 
     // The getTileImage method loads the images for each type of tile from the resources.
     public void getTileImage() {
+        // Initialize each tile and load its corresponding image using the setup method.
+        // The second argument is the name of the tile image, and the third indicates if it has collision properties.
+        setup(0, "grass", false);   // Grass tile, no collision
+        setup(1, "wall", true);     // Wall tile, has collision
+        setup(2, "water", true);    // Water tile, has collision
+        setup(3, "earth", false);   // Earth tile, no collision
+        setup(4, "tree", true);     // Tree tile, has collision
+        setup(5, "sand", false);    // Sand tile, no collision
+    }
+
+    // The setup method initializes a tile at a specific index and loads its image.
+    public void setup(int index, String imageName, boolean collision) {
+        UtilityTool uTool = new UtilityTool(); // Create an instance of UtilityTool for image scaling.
+
         try {
-            // Initialize each tile and load its corresponding image.
-            tiles[0] = new Tile();
-            tiles[0].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/grass.png")));
-
-            tiles[1] = new Tile();
-            tiles[1].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/wall.png")));
-            tiles[1].collision = true;
-
-            tiles[2] = new Tile();
-            tiles[2].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/water.png")));
-            tiles[2].collision = true;
-
-
-            tiles[3] = new Tile();
-            tiles[3].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/earth.png")));
-
-            tiles[4] = new Tile();
-            tiles[4].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/tree.png")));
-            tiles[4].collision = true;
-
-
-            tiles[5] = new Tile();
-            tiles[5].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/sand.png")));
+            // Initialize the tile object at the specified index.
+            tiles[index] = new Tile();
+            // Load the image from the resources and scale it to the desired size.
+            tiles[index].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/" + imageName + ".png")));
+            tiles[index].image = uTool.scaleImage(tiles[index].image, gp.tileSize, gp.tileSize);
+            // Set the collision property for this tile.
+            tiles[index].collision = collision;
 
         } catch (IOException e) {
             // Log an error if image loading fails.
@@ -134,7 +133,7 @@ public class TileManager {
                     worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                     worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
                 // Draw the tile image at the calculated position.
-                g2.drawImage(tiles[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                g2.drawImage(tiles[tileNum].image, screenX, screenY, null);
             }
 
             worldCol++; // Move to the next column.

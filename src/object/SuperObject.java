@@ -1,6 +1,7 @@
 package object;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,6 +29,9 @@ public class SuperObject {
 
     // Default position for the solid area (Y coordinate).
     public int solidAreaDefaultY = 0;
+
+    // UtilityTool instance for image manipulation and scaling operations.
+    UtilityTool uTool = new UtilityTool();
 
     // Draws the object on the screen relative to the player's position.
     public void draw(Graphics2D g2, GamePanel gp) {

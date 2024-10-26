@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -70,21 +71,35 @@ public class Player extends Entity {
 
     // Load the images for the player's movement in all four directions.
     public void getPlayerImage() {
-        try {
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_up_1.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_up_2.png")));
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_down_1.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_down_2.png")));
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_left_1.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_left_2.png")));
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_right_1.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_right_2.png")));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to load player image", e);
-        } catch (NullPointerException e) {
-            logger.log(Level.WARNING, "Image not found for player!", e);
-        }
+        // Use the setup method to load and scale player images for different movements
+        up1 = setup("boy_up_1");
+        up2 = setup("boy_up_2");
+        down1 = setup("boy_down_1");
+        down2 = setup("boy_down_2");
+        left1 = setup("boy_left_1");
+        left2 = setup("boy_left_2");
+        right1 = setup("boy_right_1");
+        right2 = setup("boy_right_2");
     }
+
+    // Helper method to load an image by name, scale it, and return the BufferedImage
+    public BufferedImage setup(String imageName) {
+        UtilityTool uTool = new UtilityTool(); // Create an instance of UtilityTool for image scaling
+        BufferedImage image = null; // Initialize the BufferedImage variable
+
+        try {
+            // Load the image from resources and scale it to the size of the game tiles
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/" + imageName + ".png")));
+            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize); // Scale the loaded image
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to load player image", e); // Log error if image loading fails
+        } catch (NullPointerException e) {
+            logger.log(Level.WARNING, "Image not found for player!", e); // Log warning if image resource is not found
+        }
+
+        return image; // Return the scaled image
+    }
+
 
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
@@ -227,7 +242,7 @@ public class Player extends Entity {
         };
 
         // Draw the player sprite at the center of the screen, using screenX and screenY.
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
     }
 
 }

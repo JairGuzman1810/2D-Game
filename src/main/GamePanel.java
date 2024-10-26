@@ -164,13 +164,19 @@ public class GamePanel extends JPanel implements Runnable {
         // Call the superclass method to handle basic rendering.
         super.paintComponent(g);
 
+        // Measure draw time if the checkDrawTime flag is enabled.
+        long drawStart = 0;
+        if (keyH.checkDrawTime) {
+            drawStart = System.nanoTime(); // Record the start time for drawing
+        }
+
         // Cast Graphics to Graphics2D for more advanced drawing options.
         Graphics2D g2 = (Graphics2D) g;
 
         // Draws the tiles onto the Graphics2D context.
         tileM.draw(g2);
 
-        // Draw all the objects in the obj array
+        // Draw all the objects in the obj array.
         for (SuperObject superObject : obj) {
             if (superObject != null) {
                 superObject.draw(g2, this); // Calls the draw method for each object
@@ -182,6 +188,15 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
         ui.draw(g2);
+
+        // Calculate and display the time taken to render the graphics if checkDrawTime is enabled.
+        if (keyH.checkDrawTime) {
+            long drawEnd = System.nanoTime(); // Record the end time for drawing
+            long passed = drawEnd - drawStart; // Calculate the time difference
+            g2.setColor(Color.white);
+            g2.drawString("Draw Time: " + passed + " ns", 10, 400); // Display draw time on the screen
+            System.out.println("Draw Time: " + passed + " ns"); // Log draw time to the console for further analysis
+        }
 
         // Dispose of the Graphics2D object to free resources.
         g2.dispose();

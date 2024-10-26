@@ -8,6 +8,7 @@ public class KeyHandler implements KeyListener {
 
     // Booleans to track if specific movement keys (W, A, S, D) are pressed
     public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean checkDrawTime = false;
 
     // This method is required by the KeyListener interface but not used in this case
     @Override
@@ -37,6 +38,11 @@ public class KeyHandler implements KeyListener {
             case KeyEvent.VK_S -> downPressed = isPressed;  // S key (down movement)
             case KeyEvent.VK_A -> leftPressed = isPressed;  // A key (left movement)
             case KeyEvent.VK_D -> rightPressed = isPressed; // D key (right movement)
+            case KeyEvent.VK_T -> {
+                if (isPressed) {
+                    checkDrawTime = !checkDrawTime; // Toggle checkDrawTime only on key press
+                }
+            }
         }
     }
 }
