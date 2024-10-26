@@ -40,9 +40,10 @@ public class TileManager {
 
     // The getTileImage method loads the images for each type of tile from the resources.
     public void getTileImage() {
-        // Initialize each tile and load its corresponding image using the setup method.
-        // The second argument is the name of the tile image, and the third indicates if it has collision properties.
-        //Placeholders
+        // Initialize each tile by calling the setup method, which loads the corresponding image
+        // and defines its collision properties.
+
+        // Placeholder tiles - these are temporary until actual images are defined.
         setup(0, "grass00", false);
         setup(1, "grass00", false);
         setup(2, "grass00", false);
@@ -52,11 +53,13 @@ public class TileManager {
         setup(6, "grass00", false);
         setup(7, "grass00", false);
         setup(8, "grass00", false);
-        setup(8, "grass00", false);
+        setup(9, "grass00", false);
 
-
+        // Grass tiles with no collision properties.
         setup(10, "grass00", false);
         setup(11, "grass01", false);
+
+        // Water tiles with collision properties.
         setup(12, "water00", true);
         setup(13, "water01", true);
         setup(14, "water02", true);
@@ -71,6 +74,8 @@ public class TileManager {
         setup(23, "water11", true);
         setup(24, "water12", true);
         setup(25, "water13", true);
+
+        // Road tiles with no collision properties.
         setup(26, "road00", false);
         setup(27, "road01", false);
         setup(28, "road02", false);
@@ -84,11 +89,13 @@ public class TileManager {
         setup(36, "road10", false);
         setup(37, "road11", false);
         setup(38, "road12", false);
-        setup(39, "earth", false);
-        setup(40, "wall", true);
-        setup(41, "tree", true);
 
+        // Other tiles with specified properties.
+        setup(39, "earth", false); // Earth tile with no collision properties.
+        setup(40, "wall", true);   // Wall tile with collision properties.
+        setup(41, "tree", true);   // Tree tile with collision properties.
     }
+
 
     // The setup method initializes a tile at a specific index and loads its image.
     public void setup(int index, String imageName, boolean collision) {
