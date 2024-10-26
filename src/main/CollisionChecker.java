@@ -45,9 +45,14 @@ public class CollisionChecker {
     // Helper method to check if a tile is collidable based on its column and row position in the tile map.
     // Returns true if the tile has collision properties, meaning it's a solid object.
     private boolean isTileCollidable(int col, int row) {
-        int tileNum = gp.tileM.mapTileNum[col][row]; // Get the tile number from the tile map.
-        return gp.tileM.tiles[tileNum].collision; // Return whether the tile has collision properties.
+        try {
+            int tileNum = gp.tileM.mapTileNum[col][row]; // Get the tile number from the tile map
+            return gp.tileM.tiles[tileNum].collision; // Return whether the tile has collision properties
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return true; // Return true if out of bounds
+        }
     }
+
 
     // Method to check if an entity has collided with any in-game object.
     // It returns the index of the object the entity collides with, or 999 if no collision occurred.
