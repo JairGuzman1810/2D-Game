@@ -2,25 +2,13 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import main.UtilityTool;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // The Player class extends the Entity class, inheriting common attributes like position and speed.
 // It adds specific logic for handling player movement, drawing, and now, collision detection and object interaction.
 public class Player extends Entity {
-
-    // A logger to handle logging messages, such as errors during image loading.
-    private static final Logger logger = Logger.getLogger(Player.class.getName());
-
-    // Reference to the GamePanel, which provides the game environment's state and properties.
-    GamePanel gp;
 
     // Reference to the KeyHandler, which captures the player's key inputs for movement.
     KeyHandler keyH;
@@ -34,6 +22,7 @@ public class Player extends Entity {
 
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
+        super(gp);
         this.gp = gp;
         this.keyH = keyH;
 
@@ -69,32 +58,14 @@ public class Player extends Entity {
     // Load the images for the player's movement in all four directions.
     public void getPlayerImage() {
         // Use the setup method to load and scale player images for different movements
-        up1 = setup("boy_up_1");
-        up2 = setup("boy_up_2");
-        down1 = setup("boy_down_1");
-        down2 = setup("boy_down_2");
-        left1 = setup("boy_left_1");
-        left2 = setup("boy_left_2");
-        right1 = setup("boy_right_1");
-        right2 = setup("boy_right_2");
-    }
-
-    // Helper method to load an image by name, scale it, and return the BufferedImage
-    public BufferedImage setup(String imageName) {
-        UtilityTool uTool = new UtilityTool(); // Create an instance of UtilityTool for image scaling
-        BufferedImage image = null; // Initialize the BufferedImage variable
-
-        try {
-            // Load the image from resources and scale it to the size of the game tiles
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/" + imageName + ".png")));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize); // Scale the loaded image
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to load player image", e); // Log error if image loading fails
-        } catch (NullPointerException e) {
-            logger.log(Level.WARNING, "Image not found for player!", e); // Log warning if image resource is not found
-        }
-
-        return image; // Return the scaled image
+        up1 = setup("/player/boy_up_1");
+        up2 = setup("/player/boy_up_2");
+        down1 = setup("/player/boy_down_1");
+        down2 = setup("/player/boy_down_2");
+        left1 = setup("/player/boy_left_1");
+        left2 = setup("/player/boy_left_2");
+        right1 = setup("/player/boy_right_1");
+        right2 = setup("/player/boy_right_2");
     }
 
 
@@ -134,6 +105,11 @@ public class Player extends Entity {
         int objIndex = gp.cChecker.checkObject(this, true);
         pickUpObject(objIndex); // Call the method to handle object interaction.
 
+        //Check for collisions with NPC
+        // npcIndex will hold the index of the NPC the player collides with.
+        int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+        interactNPC(npcIndex);
+
         // If no collision detected, move the player in the current direction.
         if (!collisionOn) {
             switch (direction) {
@@ -160,6 +136,17 @@ public class Player extends Entity {
         // Check if an object was found at the collision point (999 indicates no object).
         if (i != 999) {
             //TODO Add logic later
+        }
+    }
+
+    // Manages interaction with NPCs.
+    // If the player is colliding with an NPC, this method handles the interaction.
+    public void interactNPC(int i) {
+        // Check if an NPC is found at the collision point (999 indicates no NPC).
+        if (i != 999) {
+            // Output a message to indicate interaction with an NPC.
+            System.out.println("You are hitting an npc!");
+            // Future logic to handle NPC-specific interactions can be added here.
         }
     }
 

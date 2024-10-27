@@ -1,5 +1,6 @@
 package main;
 
+import entity.Entity;
 import entity.Player;
 import object.SuperObject;
 import tile.TileManager;
@@ -52,6 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
     //  Handles placing objects in the world
     public AssetSetter aSetter = new AssetSetter(this);
 
+    //  Handles user interface
     public UI ui = new UI(this);
 
     // Game thread that runs the game loop. This separates game logic from the UI thread.
@@ -63,6 +65,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Array to hold the game objects, such as keys, doors, and chests
     public SuperObject[] obj = new SuperObject[10];
+
+    // Array to hold the game NPCs
+    public Entity[] npc = new Entity[10];
 
     //GAME STATE
     // Tracks the current game state (e.g., playing, paused).
@@ -94,6 +99,9 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         // Calls the AssetSetter to place objects
         aSetter.setObject();
+
+        // Calls the AssetSetter to place NPCs
+        aSetter.setNPC();
 
         // Start playing background music (index 0 in the sound array).
         playMusic(0);
@@ -168,6 +176,14 @@ public class GamePanel extends JPanel implements Runnable {
         // Check if game is in play state to update the player.
         if (gameState == playState) {
             player.update(); // Delegate the update to the player (handles player movement).
+
+            // Update all the NPC in the npc array.
+            for (Entity entity : npc) {
+                if (entity != null) {
+                    entity.update(); // Calls the update method for each npc
+                }
+            }
+
         } else {
             //No update actions if game is paused.
         }
@@ -195,6 +211,13 @@ public class GamePanel extends JPanel implements Runnable {
         for (SuperObject superObject : obj) {
             if (superObject != null) {
                 superObject.draw(g2, this); // Calls the draw method for each object
+            }
+        }
+
+        // Draw all the NPC in the npc array.
+        for (Entity entity : npc) {
+            if (entity != null) {
+                entity.draw(g2); // Calls the draw method for each npc
             }
         }
 

@@ -1,9 +1,6 @@
 package main;
 
-import object.OBJ_Boots;
-import object.OBJ_Chest;
-import object.OBJ_Door;
-import object.OBJ_Key;
+import entity.NPC_OldMan;
 
 // AssetSetter is responsible for placing objects (like keys, doors, chests)
 // at predefined positions in the game world.
@@ -18,47 +15,18 @@ public class AssetSetter {
         this.gp = gp; // Store the reference to the GamePanel for object placement.
     }
 
-    // The setObject method places various game objects (keys, doors, and a chest)
+    // The setObject method places various game objects
     // at specific world coordinates using the GamePanel's tile size.
     public void setObject() {
-        // Set a key at coordinates (23, 12) in the world.
-        gp.obj[0] = new OBJ_Key(gp);
-        gp.obj[0].worldX = 23 * gp.tileSize;
-        gp.obj[0].worldY = 12 * gp.tileSize;
 
-        // Set another key at coordinates (23, 40) in the world.
-        gp.obj[1] = new OBJ_Key(gp);
-        gp.obj[1].worldX = 23 * gp.tileSize;
-        gp.obj[1].worldY = 40 * gp.tileSize;
+    }
 
-        // Set another key at coordinates (38, 8) in the world.
-        gp.obj[2] = new OBJ_Key(gp);
-        gp.obj[2].worldX = 38 * gp.tileSize;
-        gp.obj[2].worldY = 8 * gp.tileSize;
-
-        // Set a door at coordinates (10, 12) in the world.
-        gp.obj[3] = new OBJ_Door(gp);
-        gp.obj[3].worldX = 10 * gp.tileSize;
-        gp.obj[3].worldY = 12 * gp.tileSize;
-
-        // Set another door at coordinates (8, 28) in the world.
-        gp.obj[4] = new OBJ_Door(gp);
-        gp.obj[4].worldX = 8 * gp.tileSize;
-        gp.obj[4].worldY = 28 * gp.tileSize;
-
-        // Set another door at coordinates (12, 23) in the world.
-        gp.obj[5] = new OBJ_Door(gp);
-        gp.obj[5].worldX = 12 * gp.tileSize;
-        gp.obj[5].worldY = 23 * gp.tileSize;
-
-        // Set a chest at coordinates (10, 8) in the world.
-        gp.obj[6] = new OBJ_Chest(gp);
-        gp.obj[6].worldX = 10 * gp.tileSize;
-        gp.obj[6].worldY = 8 * gp.tileSize;
-
-        // Set boots at coordinates (37, 42) in the world.
-        gp.obj[7] = new OBJ_Boots(gp);
-        gp.obj[7].worldX = 37 * gp.tileSize;
-        gp.obj[7].worldY = 42 * gp.tileSize;
+    // The setNPC method places various game NPC
+    // at specific world coordinates using the GamePanel's tile size.
+    public void setNPC() {
+        // Set a Old man at coordinates (21, 21) in the world.
+        gp.npc[0] = new NPC_OldMan(gp);
+        gp.npc[0].worldX = gp.tileSize * 21;
+        gp.npc[0].worldY = gp.tileSize * 21;
     }
 }
