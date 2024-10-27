@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileM = new TileManager(this);
 
     // KeyHandler captures and manages player keyboard inputs for movement.
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
 
     // Sound system to manage background music
     Sound music = new Sound();
@@ -63,6 +63,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Array to hold the game objects, such as keys, doors, and chests
     public SuperObject[] obj = new SuperObject[10];
+
+    //GAME STATE
+    // Tracks the current game state (e.g., playing, paused).
+    public int gameState;
+    // Constant for play state.
+    public final int playState = 1;
+    // Constant for pause state.
+    public final int pauseState = 2;
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
@@ -89,6 +97,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Start playing background music (index 0 in the sound array).
         playMusic(0);
+
+        // Set default state to play state.
+        gameState = playState;
     }
 
     // Method to start the game thread, which runs the game loop.
@@ -154,8 +165,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Update method to update the game state each frame.
     public void update() {
-        // Delegate the update to the player (handles player movement).
-        player.update();
+        // Check if game is in play state to update the player.
+        if (gameState == playState) {
+            player.update(); // Delegate the update to the player (handles player movement).
+        } else {
+            //No update actions if game is paused.
+        }
     }
 
     // paintComponent is called to render the game onto the panel.

@@ -29,9 +29,6 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
 
-    // This counter tracks how many keys the player has picked up.
-    public int hasKey = 0;
-
     // Tracks idle frames to set player to standstill position after a delay.
     int standCounter = 0;
 
@@ -162,71 +159,7 @@ public class Player extends Entity {
     public void pickUpObject(int i) {
         // Check if an object was found at the collision point (999 indicates no object).
         if (i != 999) {
-            // Retrieve the object's name to determine its type.
-            String objectName = gp.obj[i].name;
-
-            // Handle different object types based on the name.
-            switch (objectName) {
-                case "Key":
-                    // Play the sound effect for picking up a key.
-                    gp.playSE(1); // Index 1 refers to the "coin" sound (interpreted as key pickup).
-
-                    // Increment the player's key count.
-                    hasKey++;
-
-                    // Remove the key object from the game (set it to null).
-                    gp.obj[i] = null;
-
-                    // Show a message indicating the player picked up a key.
-                    gp.ui.showMessage("You got a key!");
-                    break;
-
-                case "Boots":
-                    // Play the sound effect for picking up boots (power-up).
-                    gp.playSE(2); // Index 2 refers to the "power-up" sound.
-
-                    // Increase the player's speed when boots are collected.
-                    speed += (int) 1.5;
-
-                    // Remove the boots from the game once picked up.
-                    gp.obj[i] = null;
-
-                    // Show a message indicating the player's speed has increased.
-                    gp.ui.showMessage("Speed up!");
-                    break;
-
-                case "Door":
-                    // If the player has a key, unlock the door.
-                    if (hasKey > 0) {
-                        // Play the sound effect for unlocking the door.
-                        gp.playSE(3); // Index 3 refers to the "unlock" sound.
-
-                        // Remove the door (unlocked) from the game.
-                        gp.obj[i] = null;
-
-                        // Decrease the player's key count after unlocking the door.
-                        hasKey--;
-
-                        // Show a message indicating the door has been opened.
-                        gp.ui.showMessage("You opened the door!");
-
-                    } else {
-                        // Show a message indicating that a key is needed to unlock the door.
-                        gp.ui.showMessage("You need a key!");
-                    }
-
-                    break;
-
-                case "Chest":
-                    // If the player reaches the chest, finish the game.
-                    gp.ui.gameFinished = true;
-
-                    // Stop the background music and play the victory fanfare.
-                    gp.stopMusic();
-                    gp.playSE(4); // Index 4 refers to the "fanfare" sound.
-
-                    break;
-            }
+            //TODO Add logic later
         }
     }
 

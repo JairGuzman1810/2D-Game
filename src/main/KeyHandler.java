@@ -6,9 +6,17 @@ import java.awt.event.KeyListener;
 // The KeyHandler class implements KeyListener to handle keyboard events
 public class KeyHandler implements KeyListener {
 
+    GamePanel gp;
+
     // Booleans to track if specific movement keys (W, A, S, D) are pressed
     public boolean upPressed, downPressed, leftPressed, rightPressed;
+
+    // Boolean to track if draw time debugging is enabled; if true, draw times are printed to the console and show in the UI.
     public boolean checkDrawTime = false;
+
+    public KeyHandler(GamePanel gp) {
+        this.gp = gp;
+    }
 
     // This method is required by the KeyListener interface but not used in this case
     @Override
@@ -41,6 +49,11 @@ public class KeyHandler implements KeyListener {
             case KeyEvent.VK_T -> {
                 if (isPressed) {
                     checkDrawTime = !checkDrawTime; // Toggle checkDrawTime only on key press
+                }
+            }
+            case KeyEvent.VK_P -> {
+                if (isPressed) {
+                    gp.gameState = gp.gameState == gp.playState ? gp.pauseState : gp.playState;
                 }
             }
         }
