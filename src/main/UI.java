@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.*;
-import java.text.DecimalFormat;
 
 // The UI class manages the display of various UI elements, including messages, keys, and end-game screens.
 public class UI {
@@ -27,11 +26,9 @@ public class UI {
     // Boolean flag to indicate if the game has finished.
     public boolean gameFinished = false;
 
-    // Tracks the player's total time in the game and displays it on the screen
-    double playTime;
+    // Stores the current dialogue text to be displayed on the dialogue screen.
+    public String currentDialogue = "";
 
-    // Decimal format for displaying play time with two decimal places
-    DecimalFormat dFormat = new DecimalFormat("#0.00");
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -64,6 +61,9 @@ public class UI {
         } else if (gp.gameState == gp.pauseState) {
             // Draws the pause screen when the game is paused.
             drawPauseScreen();
+        } else if (gp.gameState == gp.dialogueState) {
+            // Draw the dialogue screen when the game is in dialogue state.
+            drawDialogueScreen();
         }
     }
 
@@ -80,6 +80,46 @@ public class UI {
 
         // Draw the centered pause message on the screen.
         g2.drawString(text, x, y);
+    }
+
+    // Draws the dialogue screen for displaying text dialogue in the game.
+    public void drawDialogueScreen() {
+        // Define the position and size of the dialogue window.
+        int x = gp.tileSize * 2; // X position with padding from the left.
+        int y = gp.tileSize / 2;  // Y position with padding from the top.
+
+        int width = gp.screenWidth - (gp.tileSize * 4); // Width of the dialogue window.
+        int height = gp.tileSize * 4; // Height of the dialogue window.
+
+        // Draw the sub-window for the dialogue.
+        drawSubWindow(x, y, width, height);
+
+        // Set the font size for the dialogue text.
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28));
+        x += gp.tileSize; // Adjust X position for padding within the window.
+        y += gp.tileSize; // Adjust Y position for padding within the window.
+
+        // Split the current dialogue into lines and draw each line in the window.
+        for (String line : currentDialogue.split("\n")) {
+            g2.drawString(line, x, y); // Draw the line at the specified position.
+            y += 40; // Move Y position down for the next line.
+        }
+    }
+
+    // Draws a rounded rectangle sub-window for displaying UI elements.
+    public void drawSubWindow(int x, int y, int width, int height) {
+        Color c = new Color(0, 0, 0, 200); // Semi-transparent black for the window background.
+
+        g2.setColor(c);
+        // Fill the rounded rectangle to create the window background.
+        g2.fillRoundRect(x, y, width, height, 35, 35);
+
+        c = new Color(255, 255, 255); // White color for the window border.
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5)); // Set the stroke for the border.
+
+        // Draw the rounded rectangle border around the window.
+        g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
     }
 
     // Calculates the x-coordinate for centering a text string on the screen.

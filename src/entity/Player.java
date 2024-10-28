@@ -139,15 +139,18 @@ public class Player extends Entity {
         }
     }
 
-    // Manages interaction with NPCs.
-    // If the player is colliding with an NPC, this method handles the interaction.
+    // Manages interaction with non-playable characters (NPCs).
+    // This method checks for collisions with NPCs and initiates dialogue if the player interacts with them.
     public void interactNPC(int i) {
-        // Check if an NPC is found at the collision point (999 indicates no NPC).
+        // Verify if an NPC is found at the collision point (999 indicates no NPC present).
         if (i != 999) {
-            // Output a message to indicate interaction with an NPC.
-            System.out.println("You are hitting an npc!");
-            // Future logic to handle NPC-specific interactions can be added here.
+            // If the enter key is pressed, change the game state to dialogue state and initiate the NPC's dialogue.
+            if (gp.keyH.enterPressed) {
+                gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
+                gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
+            }
         }
+        gp.keyH.enterPressed = false; // Reset the enter key state to avoid repeated interactions in the same frame.
     }
 
 

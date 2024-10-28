@@ -53,6 +53,12 @@ public class Entity {
     // Counter to lock the NPC's action temporarily (e.g., to control how long the NPC stays idle or continues moving in one direction).
     public int actionLockCounter = 0;
 
+    // Array for storing dialogue text, supporting multiple phrases.
+    String[] dialogues = new String[20];
+
+    // Index to track the current dialogue being displayed.
+    int dialogueIndex = 0;
+
     // Constructor initializes the Game Panel
     public Entity(GamePanel gp) {
         this.gp = gp;
@@ -63,6 +69,27 @@ public class Entity {
     // This method can be overridden by subclasses to customize NPC behavior.
     public void setAction() {
 
+    }
+
+    // Handles the entity speaking by displaying dialogue text to the player
+    // and adjusting the entity's direction to face the player.
+    public void speak() {
+        // Reset dialogue index if no more dialogue is available
+        if (dialogues[dialogueIndex] == null) {
+            dialogueIndex = 0;
+        }
+
+        // Display the current dialogue
+        gp.ui.currentDialogue = dialogues[dialogueIndex];
+        dialogueIndex++; // Move to the next dialogue for future interactions
+
+        // Face the entity towards the player’s direction
+        switch (gp.player.direction) {
+            case "up" -> direction = "down";
+            case "down" -> direction = "up";
+            case "left" -> direction = "right";
+            case "right" -> direction = "left";
+        }
     }
 
 

@@ -18,6 +18,8 @@ public class NPC_OldMan extends Entity {
         speed = 1;          // Sets the movement speed of the NPC.
 
         getImage(); // Loads images for the NPC's directional movement animations.
+
+        setDialogue(); // Sets the dialogue that will be displayed when speaking with the NPC.
     }
 
     // Loads the images for each direction (up, down, left, right) to represent
@@ -31,6 +33,14 @@ public class NPC_OldMan extends Entity {
         left2 = setup("/npc/oldman_left_2");
         right1 = setup("/npc/oldman_right_1");
         right2 = setup("/npc/oldman_right_2");
+    }
+
+    // Sets the series of dialogues for this NPC, which will display sequentially when spoken to.
+    public void setDialogue() {
+        dialogues[0] = "Hello, boy.";
+        dialogues[1] = "So you've come to this island to \nfind the treasure?";
+        dialogues[2] = "I used to be a great wizard but now... \nI'm a bit too old for taking an adventure";
+        dialogues[3] = "Well, good luck on you.";
     }
 
     @Override
@@ -56,5 +66,12 @@ public class NPC_OldMan extends Entity {
 
             actionLockCounter = 0; // Resets the action lock counter.
         }
+    }
+
+    @Override
+    // Triggers the speak method inherited from Entity, which will manage dialogue display
+    // and align the NPC’s direction towards the player during interaction.
+    public void speak() {
+        super.speak();
     }
 }

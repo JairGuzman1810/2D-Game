@@ -7,6 +7,8 @@ import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 // GamePanel handles the main game loop, updates, and rendering.
 // It extends JPanel and implements Runnable to manage the game loop in a separate thread.
@@ -39,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileM = new TileManager(this);
 
     // KeyHandler captures and manages player keyboard inputs for movement.
-    KeyHandler keyH = new KeyHandler(this);
+    public KeyHandler keyH = new KeyHandler(this);
 
     // Sound system to manage background music
     Sound music = new Sound();
@@ -76,6 +78,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int playState = 1;
     // Constant for pause state.
     public final int pauseState = 2;
+    // Constant for dialogue state.
+    public final int dialogueState = 3;
+
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
@@ -90,6 +95,20 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Add the KeyHandler to the panel to capture key events.
         this.addKeyListener(keyH);
+
+        // Add a focus listener to reset key states when focus is lost
+        this.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // No action needed when focus is regained
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Reset all key states when the window loses focus
+                keyH.resetKeyStates();
+            }
+        });
 
         // Make the panel focusable to allow it to receive key inputs.
         this.setFocusable(true);
@@ -184,8 +203,8 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-        } else {
-            //No update actions if game is paused.
+        } else if (gameState == dialogueState) {
+            keyH.resetKeyStates();
         }
     }
 
