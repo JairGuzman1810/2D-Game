@@ -1,9 +1,18 @@
 package main;
 
+import object.OBJ_Chest;
+
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // The UI class manages the display of various UI elements, including messages, keys, and end-game screens.
 public class UI {
+
+    // Logger for logging errors during image loading.
+    private static final Logger logger = Logger.getLogger(OBJ_Chest.class.getName());
 
     // Reference to the GamePanel object for accessing game-related data and functionality.
     GamePanel gp;
@@ -12,7 +21,7 @@ public class UI {
     Graphics2D g2;
 
     // Font objects for displaying text in the UI (Arial with size 40 and bold Arial with size 80).
-    Font arial_40, arial_80B;
+    Font pixelOperator;
 
     // Boolean flag to indicate if a message should be displayed.
     public boolean messageOn = false;
@@ -34,9 +43,18 @@ public class UI {
     public UI(GamePanel gp) {
         this.gp = gp;
 
-        // Initialize fonts for UI text.
-        arial_40 = new Font("Arial", Font.PLAIN, 40);
-        arial_80B = new Font("Arial", Font.BOLD, 80);
+
+        try {
+            // Initialize fonts for UI text.
+            InputStream is = getClass().getResourceAsStream("/font/PixelOperator.ttf");
+            assert is != null;
+            pixelOperator = Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to load PixelOperator font", e);
+        } catch (FontFormatException e) {
+            logger.log(Level.WARNING, "Invalid font format for PixelOperator font", e);
+        }
+
 
     }
 
@@ -52,7 +70,7 @@ public class UI {
         this.g2 = g2;
 
         // Set the font and color for the UI text display.
-        g2.setFont(arial_40);
+        g2.setFont(pixelOperator);
         g2.setColor(Color.white);
 
         // Check the game state and draw elements accordingly.
@@ -95,7 +113,7 @@ public class UI {
         drawSubWindow(x, y, width, height);
 
         // Set the font size for the dialogue text.
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32));
         x += gp.tileSize; // Adjust X position for padding within the window.
         y += gp.tileSize; // Adjust Y position for padding within the window.
 
