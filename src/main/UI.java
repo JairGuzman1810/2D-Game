@@ -38,6 +38,9 @@ public class UI {
     // Stores the current dialogue text to be displayed on the dialogue screen.
     public String currentDialogue = "";
 
+    // Stores the selected command index on the title screen.
+    public int commandNum = 0;
+
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -82,6 +85,60 @@ public class UI {
         } else if (gp.gameState == gp.dialogueState) {
             // Draw the dialogue screen when the game is in dialogue state.
             drawDialogueScreen();
+        } else if (gp.gameState == gp.titleState) {
+            // Draws the title screen when in title state.
+            drawTitleScreen();
+        }
+    }
+
+    // Renders the title screen UI elements, including game title, main character image, and menu options.
+    public void drawTitleScreen() {
+        // Sets font for the title text.
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96f));
+        String text = "Blue Boy Adventure";
+
+        // Calculates position to center the title text and adds a shadow effect.
+        int x = getXForCenteredText(text);
+        int y = gp.tileSize * 3;
+        g2.setColor(Color.gray);
+        g2.drawString(text, x + 5, y + 5);
+
+        g2.setColor(Color.white);
+        g2.drawString(text, x, y);
+
+        // Displays the main character image below the title.
+        x = gp.screenWidth / 2 - (gp.tileSize * 2) / 2;
+        y += gp.tileSize * 2;
+        g2.drawImage(gp.player.left2, x, y, gp.tileSize * 2, gp.tileSize * 2, null);
+
+        // Sets font for menu options.
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+
+        // Draws "NEW GAME" option with selection indicator.
+        text = "NEW GAME";
+        x = getXForCenteredText(text);
+        y += (int) (gp.tileSize * 3.5);
+        g2.drawString(text, x, y);
+        if (commandNum == 0) {
+            g2.drawString(">", x - gp.tileSize, y);
+        }
+
+        // Draws "LOAD GAME" option with selection indicator.
+        text = "LOAD GAME";
+        x = getXForCenteredText(text);
+        y += gp.tileSize;
+        g2.drawString(text, x, y);
+        if (commandNum == 1) {
+            g2.drawString(">", x - gp.tileSize, y);
+        }
+
+        // Draws "QUIT" option with selection indicator.
+        text = "QUIT";
+        x = getXForCenteredText(text);
+        y += gp.tileSize;
+        g2.drawString(text, x, y);
+        if (commandNum == 2) {
+            g2.drawString(">", x - gp.tileSize, y);
         }
     }
 

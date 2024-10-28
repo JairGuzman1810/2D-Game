@@ -74,6 +74,8 @@ public class GamePanel extends JPanel implements Runnable {
     //GAME STATE
     // Tracks the current game state (e.g., playing, paused).
     public int gameState;
+    // Constant for title state.
+    public final int titleState = 0;
     // Constant for play state.
     public final int playState = 1;
     // Constant for pause state.
@@ -125,8 +127,8 @@ public class GamePanel extends JPanel implements Runnable {
         // Start playing background music (index 0 in the sound array).
         playMusic(0);
 
-        // Set default state to play state.
-        gameState = playState;
+        // Set default state to title state.
+        gameState = titleState;
     }
 
     // Method to start the game thread, which runs the game loop.
@@ -203,7 +205,8 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-        } else if (gameState == dialogueState) {
+        } else {
+            // Reset keys
             keyH.resetKeyStates();
         }
     }
@@ -213,6 +216,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         // Call the superclass method to handle basic rendering.
         super.paintComponent(g);
+        // Cast Graphics to Graphics2D for more advanced drawing options.
+        Graphics2D g2 = (Graphics2D) g;
 
         // Measure draw time if the checkDrawTime flag is enabled.
         long drawStart = 0;
@@ -220,43 +225,49 @@ public class GamePanel extends JPanel implements Runnable {
             drawStart = System.nanoTime(); // Record the start time for drawing
         }
 
-        // Cast Graphics to Graphics2D for more advanced drawing options.
-        Graphics2D g2 = (Graphics2D) g;
+        // Render the appropriate screen based on the current game state.
+        if (gameState == titleState) {
+            //Draw title screen
+            ui.draw(g2);
+        } else {
 
-        // Draws the tiles onto the Graphics2D context.
-        tileM.draw(g2);
+            // Draws the tiles onto the Graphics2D context.
+            tileM.draw(g2);
 
-        // Draw all the objects in the obj array.
-        for (SuperObject superObject : obj) {
-            if (superObject != null) {
-                superObject.draw(g2, this); // Calls the draw method for each object
+            // Draw all the objects in the obj array.
+            for (SuperObject superObject : obj) {
+                if (superObject != null) {
+                    superObject.draw(g2, this); // Calls the draw method for each object
+                }
             }
-        }
 
-        // Draw all the NPC in the npc array.
-        for (Entity entity : npc) {
-            if (entity != null) {
-                entity.draw(g2); // Calls the draw method for each npc
+            // Draw all the NPC in the npc array.
+            for (Entity entity : npc) {
+                if (entity != null) {
+                    entity.draw(g2); // Calls the draw method for each npc
+                }
             }
+
+            // Draw the player using the current Graphics2D context.
+            player.draw(g2);
+
+            // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
+            ui.draw(g2);
+
+            // Calculate and display the time taken to render the graphics if checkDrawTime is enabled.
+            if (keyH.checkDrawTime) {
+                long drawEnd = System.nanoTime(); // Record the end time for drawing
+                long passed = drawEnd - drawStart; // Calculate the time difference
+                g2.setColor(Color.white);
+                g2.drawString("Draw Time: " + passed + " ns", 10, 400); // Display draw time on the screen
+                System.out.println("Draw Time: " + passed + " ns"); // Log draw time to the console for further analysis
+            }
+
+            // Dispose of the Graphics2D object to free resources.
+            g2.dispose();
         }
 
-        // Draw the player using the current Graphics2D context.
-        player.draw(g2);
 
-        // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
-        ui.draw(g2);
-
-        // Calculate and display the time taken to render the graphics if checkDrawTime is enabled.
-        if (keyH.checkDrawTime) {
-            long drawEnd = System.nanoTime(); // Record the end time for drawing
-            long passed = drawEnd - drawStart; // Calculate the time difference
-            g2.setColor(Color.white);
-            g2.drawString("Draw Time: " + passed + " ns", 10, 400); // Display draw time on the screen
-            System.out.println("Draw Time: " + passed + " ns"); // Log draw time to the console for further analysis
-        }
-
-        // Dispose of the Graphics2D object to free resources.
-        g2.dispose();
     }
 
     // Plays background music using the specified sound index.

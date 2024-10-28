@@ -13,7 +13,6 @@ public class KeyHandler implements KeyListener {
     // to determine if each key is currently pressed
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
 
-
     // Boolean to track if draw time debugging is enabled; if true, draw times are printed to the console and show in the UI.
     public boolean checkDrawTime = false;
 
@@ -30,56 +29,94 @@ public class KeyHandler implements KeyListener {
     // This method is called when a key is pressed
     @Override
     public void keyPressed(KeyEvent e) {
-        // Call the helper method to update key state to 'pressed' (true)
+        // Call the helper method to update key state to 'pressed'
         setKeyState(e.getKeyCode(), true);
     }
 
     // This method is called when a key is released
     @Override
     public void keyReleased(KeyEvent e) {
-        // Call the helper method to update key state to 'released' (false)
+        // Call the helper method to update key state to 'released'
         setKeyState(e.getKeyCode(), false);
     }
 
     // Helper method to update the state of movement keys based on keyCode
     private void setKeyState(int keyCode, boolean isPressed) {
-        // Check if the game is in play state to enable movement and toggling actions
-        if (gp.gameState == gp.playState) {
+        // Check the current game state and call the corresponding handler method
+        if (gp.gameState == gp.titleState) { // Check if the game is in the title state
+            handleTitleState(keyCode, isPressed); // Handle key events for the title state
+        } else if (gp.gameState == gp.playState) { // Check if the game is in the play state
+            handlePlayState(keyCode, isPressed); // Handle key events for the play state
+        } else if (gp.gameState == gp.pauseState) { // Check if the game is in the pause state
+            handlePauseState(keyCode, isPressed); // Handle key events for the pause state
+        } else if (gp.gameState == gp.dialogueState) { // Check if the game is in the dialogue state
+            handleDialogueState(keyCode, isPressed); // Handle key events for the dialogue state
+        }
+    }
+
+    // Handles key events in the title state
+    private void handleTitleState(int keyCode, boolean isPressed) {
+        if (isPressed) {
             switch (keyCode) {
-                case KeyEvent.VK_W -> upPressed = isPressed;    // Sets W key state to move player up
-                case KeyEvent.VK_S -> downPressed = isPressed;  // Sets S key state to move player down
-                case KeyEvent.VK_A -> leftPressed = isPressed;  // Sets A key state to move player left
-                case KeyEvent.VK_D -> rightPressed = isPressed; // Sets D key state to move player right
-                case KeyEvent.VK_T -> {
-                    if (isPressed) checkDrawTime = !checkDrawTime; // Toggles display of frame rendering times
+                case KeyEvent.VK_W ->
+                        gp.ui.commandNum = (gp.ui.commandNum - 1 + 3) % 3; // Decrement commandNum, wrap to 2
+                case KeyEvent.VK_S -> gp.ui.commandNum = (gp.ui.commandNum + 1) % 3; // Increment commandNum, wrap to 0
+                case KeyEvent.VK_ENTER -> {
+                    // Perform action based on current commandNum
+                    if (gp.ui.commandNum == 0) gp.gameState = gp.playState; // Start game if commandNum is 0
+                    else if (gp.ui.commandNum == 1) {
+                        // Placeholder for additional functionality
+                    } else {
+                        System.exit(0); // Exit the game if commandNum is 2
+                    }
                 }
-                case KeyEvent.VK_P -> {
-                    if (isPressed) gp.gameState = gp.pauseState; // Switches game to pause state if P is pressed
-                }
-                case KeyEvent.VK_ENTER ->
-                        enterPressed = isPressed; // Tracks Enter key for dialogue and selection actions
-            }
-        }
-        // If game is paused, only unpause when P key is pressed
-        else if (gp.gameState == gp.pauseState) {
-            if (keyCode == KeyEvent.VK_P && isPressed) {
-                gp.gameState = gp.playState; // Resumes game play state from pause
-            }
-        }
-        // If in dialogue state, pressing Enter resumes play state
-        else if (gp.gameState == gp.dialogueState) {
-            if (keyCode == KeyEvent.VK_ENTER && isPressed) {
-                gp.gameState = gp.playState; // Exits dialogue and resumes gameplay
             }
         }
     }
 
+    // Handles key events in the play state
+    private void handlePlayState(int keyCode, boolean isPressed) {
+        if (isPressed) {
+            switch (keyCode) {
+                case KeyEvent.VK_W -> upPressed = true;    // Sets upPressed to true for moving player up
+                case KeyEvent.VK_S -> downPressed = true;  // Sets downPressed to true for moving player down
+                case KeyEvent.VK_A -> leftPressed = true;  // Sets leftPressed to true for moving player left
+                case KeyEvent.VK_D -> rightPressed = true; // Sets rightPressed to true for moving player right
+                case KeyEvent.VK_T -> checkDrawTime = !checkDrawTime; // Toggles the display of frame rendering times
+                case KeyEvent.VK_P -> gp.gameState = gp.pauseState; // Switches game to pause state if P is pressed
+                case KeyEvent.VK_ENTER -> enterPressed = true; // Tracks Enter key for dialogue and selection actions
+            }
+        } else {
+            // Reset movement keys if they are released
+            switch (keyCode) {
+                case KeyEvent.VK_W -> upPressed = false; // Reset upPressed to false
+                case KeyEvent.VK_S -> downPressed = false; // Reset downPressed to false
+                case KeyEvent.VK_A -> leftPressed = false; // Reset leftPressed to false
+                case KeyEvent.VK_D -> rightPressed = false; // Reset rightPressed to false
+                case KeyEvent.VK_ENTER -> enterPressed = false; // Reset enterPressed to false
+            }
+        }
+    }
+
+    // Handles key events in the pause state
+    private void handlePauseState(int keyCode, boolean isPressed) {
+        if (isPressed && keyCode == KeyEvent.VK_P) {
+            gp.gameState = gp.playState; // Resumes gameplay
+        }
+    }
+
+    // Handles key events in the dialogue state
+    private void handleDialogueState(int keyCode, boolean isPressed) {
+        if (isPressed && keyCode == KeyEvent.VK_ENTER) {
+            gp.gameState = gp.playState; // Exits dialogue and resumes gameplay
+        }
+    }
 
     // Method to reset all movement keys to false
     public void resetKeyStates() {
-        upPressed = false;
-        downPressed = false;
-        leftPressed = false;
-        rightPressed = false;
+        upPressed = false;   // Resets upPressed state
+        downPressed = false; // Resets downPressed state
+        leftPressed = false; // Resets leftPressed state
+        rightPressed = false; // Resets rightPressed state
     }
 }
