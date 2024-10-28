@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 public class SuperObject {
 
     // The image representing the object (e.g., key, door, etc.).
-    public BufferedImage image;
+    public BufferedImage image, image2, image3;
 
     // The name of the object.
     public String name;

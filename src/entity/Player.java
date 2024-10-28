@@ -53,6 +53,11 @@ public class Player extends Entity {
         speed = 4;
         // Default movement direction.
         direction = "down";
+
+        // Player's maximum health represented by heart images on the screen.
+        maxLife = 6;
+        // Sets the player's initial health equal to the maximum, displayed as full hearts.
+        life = maxLife;
     }
 
     // Load the images for the player's movement in all four directions.

@@ -1,8 +1,11 @@
 package main;
 
 import object.OBJ_Chest;
+import object.OBJ_Heart;
+import object.SuperObject;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -22,6 +25,9 @@ public class UI {
 
     // Font objects for displaying text in the UI (Arial with size 40 and bold Arial with size 80).
     Font pixelOperator;
+
+    // Images representing full, half, and blank hearts for displaying player life status.
+    BufferedImage heart_full, heart_half, heart_blank;
 
     // Boolean flag to indicate if a message should be displayed.
     public boolean messageOn = false;
@@ -58,7 +64,11 @@ public class UI {
             logger.log(Level.WARNING, "Invalid font format for PixelOperator font", e);
         }
 
-
+        // Create an instance of OBJ_Heart to load heart images.
+        SuperObject heart = new OBJ_Heart(gp);
+        heart_full = heart.image;   // Full heart image.
+        heart_half = heart.image2;  // Half heart image.
+        heart_blank = heart.image3;  // Blank heart image.
     }
 
     // Method to set a message to be displayed on the screen.
@@ -77,17 +87,49 @@ public class UI {
         g2.setColor(Color.white);
 
         // Check the game state and draw elements accordingly.
-        if (gp.gameState == gp.playState) {
+        if (gp.gameState == gp.titleState) {
+            // Draws the title screen when in title state.
+            drawTitleScreen();
+        } else if (gp.gameState == gp.playState) {
             // Placeholder for future play-state UI elements.
+            drawPlayerLifer();
         } else if (gp.gameState == gp.pauseState) {
             // Draws the pause screen when the game is paused.
+            drawPlayerLifer();
             drawPauseScreen();
         } else if (gp.gameState == gp.dialogueState) {
             // Draw the dialogue screen when the game is in dialogue state.
+            drawPlayerLifer();
             drawDialogueScreen();
-        } else if (gp.gameState == gp.titleState) {
-            // Draws the title screen when in title state.
-            drawTitleScreen();
+        }
+    }
+
+    // Draws the player's life status on the screen using heart images.
+    public void drawPlayerLifer() {
+        gp.player.life = 1; // Set player life to 1 for rendering (adjust this as needed).
+        int x = gp.tileSize / 2; // Starting X position for drawing hearts.
+        int y = gp.tileSize / 2; // Starting Y position for drawing hearts.
+        int i = 0; // Counter for heart images.
+
+        // Draw max life
+        while (i < gp.player.maxLife / 2) {
+            g2.drawImage(heart_blank, x, y, null); // Draw blank heart for max life.
+            i++;
+            x += (int) (gp.tileSize * 1.5); // Move X position for the next heart.
+        }
+
+        x = gp.tileSize / 2; // Reset X position for drawing current life.
+        i = 0; // Reset counter for current life.
+
+        // Draw current life
+        while (i < gp.player.life) {
+            g2.drawImage(heart_half, x, y, null); // Draw half heart if player has only half a life.
+            i++;
+            if (i < gp.player.life) {
+                g2.drawImage(heart_full, x, y, null); // Draw full heart for each life.
+            }
+            i++;
+            x += (int) (gp.tileSize * 1.5); // Move X position for the next heart.
         }
     }
 

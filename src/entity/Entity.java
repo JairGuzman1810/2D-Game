@@ -59,6 +59,12 @@ public class Entity {
     // Index to track the current dialogue being displayed.
     int dialogueIndex = 0;
 
+    //Character status
+    // The maximum life points the entity can have (e.g., total hearts).
+    public int maxLife;
+    // The current life points of the entity, used to determine health status and display hearts on the UI.
+    public int life;
+
     // Constructor initializes the Game Panel
     public Entity(GamePanel gp) {
         this.gp = gp;
