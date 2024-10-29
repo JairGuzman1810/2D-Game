@@ -110,10 +110,16 @@ public class Player extends Entity {
         int objIndex = gp.cChecker.checkObject(this, true);
         pickUpObject(objIndex); // Call the method to handle object interaction.
 
-        //Check for collisions with NPC
+        // Check for collisions with NPC
         // npcIndex will hold the index of the NPC the player collides with.
         int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
         interactNPC(npcIndex);
+
+        // Check for event
+        gp.eHandler.checkEvent();
+
+        // Reset the enter key state to avoid repeated interactions in the same frame.
+        gp.keyH.enterPressed = false;
 
         // If no collision detected, move the player in the current direction.
         if (!collisionOn) {
@@ -155,7 +161,6 @@ public class Player extends Entity {
                 gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
             }
         }
-        gp.keyH.enterPressed = false; // Reset the enter key state to avoid repeated interactions in the same frame.
     }
 
 

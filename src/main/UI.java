@@ -106,7 +106,6 @@ public class UI {
 
     // Draws the player's life status on the screen using heart images.
     public void drawPlayerLifer() {
-        gp.player.life = 1; // Set player life to 1 for rendering (adjust this as needed).
         int x = gp.tileSize / 2; // Starting X position for drawing hearts.
         int y = gp.tileSize / 2; // Starting Y position for drawing hearts.
         int i = 0; // Counter for heart images.

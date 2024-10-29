@@ -58,6 +58,9 @@ public class GamePanel extends JPanel implements Runnable {
     //  Handles user interface
     public UI ui = new UI(this);
 
+    // Manages interactive events like damage zones, healing zones, and teleportation within the game world.
+    public EventHandler eHandler = new EventHandler(this);
+
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
