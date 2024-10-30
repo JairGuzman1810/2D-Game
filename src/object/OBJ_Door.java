@@ -1,15 +1,12 @@
 package object;
 
+import entity.Entity;
 import main.GamePanel;
 
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // OBJ_Door defines the door object in the game, which can block the player's path.
-public class OBJ_Door extends SuperObject {
+public class OBJ_Door extends Entity {
 
     // Logger for logging errors during image loading.
     private static final Logger logger = Logger.getLogger(OBJ_Door.class.getName());
@@ -20,25 +17,11 @@ public class OBJ_Door extends SuperObject {
 
     // Constructor that sets the door's name and loads its image.
     public OBJ_Door(GamePanel gp) {
-        this.gp = gp; // Store the reference to the GamePanel for accessing game settings.
-
+        super(gp);
         // Set the name of the door object.
         name = "Door";
-
-        try {
-            // Load the door image from the resources folder.
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/objects/door.png")));
-            // Scale the loaded image to match the tile size defined in GamePanel.
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize); // Scale the image for proper display size.
-
-        } catch (IOException e) {
-            // Log an error if the image fails to load.
-            logger.log(Level.SEVERE, "Failed to load door image", e);
-        } catch (NullPointerException e) {
-            // Log a warning if the image resource is not found.
-            logger.log(Level.WARNING, "Image not found for door!", e);
-        }
-
+        // Load the door image from resources.
+        down1 = setup("/objects/door");
         // Set collision property to true, indicating that the door can block the player's path.
         collision = true;
     }

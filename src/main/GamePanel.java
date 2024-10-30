@@ -2,13 +2,14 @@ package main;
 
 import entity.Entity;
 import entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 // GamePanel handles the main game loop, updates, and rendering.
 // It extends JPanel and implements Runnable to manage the game loop in a separate thread.
@@ -69,10 +70,13 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
 
     // Array to hold the game objects, such as keys, doors, and chests
-    public SuperObject[] obj = new SuperObject[10];
+    public Entity[] obj = new Entity[10];
 
     // Array to hold the game NPCs
     public Entity[] npc = new Entity[10];
+
+    // ArrayList to hold all entities for rendering in the correct order.
+    ArrayList<Entity> entityList = new ArrayList<>();
 
     //GAME STATE
     // Tracks the current game state (e.g., playing, paused).
@@ -237,22 +241,31 @@ public class GamePanel extends JPanel implements Runnable {
             // Draws the tiles onto the Graphics2D context.
             tileM.draw(g2);
 
-            // Draw all the objects in the obj array.
-            for (SuperObject superObject : obj) {
-                if (superObject != null) {
-                    superObject.draw(g2, this); // Calls the draw method for each object
+            // Add entities to the list;
+            entityList.add(player); // Add the player entity to the list.
+
+            for (Entity entity : npc) { // Iterate through the array of NPC entities.
+                if (entity != null) { // Check if the entity is not null.
+                    entityList.add(entity); // Add the non-null NPC to the entity list.
                 }
             }
 
-            // Draw all the NPC in the npc array.
-            for (Entity entity : npc) {
-                if (entity != null) {
-                    entity.draw(g2); // Calls the draw method for each npc
+            for (Entity entity : obj) { // Iterate through the array of game objects.
+                if (entity != null) { // Check if the entity is not null.
+                    entityList.add(entity); // Add the non-null game object to the entity list.
                 }
             }
 
-            // Draw the player using the current Graphics2D context.
-            player.draw(g2);
+            // Sort the entity list based on the worldY position for proper rendering order.
+            entityList.sort(Comparator.comparingInt(e -> e.worldY)); // Sort entities by their worldY position to determine rendering order.
+
+            // Draw entities;
+            for (Entity entity : entityList) { // Iterate through the sorted entity list.
+                entity.draw(g2); // Call the draw method on each entity to render it on the Graphics2D context.
+            }
+
+            // Clear the entity list to prepare for the next frame's rendering.
+            entityList.clear();
 
             // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
             ui.draw(g2);

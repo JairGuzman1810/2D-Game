@@ -1,8 +1,8 @@
 package main;
 
+import entity.Entity;
 import object.OBJ_Chest;
 import object.OBJ_Heart;
-import object.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -65,7 +65,7 @@ public class UI {
         }
 
         // Create an instance of OBJ_Heart to load heart images.
-        SuperObject heart = new OBJ_Heart(gp);
+        Entity heart = new OBJ_Heart(gp);
         heart_full = heart.image;   // Full heart image.
         heart_half = heart.image2;  // Half heart image.
         heart_blank = heart.image3;  // Blank heart image.

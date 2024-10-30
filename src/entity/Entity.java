@@ -31,7 +31,7 @@ public class Entity {
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
 
     // Stores the current direction of the player's movement (up, down, left, right).
-    public String direction;
+    public String direction = "down";
 
     // spriteCounter keeps track of the number of frames elapsed for animating the sprite.
     public int spriteCounter = 0;
@@ -58,6 +58,15 @@ public class Entity {
 
     // Index to track the current dialogue being displayed.
     int dialogueIndex = 0;
+
+    // The image representing the object (e.g., key, door, etc.).
+    public BufferedImage image, image2, image3;
+
+    // The name of the object.
+    public String name;
+
+    // Indicates whether the object can trigger collisions.
+    public boolean collision = false;
 
     //Character status
     // The maximum life points the entity can have (e.g., total hearts).
