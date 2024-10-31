@@ -139,52 +139,25 @@ public class CollisionChecker {
                 // Get entity's solid area position
                 entity.solidArea.x = entity.worldX + entity.solidArea.x;
                 entity.solidArea.y = entity.worldY + entity.solidArea.y;
-                // Get the NPC's solid area position
+                // Get the target entity solid area position
                 target[i].solidArea.x = target[i].worldX + target[i].solidArea.x;
                 target[i].solidArea.y = target[i].worldY + target[i].solidArea.y;
 
                 // Check collision based on the entity's movement direction.
                 switch (entity.direction) {
-                    case "up" -> {
-                        entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
-                        if (entity.solidArea.intersects(target[i].solidArea)) { // Check for collision.
-                            entity.collisionOn = true;
+                    case "up" -> entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
+                    case "down" -> entity.solidArea.y += entity.speed; // Move entity's solid area down based on speed.
+                    case "left" -> entity.solidArea.x -= entity.speed; // Move entity's solid area left based on speed.
+                    case "right" ->
+                            entity.solidArea.x += entity.speed; // Move entity's solid area right based on speed.
+                }
 
-                            // return the NPC's index.
-                            index = i;
+                if (entity.solidArea.intersects(target[i].solidArea) && target[i] != entity) { // Check for collision.
+                    entity.collisionOn = true;
 
-                        }
-                    }
-                    case "down" -> {
-                        entity.solidArea.y += entity.speed; // Move entity's solid area down based on speed.
-                        if (entity.solidArea.intersects(target[i].solidArea)) { // Check for collision.
-                            entity.collisionOn = true;
+                    // return the target entity index.
+                    index = i;
 
-                            //return the NPC's index.
-                            index = i;
-
-                        }
-                    }
-                    case "left" -> {
-                        entity.solidArea.x -= entity.speed; // Move entity's solid area left based on speed.
-                        if (entity.solidArea.intersects(target[i].solidArea)) { // Check for collision.
-                            entity.collisionOn = true;
-
-                            //return the NPC's index.
-                            index = i;
-
-                        }
-                    }
-                    case "right" -> {
-                        entity.solidArea.x += entity.speed; // Move entity's solid area right based on speed.
-                        if (entity.solidArea.intersects(target[i].solidArea)) { // Check for collision.
-                            entity.collisionOn = true;
-
-                            // return the NPC's index.
-                            index = i;
-
-                        }
-                    }
                 }
 
                 // Reset the solid areas back to their default positions after checking for collisions.
@@ -198,8 +171,10 @@ public class CollisionChecker {
         return index; // Return the index of the NPC collided with, or 999 if no collision.
     }
 
-    // Method to check if an entity has collided with the player.
-    public void checkPlayer(Entity entity) {
+    // Method to check if an entity has collided with the player and return if contact
+    public boolean checkPlayer(Entity entity) {
+        boolean contactPlayer = false;
+
         // Get entity's solid area position
         entity.solidArea.x = entity.worldX + entity.solidArea.x;
         entity.solidArea.y = entity.worldY + entity.solidArea.y;
@@ -209,30 +184,15 @@ public class CollisionChecker {
 
         // Check collision based on the entity's movement direction.
         switch (entity.direction) {
-            case "up" -> {
-                entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
-                if (entity.solidArea.intersects(gp.player.solidArea)) { // Check for collision.
-                    entity.collisionOn = true;
-                }
-            }
-            case "down" -> {
-                entity.solidArea.y += entity.speed; // Move entity's solid area down based on speed.
-                if (entity.solidArea.intersects(gp.player.solidArea)) { // Check for collision.
-                    entity.collisionOn = true;
-                }
-            }
-            case "left" -> {
-                entity.solidArea.x -= entity.speed; // Move entity's solid area left based on speed.
-                if (entity.solidArea.intersects(gp.player.solidArea)) { // Check for collision.
-                    entity.collisionOn = true;
-                }
-            }
-            case "right" -> {
-                entity.solidArea.x += entity.speed; // Move entity's solid area right based on speed.
-                if (entity.solidArea.intersects(gp.player.solidArea)) { // Check for collision.
-                    entity.collisionOn = true;
-                }
-            }
+            case "up" -> entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
+            case "down" -> entity.solidArea.y += entity.speed; // Move entity's solid area down based on speed.
+            case "left" -> entity.solidArea.x -= entity.speed; // Move entity's solid area left based on speed.
+            case "right" -> entity.solidArea.x += entity.speed; // Move entity's solid area right based on speed.
+        }
+
+        if (entity.solidArea.intersects(gp.player.solidArea)) { // Check for collision.
+            entity.collisionOn = true;
+            contactPlayer = true;
         }
 
         // Reset the solid areas back to their default positions after checking for collisions.
@@ -241,5 +201,7 @@ public class CollisionChecker {
         gp.player.solidArea.x = gp.player.solidAreaDefaultX;
         gp.player.solidArea.y = gp.player.solidAreaDefaultY;
 
+
+        return contactPlayer;
     }
 }

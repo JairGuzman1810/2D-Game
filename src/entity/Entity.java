@@ -50,8 +50,14 @@ public class Entity {
     // A flag that indicates whether a collision has occurred (true) or not (false).
     public boolean collisionOn = false;
 
-    // Counter to lock the NPC's action temporarily (e.g., to control how long the NPC stays idle or continues moving in one direction).
+    // Counter to lock the entity's action temporarily (e.g., to control how long the entity stays idle or continues moving in one direction).
     public int actionLockCounter = 0;
+
+    // Indicates if the entity is currently invincible, used to prevent taking repeated damage.
+    public boolean invincible = false;
+
+    // Frame counter to track the duration of the invincibility effect.
+    public int invincibleCounter = 0;
 
     // Array for storing dialogue text, supporting multiple phrases.
     String[] dialogues = new String[20];
@@ -67,6 +73,9 @@ public class Entity {
 
     // Indicates whether the object can trigger collisions.
     public boolean collision = false;
+
+    // Type identifier for the entity: 0 for player, 1 for NPC, and 2 for monster.
+    public int type;
 
     //Character status
     // The maximum life points the entity can have (e.g., total hearts).
@@ -108,17 +117,28 @@ public class Entity {
     }
 
 
-    // Updates the NPC's state each frame, handling movement, collision detection,
+    // Updates the entity's state each frame, handling movement, collision detection,
     // and animation updates. This ensures smooth movement and interaction with the game world.
     public void update() {
         setAction();
         // Check for tile collision.
         collisionOn = false; // Reset collision state.
-        gp.cChecker.checkTile(this); // Check if the NPC is colliding with any tiles.
-        gp.cChecker.checkObject(this, false); // Check if the NPC is colliding with any object.
-        gp.cChecker.checkPlayer(this); // Check if the NPC is colliding with the player.
+        gp.cChecker.checkTile(this); // Check if the entity is colliding with any tiles.
+        gp.cChecker.checkObject(this, false); // Check if the entity is colliding with any object.
+        gp.cChecker.checkEntity(this, gp.npc); // Check if the entity is colliding with any other NPC.
+        gp.cChecker.checkEntity(this, gp.monster); // Check if the entity is colliding with any other monster.
+        boolean contactPlayer = gp.cChecker.checkPlayer(this); // Check if the entity is colliding with the player, if yes true, no false
 
-        // If no collision detected, move the NPC in the current direction.
+        // Checks if the entity is a monster and has contacted the player.
+        // If so, reduces player's life and sets them to invincible to avoid consecutive damage.
+        if (this.type == 2 && contactPlayer) {
+            if (!gp.player.invincible) {
+                gp.player.life--; // Decrease player's life by one unit.
+                gp.player.invincible = true; // Trigger invincibility to prevent repeat hits.
+            }
+        }
+
+        // If no collision detected, move the entity in the current direction.
         if (!collisionOn) {
             switch (direction) {
                 case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
@@ -138,7 +158,7 @@ public class Entity {
         }
     }
 
-    // Draws the NPC on the screen relative to the player's position.
+    // Draws the entity on the screen relative to the player's position.
     public void draw(Graphics2D g2) {
 
         BufferedImage image;
@@ -147,7 +167,7 @@ public class Entity {
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
 
-        // Check if the NPC is within the player's visible area.
+        // Check if the entity is within the player's visible area.
         if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
                 worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
                 worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
@@ -161,7 +181,7 @@ public class Entity {
                 default -> down1;
             };
 
-            // Draw the NPC's image on the screen at the calculated position.
+            // Draw the entity's image on the screen at the calculated position.
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
         }
     }

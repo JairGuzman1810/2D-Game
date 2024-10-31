@@ -20,6 +20,9 @@ public class Player extends Entity {
     // Tracks idle frames to set player to standstill position after a delay.
     int standCounter = 0;
 
+    // Variable to count frames while the player is invincible
+    private int invincibleFrameCounter = 0;
+
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
@@ -87,58 +90,75 @@ public class Player extends Entity {
                 standCounter = 0; // Reset the stand counter for future idle checks
             }
 
-            return; // Exit update early if the player is idle
-        }
-
-        // Check and update the player's direction based on key inputs.
-        if (keyH.upPressed) {
-            direction = "up";
-        } else if (keyH.downPressed) {
-            direction = "down";
-        } else if (keyH.leftPressed) {
-            direction = "left";
         } else {
-            direction = "right";
+
+            // Check and update the player's direction based on key inputs.
+            if (keyH.upPressed) {
+                direction = "up";
+            } else if (keyH.downPressed) {
+                direction = "down";
+            } else if (keyH.leftPressed) {
+                direction = "left";
+            } else {
+                direction = "right";
+            }
+
+            // Check for tile collision.
+            collisionOn = false; // Reset collision state.
+            gp.cChecker.checkTile(this); // Check if the player is colliding with any tiles.
+
+            // Check for collisions with objects (like keys or doors).
+            // objIndex will hold the index of the object the player collides with.
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickUpObject(objIndex); // Call the method to handle object interaction.
+
+            // Check for collisions with NPC
+            // npcIndex will hold the index of the NPC the player collides with.
+            int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
+            interactNPC(npcIndex);
+
+            // Check for collisions with monster
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            contactMonster(monsterIndex);
+
+            // Check for event
+            gp.eHandler.checkEvent();
+
+            // Reset the enter key state to avoid repeated interactions in the same frame.
+            gp.keyH.enterPressed = false;
+
+            // If no collision detected, move the player in the current direction.
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
+                    case "down" -> worldY += speed; // Move down.
+                    case "left" -> worldX -= speed; // Move left on the X-axis.
+                    case "right" -> worldX += speed; // Move right.
+                }
+            }
+
+            // Increment spriteCounter to control the animation frame rate.
+            spriteCounter++;
+
+            // Toggle between two sprites every 12 frames to create walking animation.
+            if (spriteCounter > 12) {
+                spriteNum = (spriteNum == 1) ? 2 : 1;
+                spriteCounter = 0;
+            }
+
         }
 
-        // Check for tile collision.
-        collisionOn = false; // Reset collision state.
-        gp.cChecker.checkTile(this); // Check if the player is colliding with any tiles.
+        // If entity is invincible, increment the invincibility counter.
+        if (invincible) {
+            invincibleCounter++; // Track invincibility duration.
 
-        // Check for collisions with objects (like keys or doors).
-        // objIndex will hold the index of the object the player collides with.
-        int objIndex = gp.cChecker.checkObject(this, true);
-        pickUpObject(objIndex); // Call the method to handle object interaction.
-
-        // Check for collisions with NPC
-        // npcIndex will hold the index of the NPC the player collides with.
-        int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
-        interactNPC(npcIndex);
-
-        // Check for event
-        gp.eHandler.checkEvent();
-
-        // Reset the enter key state to avoid repeated interactions in the same frame.
-        gp.keyH.enterPressed = false;
-
-        // If no collision detected, move the player in the current direction.
-        if (!collisionOn) {
-            switch (direction) {
-                case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
-                case "down" -> worldY += speed; // Move down.
-                case "left" -> worldX -= speed; // Move left on the X-axis.
-                case "right" -> worldX += speed; // Move right.
+            // Disable invincibility after 60 frames and reset the counter.
+            if (invincibleCounter > 60) {
+                invincible = false; // End invincibility.
+                invincibleCounter = 0; // Reset counter for next use.
             }
         }
 
-        // Increment spriteCounter to control the animation frame rate.
-        spriteCounter++;
-
-        // Toggle between two sprites every 12 frames to create walking animation.
-        if (spriteCounter > 12) {
-            spriteNum = (spriteNum == 1) ? 2 : 1;
-            spriteCounter = 0;
-        }
     }
 
     // Handles object interaction.
@@ -163,8 +183,21 @@ public class Player extends Entity {
         }
     }
 
+    // Checks if a monster is encountered at a specific collision point and, if so,
+    // reduces the player's life by 1 unless the player is currently invincible.
+    public void contactMonster(int i) {
+        // Verify if a monster is found at the collision point (999 indicates no monster present).
+        if (i != 999) {
+            // If the player is not invincible, reduce life and activate invincibility.
+            if (!invincible) {
+                life--;           // Decrease the player's life by 1.
+                invincible = true; // Set invincibility to prevent immediate further damage.
+            }
+        }
+    }
 
-    // The draw method draws the player's current sprite based on direction and animation frame.
+
+    // Draw the player sprite at the center of the screen, using screenX and screenY.
     public void draw(Graphics2D g2) {
         BufferedImage image = switch (direction) {
             case "up" -> (spriteNum == 1) ? up1 : up2;
@@ -174,8 +207,24 @@ public class Player extends Entity {
             default -> down1;
         };
 
-        // Draw the player sprite at the center of the screen, using screenX and screenY.
+        // If the player is invincible, apply a blinking effect
+        if (invincible) {
+            // Toggle alpha between 0.3 and 1.0 every 10 frames
+            float alpha = (invincibleFrameCounter / 10 % 2 == 0) ? 0.3f : 1.0f;
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+
+            // Increment the invincibility frame counter
+            invincibleFrameCounter++;
+        } else {
+            // Reset frame counter when invincibility ends
+            invincibleFrameCounter = 0;
+        }
+
+        // Draw the player sprite at the center of the screen
         g2.drawImage(image, screenX, screenY, null);
+
+        // Reset transparency to 1.0 after drawing the player
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
 
 }

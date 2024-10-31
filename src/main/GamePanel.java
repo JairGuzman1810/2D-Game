@@ -75,6 +75,10 @@ public class GamePanel extends JPanel implements Runnable {
     // Array to hold the game NPCs
     public Entity[] npc = new Entity[10];
 
+    // Array to hold the game monsters
+    public Entity[] monster = new Entity[20
+            ];
+
     // ArrayList to hold all entities for rendering in the correct order.
     ArrayList<Entity> entityList = new ArrayList<>();
 
@@ -131,6 +135,9 @@ public class GamePanel extends JPanel implements Runnable {
         // Calls the AssetSetter to place NPCs
         aSetter.setNPC();
 
+        // Calls the AssetSetter to place monsters
+        aSetter.setMonster();
+
         // Start playing background music (index 0 in the sound array).
         playMusic(0);
 
@@ -155,8 +162,6 @@ public class GamePanel extends JPanel implements Runnable {
         double delta = 0;  // Accumulates the time between frames to control the update rate.
         long lastTime = System.nanoTime();  // Get the initial time in nanoseconds.
         long currentTime;  // Stores the current time on each loop iteration.
-        int timer = 0;  // Tracks elapsed time to calculate FPS.
-        int drawCount = 0;  // Tracks how many frames have been drawn.
 
         // Game loop runs continuously while gameThread is not null.
         while (gameThread != null) {
@@ -165,10 +170,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Add the time since the last frame to delta.
             delta += (currentTime - lastTime) / drawInterval;
-
-            // Accumulate the time to track FPS.
-            timer += (int) (currentTime - lastTime);
-
+            
             // Update lastTime for the next iteration.
             lastTime = currentTime;
 
@@ -183,18 +185,6 @@ public class GamePanel extends JPanel implements Runnable {
                 // Decrement delta by 1 to indicate a frame has been processed.
                 delta--;
 
-                // Increment the frame counter.
-                drawCount++;
-            }
-
-            // After 1 second (1,000,000,000 nanoseconds), print the FPS.
-            if (timer >= 1000000000) {
-                // Output the current FPS to the console.
-                System.out.println("FPS: " + drawCount);
-
-                // Reset the frame counter and timer.
-                drawCount = 0;
-                timer = 0;
             }
         }
     }
@@ -209,6 +199,13 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entity entity : npc) {
                 if (entity != null) {
                     entity.update(); // Calls the update method for each npc
+                }
+            }
+
+            // Update all the monsters in the monster array.
+            for (Entity entity : monster) {
+                if (entity != null) {
+                    entity.update(); // Calls the update method for each monster
                 }
             }
 
@@ -253,6 +250,12 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entity entity : obj) { // Iterate through the array of game objects.
                 if (entity != null) { // Check if the entity is not null.
                     entityList.add(entity); // Add the non-null game object to the entity list.
+                }
+            }
+
+            for (Entity entity : monster) { // Iterate through the array of monster entities.
+                if (entity != null) { // Check if the entity is not null.
+                    entityList.add(entity); // Add the non-null game monster to the entity list.
                 }
             }
 
