@@ -15,73 +15,50 @@ import java.util.logging.Logger;
 // It contains the common attributes of an entity, such as position (x, y), speed, and collision settings.
 public class Entity {
 
-    // A logger to handle logging messages, such as errors during image loading.
-    private static final Logger logger = Logger.getLogger(Entity.class.getName());
+    // General
+    private static final Logger logger = Logger.getLogger(Entity.class.getName()); // Logger for debugging or error messages.
+    GamePanel gp; // Reference to the game panel, provides game state and properties.
 
-    // Reference to the GamePanel, which provides the game environment's state and properties.
-    GamePanel gp;
+    // Entity Identification
+    public String name; // The name of the entity.
+    public int type; // Type identifier: 0 = player, 1 = NPC, 2 = monster.
 
-    // The entity's position in the game world (worldX, worldY).
-    public int worldX, worldY;
+    // Position and Movement
+    public int worldX, worldY; // Entity's position in the game world.
+    public int speed; // Movement speed of the entity.
+    public String direction = "down"; // Current movement direction (up, down, left, right).
 
-    // The speed of the entity, determining how fast it moves per frame.
-    public int speed;
+    // Animation
+    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // Movement animation frames.
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2; // Attack animation frames.
+    public int spriteCounter = 0; // Counts frames elapsed for animation.
+    public int spriteNum = 1; // Current sprite frame number (1 or 2) for animation.
 
-    // BufferedImages representing different frames of the player's movement in each direction.
-    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    // Collision and Solid Area
+    public Rectangle solidArea = new Rectangle(0, 0, 48, 48); // Area around the entity checked for collisions.
+    public int solidAreaDefaultX, solidAreaDefaultY; // Default x, y coordinates of the solid area within the entity.
+    public boolean collisionOn = false; // Flag to indicate if a collision has occurred.
+    public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
 
-    // Stores the current direction of the player's movement (up, down, left, right).
-    public String direction = "down";
+    // Action Control
+    public int actionLockCounter = 0; // Counter to lock entity's action temporarily (e.g., idle/move control).
+    public boolean invincible = false; // Flag for invincibility to prevent repeated damage.
+    public int invincibleCounter = 0; // Tracks duration of invincibility effect.
+    public boolean attacking = false; // Determines if the entity is attacking, triggering attack animations.
+    public int invincibleFrameCounter = 0; // Count frames while the player is invincible
 
-    // spriteCounter keeps track of the number of frames elapsed for animating the sprite.
-    public int spriteCounter = 0;
 
-    // spriteNum indicates which sprite image (1 or 2) to display for animation.
-    public int spriteNum = 1;
+    // Character Status
+    public int maxLife; // Max life points the entity can have.
+    public int life; // Current life points of the entity.
 
-    // A Rectangle representing the entity's solid area used for collision detection.
-    // This defines the area around the entity that is checked for collisions.
-    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    // Dialogue
+    String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
+    int dialogueIndex = 0; // Current dialogue index for displaying text.
 
-    // These variables store the default x and y coordinates of the solid area within the entity.
-    // They are used to reset the solid area position if needed, for example, after a collision detection update.
-    public int solidAreaDefaultX, solidAreaDefaultY;
-
-    // A flag that indicates whether a collision has occurred (true) or not (false).
-    public boolean collisionOn = false;
-
-    // Counter to lock the entity's action temporarily (e.g., to control how long the entity stays idle or continues moving in one direction).
-    public int actionLockCounter = 0;
-
-    // Indicates if the entity is currently invincible, used to prevent taking repeated damage.
-    public boolean invincible = false;
-
-    // Frame counter to track the duration of the invincibility effect.
-    public int invincibleCounter = 0;
-
-    // Array for storing dialogue text, supporting multiple phrases.
-    String[] dialogues = new String[20];
-
-    // Index to track the current dialogue being displayed.
-    int dialogueIndex = 0;
-
-    // The image representing the object (e.g., key, door, etc.).
-    public BufferedImage image, image2, image3;
-
-    // The name of the object.
-    public String name;
-
-    // Indicates whether the object can trigger collisions.
-    public boolean collision = false;
-
-    // Type identifier for the entity: 0 for player, 1 for NPC, and 2 for monster.
-    public int type;
-
-    //Character status
-    // The maximum life points the entity can have (e.g., total hearts).
-    public int maxLife;
-    // The current life points of the entity, used to determine health status and display hearts on the UI.
-    public int life;
+    // Object Properties
+    public BufferedImage image, image2, image3; // Images representing the object (e.g., key, door).
+    public boolean collision = false; // Indicates if the object can trigger collisions.
 
     // Constructor initializes the Game Panel
     public Entity(GamePanel gp) {
@@ -156,6 +133,17 @@ public class Entity {
             spriteNum = (spriteNum == 1) ? 2 : 1;
             spriteCounter = 0;
         }
+
+        // If entity is invincible, increment the invincibility counter.
+        if (invincible) {
+            invincibleCounter++; // Track invincibility duration.
+
+            // Disable invincibility after 40 frames and reset the counter.
+            if (invincibleCounter > 40) {
+                invincible = false; // End invincibility.
+                invincibleCounter = 0; // Reset counter for next use.
+            }
+        }
     }
 
     // Draws the entity on the screen relative to the player's position.
@@ -181,20 +169,33 @@ public class Entity {
                 default -> down1;
             };
 
+            // Apply invincibility blinking effect
+            if (invincible) {
+                // Toggle alpha between 0.3 and 1.0 every 10 frames
+                float alpha = (invincibleFrameCounter / 10 % 2 == 0) ? 0.4f : 1.0f;
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                invincibleFrameCounter++;
+            } else {
+                invincibleFrameCounter = 0; // Reset frame counter when invincibility ends
+            }
+
             // Draw the entity's image on the screen at the calculated position.
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+
+            // Reset alpha to 1f
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
     }
 
     // Helper method to load an image by name, scale it, and return the BufferedImage
-    public BufferedImage setup(String imagePath) {
+    public BufferedImage setup(String imagePath, int width, int height) {
         UtilityTool uTool = new UtilityTool(); // Create an instance of UtilityTool for image scaling
         BufferedImage image = null; // Initialize the BufferedImage variable
 
         try {
             // Load the image from resources and scale it to the size of the game tiles
             image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(imagePath + ".png")));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize); // Scale the loaded image
+            image = uTool.scaleImage(image, width, height); // Scale the loaded image
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to load image", e); // Log error if image loading fails
         } catch (NullPointerException e) {

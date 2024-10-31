@@ -21,7 +21,7 @@ public class OBJ_Boots extends Entity {
         // Set the name of the boots object.
         name = "Boots";
         // Load the boots image from resources.
-        down1 = setup("/objects/boots");
+        down1 = setup("/objects/boots", gp.tileSize, gp.tileSize);
 
     }
 }

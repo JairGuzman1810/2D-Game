@@ -17,7 +17,7 @@ public class OBJ_Door extends Entity {
         // Set the name of the door object.
         name = "Door";
         // Load the door image from resources.
-        down1 = setup("/objects/door");
+        down1 = setup("/objects/door", gp.tileSize, gp.tileSize);
         // Set collision property to true, indicating that the door can block the player's path.
         collision = true;
     }

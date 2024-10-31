@@ -16,6 +16,6 @@ public class OBJ_Key extends Entity {
         // Set the name of the key object.
         name = "Key";
         // Load the key image from resources.
-        down1 = setup("/objects/key");
+        down1 = setup("/objects/key", gp.tileSize, gp.tileSize);
     }
 }

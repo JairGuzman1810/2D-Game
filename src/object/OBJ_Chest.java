@@ -16,6 +16,6 @@ public class OBJ_Chest extends Entity {
         // Set the name of the chest.
         name = "Chest";
         // Load the chest image from resources.
-        down1 = setup("/objects/chest");
+        down1 = setup("/objects/chest", gp.tileSize, gp.tileSize);
     }
 }

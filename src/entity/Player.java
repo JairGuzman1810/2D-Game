@@ -20,9 +20,6 @@ public class Player extends Entity {
     // Tracks idle frames to set player to standstill position after a delay.
     int standCounter = 0;
 
-    // Variable to count frames while the player is invincible
-    private int invincibleFrameCounter = 0;
-
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
@@ -39,12 +36,16 @@ public class Player extends Entity {
         solidArea.y = 16; // Offset within the sprite.
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = 32;  // Width of the collision area.
-        solidArea.height = 32; // Height of the collision area.
+        solidArea.width = 32;  // Width of the player collision area.
+        solidArea.height = 32; // Height of the player collision area.
+
+        attackArea.width = 36; // Width of the player attack collision area.
+        attackArea.height = 36; // Height of the player attack collision area.
 
         // Set the player's initial position and speed.
         setDefaultValues();
         getPlayerImage();
+        getPlayerAttackImage();
     }
 
     // Sets the default values for the player's position and speed.
@@ -66,21 +67,39 @@ public class Player extends Entity {
     // Load the images for the player's movement in all four directions.
     public void getPlayerImage() {
         // Use the setup method to load and scale player images for different movements
-        up1 = setup("/player/boy_up_1");
-        up2 = setup("/player/boy_up_2");
-        down1 = setup("/player/boy_down_1");
-        down2 = setup("/player/boy_down_2");
-        left1 = setup("/player/boy_left_1");
-        left2 = setup("/player/boy_left_2");
-        right1 = setup("/player/boy_right_1");
-        right2 = setup("/player/boy_right_2");
+        up1 = setup("/player/boy_up_1", gp.tileSize, gp.tileSize);
+        up2 = setup("/player/boy_up_2", gp.tileSize, gp.tileSize);
+        down1 = setup("/player/boy_down_1", gp.tileSize, gp.tileSize);
+        down2 = setup("/player/boy_down_2", gp.tileSize, gp.tileSize);
+        left1 = setup("/player/boy_left_1", gp.tileSize, gp.tileSize);
+        left2 = setup("/player/boy_left_2", gp.tileSize, gp.tileSize);
+        right1 = setup("/player/boy_right_1", gp.tileSize, gp.tileSize);
+        right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
+    }
+
+    // Load the images for the player's attack in all four directions.
+    public void getPlayerAttackImage() {
+        // Use the setup method to load and scale player images for different attacks
+        attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+        attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+        attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+        attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+        attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
+        attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
+        attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
+        attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
     }
 
 
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
+        // Check if player its attacking
+        if (attacking) {
+            // Call method of attacking
+            attacking();
+        }
         // Check if no movement keys are pressed to keep the player idle
-        if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed && !keyH.enterPressed) {
+        else if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed && !keyH.enterPressed) {
             // Increment the stand counter each frame when idle
             standCounter++;
 
@@ -149,7 +168,7 @@ public class Player extends Entity {
 
         }
 
-        // If entity is invincible, increment the invincibility counter.
+        // If player is invincible, increment the invincibility counter.
         if (invincible) {
             invincibleCounter++; // Track invincibility duration.
 
@@ -161,6 +180,54 @@ public class Player extends Entity {
         }
 
     }
+
+    // Controls the attack animation by toggling between two frames.
+    private void attacking() {
+        spriteCounter++; // Increment counter for frame control.
+
+
+        // Determine the attack phase based on spriteCounter.
+        if (spriteCounter <= 5) {
+            spriteNum = 1; // Initial attack phase.
+        } else if (spriteCounter <= 25) {
+            spriteNum = 2; // Second phase during attack.
+
+            // Save the current worldX, worldY, solidArea
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+
+            // Adjust player's worldX/Y for the attackArea
+            switch (direction) {
+                case "up" -> worldY -= attackArea.height;
+                case "down" -> worldY += attackArea.height;
+                case "left" -> worldX -= attackArea.width;
+                case "right" -> worldX += attackArea.width;
+            }
+
+            // attackArea becomes solidArea
+            solidArea.width = attackArea.width;
+            solidArea.height = attackArea.height;
+
+            // Check monster collision with the updated worldX, worldY and solidArea
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            damageMonster(monsterIndex);
+            // After checking collision, restore the original data
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+
+
+        } else {
+            spriteNum = 1; // Reset phase after completing the attack.
+            spriteCounter = 0; // Reset sprite counter.
+            attacking = false; // End attacking animation.
+        }
+    }
+
 
     // Handles object interaction.
     // If the player collides with an object (like a key, door, or chest), this method manages the interaction.
@@ -174,12 +241,33 @@ public class Player extends Entity {
     // Manages interaction with non-playable characters (NPCs).
     // This method checks for collisions with NPCs and initiates dialogue if the player interacts with them.
     public void interactNPC(int i) {
-        // Verify if an NPC is found at the collision point (999 indicates no NPC present).
+        // If there's an NPC at the collision point and the enter key is pressed, start dialogue.
+        if (i != 999 && gp.keyH.enterPressed) {
+            gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
+            gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
+        }
+        // If no NPC is present, pressing enter initiates an attack.
+        else if (gp.keyH.enterPressed) {
+            attacking = true; // The player its attacking
+        }
+    }
+
+    // This method handles damaging a monster by decreasing its life when the player attacks.
+    // It checks if the monster is invincible to prevent damage during the invincibility period.
+    public void damageMonster(int i) {
+        // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
-            // If the enter key is pressed, change the game state to dialogue state and initiate the NPC's dialogue.
-            if (gp.keyH.enterPressed) {
-                gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
-                gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
+            // Check if the monster is not currently invincible.
+            if (!gp.monster[i].invincible) {
+                // Decrease the monster's life by one.
+                gp.monster[i].life--;
+                // Set the monster's invincibility to true to prevent further damage.
+                gp.monster[i].invincible = true;
+
+                // If the monster's life reaches zero or below, remove it from the game.
+                if (gp.monster[i].life <= 0) {
+                    gp.monster[i] = null; // Set the monster reference to null, indicating it's defeated.
+                }
             }
         }
     }
@@ -200,32 +288,44 @@ public class Player extends Entity {
 
     // Draw the player sprite at the center of the screen, using screenX and screenY.
     public void draw(Graphics2D g2) {
+        // Adjust tempScreenX and tempScreenY based on direction to position the attack animation properly.
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
+
+        // Adjust Y-coordinate when direction is up or down
+        if (attacking) {
+            switch (direction) {
+                case "up" -> tempScreenY = screenY - gp.tileSize;
+                case "left" -> tempScreenX = screenX - gp.tileSize;
+            }
+        }
+
+        // Choose the correct animation frame based on direction and attack status.
         BufferedImage image = switch (direction) {
-            case "up" -> (spriteNum == 1) ? up1 : up2;
-            case "down" -> (spriteNum == 1) ? down1 : down2;
-            case "left" -> (spriteNum == 1) ? left1 : left2;
-            case "right" -> (spriteNum == 1) ? right1 : right2;
-            default -> down1;
+            case "up" -> attacking ? (spriteNum == 1 ? attackUp1 : attackUp2) : (spriteNum == 1 ? up1 : up2);
+            case "down" -> attacking ? (spriteNum == 1 ? attackDown1 : attackDown2) : (spriteNum == 1 ? down1 : down2);
+            case "left" -> attacking ? (spriteNum == 1 ? attackLeft1 : attackLeft2) : (spriteNum == 1 ? left1 : left2);
+            case "right" ->
+                    attacking ? (spriteNum == 1 ? attackRight1 : attackRight2) : (spriteNum == 1 ? right1 : right2);
+            default -> down1; // Default to down1 if direction is unrecognized.
         };
 
-        // If the player is invincible, apply a blinking effect
+        // Apply invincibility blinking effect
         if (invincible) {
             // Toggle alpha between 0.3 and 1.0 every 10 frames
             float alpha = (invincibleFrameCounter / 10 % 2 == 0) ? 0.3f : 1.0f;
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-
-            // Increment the invincibility frame counter
             invincibleFrameCounter++;
         } else {
-            // Reset frame counter when invincibility ends
-            invincibleFrameCounter = 0;
+            invincibleFrameCounter = 0; // Reset frame counter when invincibility ends
         }
 
-        // Draw the player sprite at the center of the screen
-        g2.drawImage(image, screenX, screenY, null);
+        // Draw the player sprite
+        g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-        // Reset transparency to 1.0 after drawing the player
+        // Reset transparency
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
+
 
 }
