@@ -80,7 +80,7 @@ public class Player extends Entity {
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
         // Check if no movement keys are pressed to keep the player idle
-        if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed) {
+        if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed && !keyH.enterPressed) {
             // Increment the stand counter each frame when idle
             standCounter++;
 
@@ -99,7 +99,7 @@ public class Player extends Entity {
                 direction = "down";
             } else if (keyH.leftPressed) {
                 direction = "left";
-            } else {
+            } else if (keyH.rightPressed) {
                 direction = "right";
             }
 
@@ -124,11 +124,9 @@ public class Player extends Entity {
             // Check for event
             gp.eHandler.checkEvent();
 
-            // Reset the enter key state to avoid repeated interactions in the same frame.
-            gp.keyH.enterPressed = false;
 
             // If no collision detected, move the player in the current direction.
-            if (!collisionOn) {
+            if (!collisionOn && !keyH.enterPressed) {
                 switch (direction) {
                     case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
                     case "down" -> worldY += speed; // Move down.
@@ -136,6 +134,9 @@ public class Player extends Entity {
                     case "right" -> worldX += speed; // Move right.
                 }
             }
+
+            // Reset the enter key state to avoid repeated interactions in the same frame.
+            gp.keyH.enterPressed = false;
 
             // Increment spriteCounter to control the animation frame rate.
             spriteCounter++;
