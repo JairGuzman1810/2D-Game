@@ -77,4 +77,16 @@ public class MON_GreenSlime extends Entity {
             actionLockCounter = 0; // Resets the action lock counter.
         }
     }
+
+    @Override
+    // Handles the slime's reaction to damage by resetting its action counter
+    // and changing direction to match the player's current facing direction.
+    public void damageReaction() {
+        super.damageReaction();
+        // Resets the action lock counter to allow an immediate response after taking damage
+        actionLockCounter = 0;
+        // Sets the slime's direction to match the player's current facing direction,
+        // making the slime appear to react by moving away from the player's attack
+        direction = gp.player.direction;
+    }
 }

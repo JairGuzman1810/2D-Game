@@ -170,7 +170,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Add the time since the last frame to delta.
             delta += (currentTime - lastTime) / drawInterval;
-            
+
             // Update lastTime for the next iteration.
             lastTime = currentTime;
 
@@ -195,17 +195,28 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == playState) {
             player.update(); // Delegate the update to the player (handles player movement).
 
-            // Update all the NPC in the npc array.
+            // Update all NPCs.
             for (Entity entity : npc) {
                 if (entity != null) {
-                    entity.update(); // Calls the update method for each npc
+                    entity.update(); // Calls the update method for each NPC.
                 }
             }
 
-            // Update all the monsters in the monster array.
-            for (Entity entity : monster) {
-                if (entity != null) {
-                    entity.update(); // Calls the update method for each monster
+            // Iterate through the array of monsters to update their status and remove dead ones
+            for (int i = 0; i < monster.length; i++) {
+                // Check if the current monster slot is not empty
+                if (monster[i] != null) {
+
+                    // If the monster is alive and not in a dying state, update its behavior and position
+                    if (monster[i].alive && !monster[i].dying) {
+                        // Call the update method to handle the monster's actions, movements, and status changes
+                        monster[i].update();
+                    }
+
+                    // If the monster is no longer alive, remove it from the array by setting it to null
+                    if (!monster[i].alive) {
+                        monster[i] = null;
+                    }
                 }
             }
 

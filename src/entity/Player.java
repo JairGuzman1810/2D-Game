@@ -248,25 +248,26 @@ public class Player extends Entity {
         }
         // If no NPC is present, pressing enter initiates an attack.
         else if (gp.keyH.enterPressed) {
+            gp.playSE(7); // Play sound effect swing weapon
             attacking = true; // The player its attacking
         }
     }
 
     // This method handles damaging a monster by decreasing its life when the player attacks.
-    // It checks if the monster is invincible to prevent damage during the invincibility period.
+// It checks if the monster is invincible to prevent damage during the invincibility period.
     public void damageMonster(int i) {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.
             if (!gp.monster[i].invincible) {
-                // Decrease the monster's life by one.
-                gp.monster[i].life--;
-                // Set the monster's invincibility to true to prevent further damage.
-                gp.monster[i].invincible = true;
+                gp.playSE(5); // Play sound effect indicating a hit on the monster
+                gp.monster[i].life--; // Decrease the monster's life by one
+                gp.monster[i].invincible = true; // Set invincibility to prevent further hits
+                gp.monster[i].damageReaction(); // Trigger the monster's reaction to damage
 
-                // If the monster's life reaches zero or below, remove it from the game.
+                // Mark the monster as dying if its life reaches zero or below
                 if (gp.monster[i].life <= 0) {
-                    gp.monster[i] = null; // Set the monster reference to null, indicating it's defeated.
+                    gp.monster[i].dying = true;
                 }
             }
         }
@@ -279,6 +280,7 @@ public class Player extends Entity {
         if (i != 999) {
             // If the player is not invincible, reduce life and activate invincibility.
             if (!invincible) {
+                gp.playSE(6); // Play sound effect receive damage
                 life--;           // Decrease the player's life by 1.
                 invincible = true; // Set invincibility to prevent immediate further damage.
             }
@@ -312,12 +314,7 @@ public class Player extends Entity {
 
         // Apply invincibility blinking effect
         if (invincible) {
-            // Toggle alpha between 0.3 and 1.0 every 10 frames
-            float alpha = (invincibleFrameCounter / 10 % 2 == 0) ? 0.3f : 1.0f;
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            invincibleFrameCounter++;
-        } else {
-            invincibleFrameCounter = 0; // Reset frame counter when invincibility ends
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
         }
 
         // Draw the player sprite

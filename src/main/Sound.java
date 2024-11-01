@@ -36,6 +36,15 @@ public class Sound {
 
         // Index 4: Victory fanfare sound.
         soundURL[4] = getClass().getResource("/sound/fanfare.wav");
+
+        // Index 5: Hit monster sound.
+        soundURL[5] = getClass().getResource("/sound/hitmonster.wav");
+
+        // Index 5: Receive damage sound.
+        soundURL[6] = getClass().getResource("/sound/receivedamage.wav");
+
+        // Index 5: Swing weapon sound.
+        soundURL[7] = getClass().getResource("/sound/swingweapon.wav");
     }
 
 

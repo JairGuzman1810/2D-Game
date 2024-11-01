@@ -42,15 +42,19 @@ public class Entity {
 
     // Action Control
     public int actionLockCounter = 0; // Counter to lock entity's action temporarily (e.g., idle/move control).
-    public boolean invincible = false; // Flag for invincibility to prevent repeated damage.
     public int invincibleCounter = 0; // Tracks duration of invincibility effect.
-    public boolean attacking = false; // Determines if the entity is attacking, triggering attack animations.
-    public int invincibleFrameCounter = 0; // Count frames while the player is invincible
+    int dyingCounter = 0; // Tracks duration of dying animation.
+    int hpBarCounter = 0; // Tracks visibility duration of the HP bar.
 
 
     // Character Status
     public int maxLife; // Max life points the entity can have.
     public int life; // Current life points of the entity.
+    public boolean invincible = false; // Flag for invincibility to prevent repeated damage.
+    public boolean attacking = false; // Determines if the entity is attacking, triggering attack animations.
+    public boolean alive = true; // Flag indicating if the entity is alive.
+    public boolean dying = false; // Flag indicating if the entity is in the process of dying.
+    boolean hpBarOn = false; // Flag to display the health bar when true.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
@@ -66,9 +70,15 @@ public class Entity {
     }
 
 
-    // Sets the action for the NPC, such as determining its direction or behavior.
-    // This method can be overridden by subclasses to customize NPC behavior.
+    // Sets the action for the entity, such as determining its direction or behavior.
+    // This method can be overridden by subclasses to customize entity behavior.
     public void setAction() {
+
+    }
+
+    // Defines the reaction of the entity upon receiving damage.
+    // Can be overridden in subclasses to provide specific behaviors.
+    public void damageReaction() {
 
     }
 
@@ -110,6 +120,7 @@ public class Entity {
         // If so, reduces player's life and sets them to invincible to avoid consecutive damage.
         if (this.type == 2 && contactPlayer) {
             if (!gp.player.invincible) {
+                gp.playSE(7);// Play sound effect player receive damage
                 gp.player.life--; // Decrease player's life by one unit.
                 gp.player.invincible = true; // Trigger invincibility to prevent repeat hits.
             }
@@ -169,23 +180,85 @@ public class Entity {
                 default -> down1;
             };
 
+            // Monster HP bar
+            if (type == 2 && hpBarOn) { // Check if the entity is a monster and the HP bar should be displayed.
+                // Calculate the width of one life point in pixels based on the monster's max life.
+                double oneScale = (double) gp.tileSize / maxLife;
+                // Calculate the current HP bar width according to the monster's current life.
+                double hpBarValue = oneScale * life;
+
+                // Draw the HP bar background slightly larger than the bar itself for visual clarity.
+                g2.setColor(new Color(35, 35, 35)); // Set background color to dark gray.
+                g2.fillRect(screenX - 1, screenY - 16, gp.tileSize + 2, 12); // Draw background rectangle.
+
+                // Draw the HP bar itself, scaled to the monster's current life.
+                g2.setColor(new Color(255, 0, 30)); // Set HP bar color to red.
+                g2.fillRect(screenX, screenY - 15, (int) hpBarValue, 10); // Draw HP bar rectangle.
+
+                // Increment the HP bar counter to track how long the HP bar has been visible.
+                hpBarCounter++;
+
+                // Hide the HP bar after a certain period (600 frames).
+                if (hpBarCounter > 600) {
+                    hpBarCounter = 0; // Reset the counter for future visibility.
+                    hpBarOn = false;  // Disable the HP bar until it’s needed again.
+                }
+            }
+
             // Apply invincibility blinking effect
             if (invincible) {
-                // Toggle alpha between 0.3 and 1.0 every 10 frames
-                float alpha = (invincibleFrameCounter / 10 % 2 == 0) ? 0.4f : 1.0f;
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-                invincibleFrameCounter++;
-            } else {
-                invincibleFrameCounter = 0; // Reset frame counter when invincibility ends
+                // Turn on the HP bar to indicate invincibility state visually
+                hpBarOn = true;
+
+                // Reduce the alpha (transparency) of the graphics to 0.4f for a blinking effect
+                // This makes the entity semi-transparent to signify invincibility
+                changeAlpha(g2, 0.4f);
+            }
+
+            // Check if the entity is in a dying state
+            if (dying) {
+                // Call the dying animation to handle visual effects during the death sequence
+                dyingAnimation(g2);
             }
 
             // Draw the entity's image on the screen at the calculated position.
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
             // Reset alpha to 1f
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+            changeAlpha(g2, 1f);
         }
     }
+
+    // Sets the transparency level for the Graphics2D object.
+    private static void changeAlpha(Graphics2D g2, float alpha) {
+        // Set the composite for the Graphics2D object to control transparency.
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+    }
+
+    // Controls the dying animation, increasing blink speed as the entity approaches "death."
+    public void dyingAnimation(Graphics2D g2) {
+
+        // Increment the counter to track the duration of the dying animation.
+        dyingCounter++;
+
+        // Calculate the blink interval, decreasing as dyingCounter approaches 40.
+        // Blink interval starts at 10 frames and decreases by 1 frame per 4 dyingCounter units.
+        int blinkInterval = Math.max(2, 10 - (dyingCounter / 4));
+
+        // Set alpha to 0.4 or 1.0, toggling every 'blinkInterval' frames for a blinking effect.
+        float alpha = (dyingCounter / blinkInterval % 2 == 0) ? 0.4f : 1.0f;
+
+        // Apply the calculated alpha transparency to the graphics object.
+        changeAlpha(g2, alpha);
+
+        // End the animation after 40 frames, resetting relevant flags and counter.
+        if (dyingCounter > 40) {
+            dying = false; // Set dying status to false.
+            alive = false; // Set alive status to false, indicating the entity is "dead."
+            dyingCounter = 0; // Reset dyingCounter for future animations if needed.
+        }
+    }
+
 
     // Helper method to load an image by name, scale it, and return the BufferedImage
     public BufferedImage setup(String imagePath, int width, int height) {
