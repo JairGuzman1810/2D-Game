@@ -101,6 +101,9 @@ public class UI {
             // Draw the dialogue screen when the game is in dialogue state.
             drawPlayerLifer();
             drawDialogueScreen();
+        } else if (gp.gameState == gp.characterState) {
+            // Draw the character stats screen when the game is in character state.
+            drawCharacterScreen();
         }
     }
 
@@ -222,6 +225,107 @@ public class UI {
         }
     }
 
+    // Draws the character screen for displaying stats of the character in the game.
+    public void drawCharacterScreen() {
+        // Define the position and size of the dialogue window.
+        int x = gp.tileSize; // X position with padding from the left.
+        int y = gp.tileSize;  // Y position with padding from the top.
+
+        int width = gp.tileSize * 5; // Width of the dialogue window.
+        int height = gp.tileSize * 10; // Height of the dialogue window.
+
+        // Draw the sub-window for the dialogue.
+        drawSubWindow(x, y, width, height);
+
+        // Stats
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(32F));
+
+        int textX = x + 20;
+        int textY = y + gp.tileSize;
+        final int lineHeight = 35;
+
+        // Labels
+        g2.drawString("Level", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Life", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Strength", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Dexterity", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Attack", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Defense", textX, textY);
+        textY += lineHeight;
+        g2.drawString("EXP", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Next Level", textX, textY);
+        textY += lineHeight;
+        g2.drawString("Coins", textX, textY);
+        textY += lineHeight + 20;
+        g2.drawString("Weapon", textX, textY);
+        textY += lineHeight + 15;
+        g2.drawString("Shield", textX, textY);
+
+        // Values
+        int tailX = x + width - 30;
+        // Reset textY
+        textY = y + gp.tileSize;
+        String value;
+
+        value = String.valueOf(gp.player.level);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = gp.player.life + "/" + gp.player.maxLife;
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.strength);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.dexterity);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.attack);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.defense);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.exp);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.nextLevelExp);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = String.valueOf(gp.player.coin);
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 14, null);
+        textY += gp.tileSize;
+
+        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 14, null);
+
+    }
+
     // Draws a rounded rectangle sub-window for displaying UI elements.
     public void drawSubWindow(int x, int y, int width, int height) {
         Color c = new Color(0, 0, 0, 200); // Semi-transparent black for the window background.
@@ -245,5 +349,11 @@ public class UI {
 
         // Center the text by calculating an x-coordinate that aligns it to the middle of the screen.
         return gp.screenWidth / 2 - length / 2;
+    }
+
+    public int getXForAlignToRight(String text, int tailX) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+
+        return tailX - length;
     }
 }

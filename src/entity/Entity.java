@@ -50,11 +50,27 @@ public class Entity {
     // Character Status
     public int maxLife; // Max life points the entity can have.
     public int life; // Current life points of the entity.
+    // Character Level and Stats
+    public int level;            // The entity's current level, affecting stats and abilities.
+    public int strength;         // Strength attribute, influencing the entity's attack power.
+    public int dexterity;        // Dexterity attribute, affecting attack speed or precision.
+    public int attack;           // Current attack power of the entity, considering weapon and strength.
+    public int defense;          // Defense stat, reducing incoming damage.
+    public int exp;              // Experience points accumulated by the entity.
+    public int nextLevelExp;     // Experience required to reach the next level.
+    public int coin;             // Number of coins the entity currently has (for purchasing items, etc.).
+    // Equipment
+    public Entity currentWeapon; // The entity's currently equipped weapon, affecting attack stats.
+    public Entity currentShield; // The entity's currently equipped shield, affecting defense stats.
     public boolean invincible = false; // Flag for invincibility to prevent repeated damage.
     public boolean attacking = false; // Determines if the entity is attacking, triggering attack animations.
     public boolean alive = true; // Flag indicating if the entity is alive.
     public boolean dying = false; // Flag indicating if the entity is in the process of dying.
     boolean hpBarOn = false; // Flag to display the health bar when true.
+
+    // Item Attributes
+    public int attackValue;      // Attack value provided by the current weapon or item.
+    public int defenseValue;     // Defense value provided by the current shield or item.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.

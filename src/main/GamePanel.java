@@ -93,6 +93,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     // Constant for dialogue state.
     public final int dialogueState = 3;
+    // Constant for character stats state.
+    public final int characterState = 4;
 
 
     // Constructor to initialize the GamePanel settings.

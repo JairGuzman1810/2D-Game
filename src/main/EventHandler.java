@@ -109,6 +109,7 @@ public class EventHandler {
     // Triggers the damage pit event, reducing player life by one.
     public void damagePit(int col, int row, int gameState) {
         gp.gameState = gameState; // Change game state to display dialogue.
+        gp.playSE(6); // Play sound effect indicating damage.
         gp.ui.currentDialogue = "You fall into a pit!"; // Set dialogue for damage pit.
         gp.player.life--; // Decrease player life by one.
         // Temporarily disables further event triggering until player moves away.
@@ -119,6 +120,8 @@ public class EventHandler {
     public void healingPool(int col, int row, int gameState) {
         // Check if player has pressed enter key to activate healing.
         if (gp.keyH.enterPressed) {
+            gp.playSE(2); // Play sound effect indicating healing.
+            gp.player.attackCancel = true;
             gp.gameState = gameState; // Change game state to display dialogue.
             gp.ui.currentDialogue = "You drink the water. \n Your HP has been recovered."; // Healing dialogue.
             gp.player.life = gp.player.maxLife; // Restore player's life to maximum.

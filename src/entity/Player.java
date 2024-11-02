@@ -2,6 +2,8 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Shield_Wood;
+import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,9 @@ public class Player extends Entity {
 
     // Tracks idle frames to set player to standstill position after a delay.
     int standCounter = 0;
+
+    // Indicates whether an attack can be canceled, such as when interacting with an NPC.
+    public boolean attackCancel = false;
 
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -58,10 +63,33 @@ public class Player extends Entity {
         // Default movement direction.
         direction = "down";
 
-        // Player's maximum health represented by heart images on the screen.
-        maxLife = 6;
-        // Sets the player's initial health equal to the maximum, displayed as full hearts.
-        life = maxLife;
+        // Player stats
+        maxLife = 6; // Player's maximum health represented by heart images on the screen.
+        life = maxLife; // Sets the player's initial health equal to the maximum, displayed as full hearts.
+        level = 1; // Player's starting level, which increases as they gain experience.
+        strength = 1; // The more strength the player has, the more damage they deal.
+        dexterity = 1; // The more dexterity the player has, the less damage they receive.
+        exp = 0; // Player's experience points, earned by defeating enemies and completing objectives.
+        nextLevelExp = 5; // The amount of experience required to reach the next level.
+        coin = 0; // The player's current number of coins, used for in-game purchases.
+        // Sets the player's current weapon to a normal sword.
+        currentWeapon = new OBJ_Sword_Normal(gp);
+        // Sets the player's current shield to a wooden shield.
+        currentShield = new OBJ_Shield_Wood(gp);
+        // Calculates total attack power based on strength and the equipped weapon.
+        attack = getAttack();
+        // Calculates total defense power based on dexterity and the equipped shield.
+        defense = getDefense();
+    }
+
+    // Calculates the player's total attack power based on strength and weapon.
+    public int getAttack() {
+        return strength * currentWeapon.attackValue;
+    }
+
+    // Calculates the player's total defense based on dexterity and shield.
+    public int getDefense() {
+        return dexterity * currentShield.defenseValue;
     }
 
     // Load the images for the player's movement in all four directions.
@@ -154,6 +182,16 @@ public class Player extends Entity {
                 }
             }
 
+            // When the enter key is pressed, initiate the player's attack sequence if it hasn't been canceled.
+            if (keyH.enterPressed && !attackCancel) {
+                gp.playSE(7); // Play attack sound effect.
+                attacking = true; // Set player to attacking state.
+                spriteCounter = 0; // Reset the sprite animation counter for the attack animation.
+            }
+
+            // Reset attackCancel after each attack cycle.
+            attackCancel = false;
+
             // Reset the enter key state to avoid repeated interactions in the same frame.
             gp.keyH.enterPressed = false;
 
@@ -243,13 +281,9 @@ public class Player extends Entity {
     public void interactNPC(int i) {
         // If there's an NPC at the collision point and the enter key is pressed, start dialogue.
         if (i != 999 && gp.keyH.enterPressed) {
+            attackCancel = true; // Prevent the player from attacking during the dialogue.
             gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
             gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
-        }
-        // If no NPC is present, pressing enter initiates an attack.
-        else if (gp.keyH.enterPressed) {
-            gp.playSE(7); // Play sound effect swing weapon
-            attacking = true; // The player its attacking
         }
     }
 

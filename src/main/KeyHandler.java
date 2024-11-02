@@ -51,6 +51,8 @@ public class KeyHandler implements KeyListener {
             handlePauseState(keyCode, isPressed); // Handle key events for the pause state
         } else if (gp.gameState == gp.dialogueState) { // Check if the game is in the dialogue state
             handleDialogueState(keyCode, isPressed); // Handle key events for the dialogue state
+        } else if (gp.gameState == gp.characterState) { // Check if the game is in the character state
+            handleCharacterState(keyCode, isPressed); // Handle key events for the character stats state
         }
     }
 
@@ -85,6 +87,8 @@ public class KeyHandler implements KeyListener {
                 case KeyEvent.VK_T -> checkDrawTime = !checkDrawTime; // Toggles the display of frame rendering times
                 case KeyEvent.VK_P -> gp.gameState = gp.pauseState; // Switches game to pause state if P is pressed
                 case KeyEvent.VK_ENTER -> enterPressed = true; // Tracks Enter key for dialogue and selection actions
+                case KeyEvent.VK_C ->
+                        gp.gameState = gp.characterState; // Switches game to character stats state if C is pressed
             }
         } else {
             // Reset movement keys if they are released
@@ -105,10 +109,17 @@ public class KeyHandler implements KeyListener {
         }
     }
 
-    // Handles key events in the dialogue state
+    // Handles key events in the character state
     private void handleDialogueState(int keyCode, boolean isPressed) {
         if (isPressed && keyCode == KeyEvent.VK_ENTER) {
-            gp.gameState = gp.playState; // Exits dialogue and resumes gameplay
+            gp.gameState = gp.playState; // Exits character and resumes gameplay
+        }
+    }
+
+    // Handles key events in the character state
+    private void handleCharacterState(int keyCode, boolean isPressed) {
+        if (isPressed && keyCode == KeyEvent.VK_C) {
+            gp.gameState = gp.playState; // Exits stats screen and resumes gameplay
         }
     }
 
