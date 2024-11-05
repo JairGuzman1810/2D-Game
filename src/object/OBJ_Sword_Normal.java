@@ -19,5 +19,8 @@ public class OBJ_Sword_Normal extends Entity {
 
         // Set the attack value that this sword provides.
         attackValue = 1;
+
+        // Provides a short description of the item, shown in the inventory.
+        description = "[" + name + "]\n An old sword.";
     }
 }

@@ -60,17 +60,18 @@ public class Entity {
     public int nextLevelExp;     // Experience required to reach the next level.
     public int coin;             // Number of coins the entity currently has (for purchasing items, etc.).
     // Equipment
-    public Entity currentWeapon; // The entity's currently equipped weapon, affecting attack stats.
-    public Entity currentShield; // The entity's currently equipped shield, affecting defense stats.
-    public boolean invincible = false; // Flag for invincibility to prevent repeated damage.
-    public boolean attacking = false; // Determines if the entity is attacking, triggering attack animations.
-    public boolean alive = true; // Flag indicating if the entity is alive.
-    public boolean dying = false; // Flag indicating if the entity is in the process of dying.
-    boolean hpBarOn = false; // Flag to display the health bar when true.
+    public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
+    public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
+    public boolean invincible = false;  // Flag for invincibility to prevent repeated damage.
+    public boolean attacking = false;   // Determines if the entity is attacking, triggering attack animations.
+    public boolean alive = true;        // Flag indicating if the entity is alive.
+    public boolean dying = false;       // Flag indicating if the entity is in the process of dying.
+    boolean hpBarOn = false;            // Flag to display the health bar when true.
 
     // Item Attributes
-    public int attackValue;      // Attack value provided by the current weapon or item.
-    public int defenseValue;     // Defense value provided by the current shield or item.
+    public int attackValue;             // Attack value provided by the current weapon or item.
+    public int defenseValue;            // Defense value provided by the current shield or item.
+    public String description = "";     // A brief description of the item, which can be displayed in the inventory.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.

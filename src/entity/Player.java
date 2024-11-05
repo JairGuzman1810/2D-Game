@@ -2,11 +2,13 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 // The Player class extends the Entity class, inheriting common attributes like position and speed.
 // It adds specific logic for handling player movement, drawing, and now, collision detection and object interaction.
@@ -24,6 +26,12 @@ public class Player extends Entity {
 
     // Indicates whether an attack can be canceled, such as when interacting with an NPC.
     public boolean attackCancel = false;
+
+    // Inventory list that holds items collected by the player, such as weapons, shields, etc.
+    public ArrayList<Entity> inventory = new ArrayList<>();
+
+    // Maximum number of items that the player can carry in the inventory.
+    public final int maxInventorySize = 20;
 
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -51,6 +59,7 @@ public class Player extends Entity {
         setDefaultValues();
         getPlayerImage();
         getPlayerAttackImage();
+        setItems();
     }
 
     // Sets the default values for the player's position and speed.
@@ -81,6 +90,19 @@ public class Player extends Entity {
         // Calculates total defense power based on dexterity and the equipped shield.
         defense = getDefense();
     }
+
+    // Sets the initial items for the player's inventory.
+    public void setItems() {
+        // Adds the current weapon to the inventory.
+        inventory.add(currentWeapon);
+
+        // Adds the current shield to the inventory.
+        inventory.add(currentShield);
+
+        // Adds a new key object to the inventory, allowing the player to open doors.
+        inventory.add(new OBJ_Key(gp));
+    }
+
 
     // Calculates the player's total attack power based on strength and weapon.
     public int getAttack() {

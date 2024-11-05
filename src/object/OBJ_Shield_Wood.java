@@ -19,5 +19,8 @@ public class OBJ_Shield_Wood extends Entity {
 
         // Set the defense value that this shield provides.
         defenseValue = 1;
+
+        // Provides a short description of the item, shown in the inventory.
+        description = "[" + name + "]\nMade with wood.";
     }
 }

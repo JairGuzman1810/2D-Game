@@ -46,6 +46,12 @@ public class UI {
     // Stores the selected command index on the title screen.
     public int commandNum = 0;
 
+    // Current column index for item slots in the inventory
+    int slotCol = 0;
+
+    // Current row index for item slots in the inventory
+    int slotRow = 0;
+
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -104,6 +110,7 @@ public class UI {
         } else if (gp.gameState == gp.characterState) {
             // Draw the character stats screen when the game is in character state.
             drawCharacterScreen();
+            drawInventory();
         }
     }
 
@@ -365,6 +372,76 @@ public class UI {
 
     }
 
+    // Draws the player's inventory, including item slots,
+    // a selection cursor, and item descriptions on the screen.
+    public void drawInventory() {
+        // Frame position and dimensions
+        int frameX = gp.tileSize * 9; // X position of the inventory frame
+        int frameY = gp.tileSize; // Y position of the inventory frame
+        int frameWidth = gp.tileSize * 6; // Width of the inventory frame
+        int frameHeight = gp.tileSize * 5; // Height of the inventory frame
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight); // Draw the inventory frame
+
+        // Starting positions for slots
+        final int slotXStart = frameX + 20; // X position for the first slot
+        final int slotYStart = frameY + 20; // Y position for the first slot
+
+        int slotX = slotXStart; // Current X position for drawing slots
+        int slotY = slotYStart; // Current Y position for drawing slots
+
+        int slotSize = gp.tileSize + 3; // Size of each slot (including padding)
+
+        // Cursor (item selector) position
+        int cursorX = slotX + (slotSize * slotCol); // X position of the cursor based on column
+        int cursorY = slotY + (slotSize * slotRow); // Y position of the cursor based on row
+        int cursorWidth = gp.tileSize; // Width of the cursor
+        int cursorHeight = gp.tileSize; // Height of the cursor
+
+        // Draw player's items in the inventory
+        for (int i = 0; i < gp.player.inventory.size(); i++) {
+            g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null); // Draw each item image
+            slotX += slotSize; // Move to the next slot position horizontally
+
+            // Move to the next row after every 5 items
+            if ((i + 1) % 5 == 0) { // Check if the current item is the last in the row
+                slotX = slotXStart; // Reset X position for the next row
+                slotY += slotSize; // Move Y position down for the next row
+            }
+        }
+
+        // Draw the cursor to indicate selected item
+        g2.setColor(Color.white); // Set cursor color
+        g2.setStroke(new BasicStroke(3)); // Set cursor stroke width
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10); // Draw rounded rectangle as cursor
+
+        // Description frame position and dimensions
+        int dFrameY = frameY + frameHeight; // Y position for the description frame
+        int dFrameHeight = gp.tileSize * 3; // Height of the description frame
+
+        drawSubWindow(frameX, dFrameY, frameWidth, dFrameHeight); // Draw the description frame
+
+        // Draw description text for the currently selected item
+        int textX = frameX + 20; // X position for drawing description text
+        int textY = dFrameY + gp.tileSize; // Y position for drawing description text
+        g2.setFont(g2.getFont().deriveFont(28F)); // Set font size for description text
+
+        int itemIndex = getItemIndexOnSlot(); // Get index of the currently selected item
+
+        // Check if the selected item index is valid
+        if (itemIndex < gp.player.inventory.size()) {
+            // Split the item's description into lines and draw each line
+            for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
+                g2.drawString(line, textX, textY); // Draw each line of the description
+                textY += 32; // Move Y position down for the next line
+            }
+        }
+    }
+
+    // Calculate the index of the item based on current slot position
+    public int getItemIndexOnSlot() {
+        return slotCol + (slotRow * 5); // Calculate index by adding column and row offsets
+    }
+
     // Draws a rounded rectangle sub-window for displaying UI elements.
     public void drawSubWindow(int x, int y, int width, int height) {
         Color c = new Color(0, 0, 0, 200); // Semi-transparent black for the window background.
@@ -390,9 +467,10 @@ public class UI {
         return gp.screenWidth / 2 - length / 2;
     }
 
+    // Align text to the right based on the tail position
     public int getXForAlignToRight(String text, int tailX) {
-        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth(); // Get width of the text
 
-        return tailX - length;
+        return tailX - length; // Calculate X position for right alignment
     }
 }

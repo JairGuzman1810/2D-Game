@@ -118,8 +118,31 @@ public class KeyHandler implements KeyListener {
 
     // Handles key events in the character state
     private void handleCharacterState(int keyCode, boolean isPressed) {
-        if (isPressed && keyCode == KeyEvent.VK_C) {
-            gp.gameState = gp.playState; // Exits stats screen and resumes gameplay
+        if (isPressed) { // Only respond if the key is pressed down
+            switch (keyCode) {
+                case KeyEvent.VK_C ->
+                        gp.gameState = gp.playState; // Pressing 'C' exits character state and returns to play state
+                case KeyEvent.VK_W -> { // Pressing 'W' moves the slot selector up
+                    gp.ui.slotRow--; // Decrease row index to move up
+                    if (gp.ui.slotRow < 0) gp.ui.slotRow = 3; // Wrap to bottom if it goes above the limit
+                    gp.playSE(9); // Play sound effect for slot movement
+                }
+                case KeyEvent.VK_S -> { // Pressing 'S' moves the slot selector down
+                    gp.ui.slotRow++; // Increase row index to move down
+                    if (gp.ui.slotRow > 3) gp.ui.slotRow = 0; // Wrap to top if it exceeds the limit
+                    gp.playSE(9); // Play sound effect for slot movement
+                }
+                case KeyEvent.VK_A -> { // Pressing 'A' moves the slot selector left
+                    gp.ui.slotCol--; // Decrease column index to move left
+                    if (gp.ui.slotCol < 0) gp.ui.slotCol = 4; // Wrap to right if it goes beyond the limit
+                    gp.playSE(9); // Play sound effect for slot movement
+                }
+                case KeyEvent.VK_D -> { // Pressing 'D' moves the slot selector right
+                    gp.ui.slotCol++; // Increase column index to move right
+                    if (gp.ui.slotCol > 4) gp.ui.slotCol = 0; // Wrap to left if it exceeds the limit
+                    gp.playSE(9); // Play sound effect for slot movement
+                }
+            }
         }
     }
 

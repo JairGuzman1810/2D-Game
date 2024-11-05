@@ -17,5 +17,8 @@ public class OBJ_Key extends Entity {
         name = "Key";
         // Load the key image from resources.
         down1 = setup("/objects/key", gp.tileSize, gp.tileSize);
+
+        // Provides a short description of the item, shown in the inventory.
+        description = "[" + name + "]\nIt opens a door.";
     }
 }

@@ -48,6 +48,9 @@ public class Sound {
 
         // Index 8: Level up sound.
         soundURL[8] = getClass().getResource("/sound/levelup.wav");
+
+        // Index 9: Cursor movement sound.
+        soundURL[9] = getClass().getResource("/sound/cursor.wav");
     }
 
 
