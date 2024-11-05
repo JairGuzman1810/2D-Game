@@ -288,22 +288,47 @@ public class Player extends Entity {
     }
 
     // This method handles damaging a monster by decreasing its life when the player attacks.
-// It checks if the monster is invincible to prevent damage during the invincibility period.
+    // It checks if the monster is invincible to prevent damage during the invincibility period.
     public void damageMonster(int i) {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.
             if (!gp.monster[i].invincible) {
                 gp.playSE(5); // Play sound effect indicating a hit on the monster
-                gp.monster[i].life--; // Decrease the monster's life by one
+
+                // Calculates the damage dealt, ensuring it is at least zero (if defense is higher).
+                int damage = Math.max(attack - gp.monster[i].defense, 0);
+                gp.ui.addMessage(damage + " damage!"); // Display the amount of damage dealt to the monster
+                gp.monster[i].life -= damage; // Reduce the monster's life by the damage amount
                 gp.monster[i].invincible = true; // Set invincibility to prevent further hits
                 gp.monster[i].damageReaction(); // Trigger the monster's reaction to damage
 
                 // Mark the monster as dying if its life reaches zero or below
                 if (gp.monster[i].life <= 0) {
                     gp.monster[i].dying = true;
+                    gp.ui.addMessage("Killed the " + gp.monster[i].name + "!"); // Display a message indicating the monster was killed
+                    gp.ui.addMessage("Exp +" + gp.monster[i].exp); // Display experience gained
+                    exp += gp.monster[i].exp; // Add monster's experience points to player
+                    checkLevelUp(); // Check if player has leveled up
                 }
             }
+        }
+    }
+
+    // Method to handle leveling up the player based on experience gained.
+    public void checkLevelUp() {
+        // Check if player experience meets or exceeds the required for next level.
+        if (exp >= nextLevelExp) {
+            level++; // Increase player level
+            nextLevelExp *= 2; // Set experience threshold for next level
+            maxLife += 2; // Increase maximum life points
+            strength++; // Increase player strength
+            dexterity++; // Increase player dexterity
+            attack = getAttack(); // Recalculate attack with updated strength
+            defense = getDefense(); // Recalculate defense with updated dexterity
+            gp.playSE(8); // Play sound effect for leveling up
+            gp.gameState = gp.dialogueState; // Trigger dialogue state to show level up message
+            gp.ui.currentDialogue = "You are level " + level + " now!\n You feel stronger!";
         }
     }
 
@@ -315,7 +340,8 @@ public class Player extends Entity {
             // If the player is not invincible, reduce life and activate invincibility.
             if (!invincible) {
                 gp.playSE(6); // Play sound effect receive damage
-                life--;           // Decrease the player's life by 1.
+                int damage = Math.max(gp.monster[i].attack - defense, 0);
+                life -= damage;
                 invincible = true; // Set invincibility to prevent immediate further damage.
             }
         }

@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,12 +33,10 @@ public class UI {
     // Boolean flag to indicate if a message should be displayed.
     public boolean messageOn = false;
 
-    // String variable to store the message text.
-    public String message = "";
-
-    // Counter to track how long the message has been displayed.
-    int messageCounter = 0;
-
+    // List to hold messages to be displayed
+    ArrayList<String> message = new ArrayList<>();
+    // List to keep track of the duration each message has been displayed
+    ArrayList<Integer> messageCounter = new ArrayList<>();
     // Boolean flag to indicate if the game has finished.
     public boolean gameFinished = false;
 
@@ -71,10 +70,10 @@ public class UI {
         heart_blank = heart.image3;  // Blank heart image.
     }
 
-    // Method to set a message to be displayed on the screen.
-    public void showMessage(String text) {
-        message = text;  // Set the message text.
-        messageOn = true; // Turn on the message display.
+    // Adds a new message to be displayed on the screen.
+    public void addMessage(String text) {
+        message.add(text); // Add the message to the list
+        messageCounter.add(0); // Initialize the counter for this message
     }
 
     // The draw method renders UI elements on the screen
@@ -92,14 +91,15 @@ public class UI {
             drawTitleScreen();
         } else if (gp.gameState == gp.playState) {
             // Placeholder for future play-state UI elements.
-            drawPlayerLifer();
+            drawPlayerLife();
+            drawMessage();
         } else if (gp.gameState == gp.pauseState) {
             // Draws the pause screen when the game is paused.
-            drawPlayerLifer();
+            drawPlayerLife();
             drawPauseScreen();
         } else if (gp.gameState == gp.dialogueState) {
             // Draw the dialogue screen when the game is in dialogue state.
-            drawPlayerLifer();
+            drawPlayerLife();
             drawDialogueScreen();
         } else if (gp.gameState == gp.characterState) {
             // Draw the character stats screen when the game is in character state.
@@ -108,7 +108,7 @@ public class UI {
     }
 
     // Draws the player's life status on the screen using heart images.
-    public void drawPlayerLifer() {
+    public void drawPlayerLife() {
         int x = gp.tileSize / 2; // Starting X position for drawing hearts.
         int y = gp.tileSize / 2; // Starting Y position for drawing hearts.
         int i = 0; // Counter for heart images.
@@ -132,6 +132,45 @@ public class UI {
             }
             i++;
             x += (int) (gp.tileSize * 1.5); // Move X position for the next heart.
+        }
+    }
+
+    // Draws the messages on the screen.
+    // The messages are displayed at a specific position and fade out after a certain duration.
+    public void drawMessage() {
+        int messageX = gp.tileSize; // X coordinate for message drawing
+        int messageY = gp.tileSize * 4; // Y coordinate for message drawing
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F)); // Set the font for the messages
+
+        // List to keep track of indices of messages that need to be removed
+        ArrayList<Integer> indicesToRemove = new ArrayList<>();
+
+        // Iterate over all messages
+        for (int i = 0; i < message.size(); i++) {
+            if (message.get(i) != null) { // Check if the message is not null
+                g2.setColor(Color.black); // Set color for shadow effect
+                g2.drawString(message.get(i), messageX + 2, messageY + 2); // Draw shadow
+
+                g2.setColor(Color.white); // Set color for the actual message
+                g2.drawString(message.get(i), messageX, messageY); // Draw message
+
+                // Update the message display duration counter
+                int counter = messageCounter.get(i) + 1; // Increment the counter
+                messageCounter.set(i, counter); // Update the counter in the list
+                messageY += 50; // Move the Y position down for the next message
+
+                // Check if the message has been displayed for longer than 180 frames
+                if (messageCounter.get(i) > 180) {
+                    indicesToRemove.add(i); // Mark this message for removal
+                }
+            }
+        }
+
+        // Remove marked messages and counters in reverse order to avoid shifting issues
+        for (int i = indicesToRemove.size() - 1; i >= 0; i--) {
+            int index = indicesToRemove.get(i);
+            message.remove(index); // Remove the message
+            messageCounter.remove(index); // Remove the corresponding counter
         }
     }
 

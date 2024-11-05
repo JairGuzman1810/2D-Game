@@ -125,6 +125,7 @@ public class EventHandler {
             gp.gameState = gameState; // Change game state to display dialogue.
             gp.ui.currentDialogue = "You drink the water. \n Your HP has been recovered."; // Healing dialogue.
             gp.player.life = gp.player.maxLife; // Restore player's life to maximum.
+            gp.aSetter.setMonster(); // Respawn the monster
         }
     }
 }

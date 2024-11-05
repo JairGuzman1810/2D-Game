@@ -25,7 +25,9 @@ public class MON_GreenSlime extends Entity {
         speed = 1;             // Defines the movement speed of the slime.
         maxLife = 4;           // Sets maximum life for the slime.
         life = maxLife;        // Initializes life to maxLife.
-
+        attack = 5;            // Sets the attack power of the slime.
+        defense = 0;           // Sets the defense level of the slime.
+        exp = 2;               // Experience points awarded to the player when this monster is defeated.
         // Defines the solid area for collision detection, setting its position
         // and size, which helps prevent the entity from moving through obstacles.
         solidArea.x = 3;

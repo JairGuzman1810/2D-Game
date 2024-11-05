@@ -40,11 +40,14 @@ public class Sound {
         // Index 5: Hit monster sound.
         soundURL[5] = getClass().getResource("/sound/hitmonster.wav");
 
-        // Index 5: Receive damage sound.
+        // Index 6: Receive damage sound.
         soundURL[6] = getClass().getResource("/sound/receivedamage.wav");
 
-        // Index 5: Swing weapon sound.
+        // Index 7: Swing weapon sound.
         soundURL[7] = getClass().getResource("/sound/swingweapon.wav");
+
+        // Index 8: Level up sound.
+        soundURL[8] = getClass().getResource("/sound/levelup.wav");
     }
 
 

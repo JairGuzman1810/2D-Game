@@ -137,7 +137,9 @@ public class Entity {
         if (this.type == 2 && contactPlayer) {
             if (!gp.player.invincible) {
                 gp.playSE(7);// Play sound effect player receive damage
-                gp.player.life--; // Decrease player's life by one unit.
+                // Calculate damage as monster's attack minus player's defense, with a minimum of zero.
+                int damage = Math.max(attack - gp.player.defense, 0);
+                gp.player.life -= damage; // Reduces player's life by the calculated damage amount.
                 gp.player.invincible = true; // Trigger invincibility to prevent repeat hits.
             }
         }
