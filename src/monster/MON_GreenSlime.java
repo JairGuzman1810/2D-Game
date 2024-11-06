@@ -20,7 +20,7 @@ public class MON_GreenSlime extends Entity {
 
         this.gp = gp;
 
-        type = 2;              // Sets type to 2, indicating a monster entity.
+        type = type_monster;   // Sets type to type_monster, indicating a monster entity.
         name = "Green Slime";  // Assigns the name of this monster type.
         speed = 1;             // Defines the movement speed of the slime.
         maxLife = 4;           // Sets maximum life for the slime.

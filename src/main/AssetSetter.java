@@ -2,6 +2,10 @@ package main;
 
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
+import object.OBJ_Axe;
+import object.OBJ_Key;
+import object.OBJ_Potion_Red;
+import object.OBJ_Shield_Blue;
 
 // AssetSetter is responsible for placing objects (like keys, doors, chests)
 // at predefined positions in the game world.
@@ -16,10 +20,38 @@ public class AssetSetter {
         this.gp = gp; // Store the reference to the GamePanel for object placement.
     }
 
-    // The setObject method places various game objects
-    // at specific world coordinates using the GamePanel's tile size.
+    // Places various game objects at predefined positions in the game world.
     public void setObject() {
 
+        // Place a key at tile coordinates (25, 23)
+        gp.obj[0] = new OBJ_Key(gp);
+        gp.obj[0].worldX = gp.tileSize * 25;
+        gp.obj[0].worldY = gp.tileSize * 23;
+
+        // Place another key at tile coordinates (21, 19)
+        gp.obj[1] = new OBJ_Key(gp);
+        gp.obj[1].worldX = gp.tileSize * 21;
+        gp.obj[1].worldY = gp.tileSize * 19;
+
+        // Place a third key at tile coordinates (26, 21)
+        gp.obj[2] = new OBJ_Key(gp);
+        gp.obj[2].worldX = gp.tileSize * 26;
+        gp.obj[2].worldY = gp.tileSize * 21;
+
+        // Place an axe at tile coordinates (33, 21)
+        gp.obj[3] = new OBJ_Axe(gp);
+        gp.obj[3].worldX = gp.tileSize * 33;
+        gp.obj[3].worldY = gp.tileSize * 21;
+
+        // Place a blue shield at tile coordinates (35, 21)
+        gp.obj[4] = new OBJ_Shield_Blue(gp);
+        gp.obj[4].worldX = gp.tileSize * 35;
+        gp.obj[4].worldY = gp.tileSize * 21;
+
+        // Place a red potion at tile coordinates (22, 27)
+        gp.obj[5] = new OBJ_Potion_Red(gp);
+        gp.obj[5].worldX = gp.tileSize * 22;
+        gp.obj[5].worldY = gp.tileSize * 27;
     }
 
     // The setNPC method places various game NPC

@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// The Entity class serves as a base class for any game entity (like a player or enemy).
+// The Entity class serves as a base class for any game entity (like a player, enemy or object).
 // It contains the common attributes of an entity, such as position (x, y), speed, and collision settings.
 public class Entity {
 
@@ -21,7 +21,18 @@ public class Entity {
 
     // Entity Identification
     public String name; // The name of the entity.
-    public int type; // Type identifier: 0 = player, 1 = NPC, 2 = monster.
+    public int type; // Type identifier used to classify the entity for gameplay interactions.
+
+    // Constants representing different types of entities or items in the game.
+    // These help the game identify the entity and apply specific behavior based on its type.
+    public final int type_player = 0; // Identifies the player character.
+    public final int type_npc = 1; // Identifies a non-player character (NPC).
+    public final int type_monster = 2; // Identifies a monster or enemy.
+    public final int type_sword = 3; // Identifies a sword item.
+    public final int type_axe = 4; // Identifies an axe item.
+    public final int type_shield = 5; // Identifies a shield item.
+    public final int type_consumable = 6; // Identifies a consumable item, like potions.
+
 
     // Position and Movement
     public int worldX, worldY; // Entity's position in the game world.
@@ -99,6 +110,12 @@ public class Entity {
 
     }
 
+    // Method to use a consumable item, like a potion. Can be overridden in subclasses to implement specific effects.
+    // The `entity` parameter represents the entity that is being used.
+    public void use(Entity entity) {
+
+    }
+
     // Handles the entity speaking by displaying dialogue text to the player
     // and adjusting the entity's direction to face the player.
     public void speak() {
@@ -135,7 +152,7 @@ public class Entity {
 
         // Checks if the entity is a monster and has contacted the player.
         // If so, reduces player's life and sets them to invincible to avoid consecutive damage.
-        if (this.type == 2 && contactPlayer) {
+        if (this.type == type_monster && contactPlayer) {
             if (!gp.player.invincible) {
                 gp.playSE(7);// Play sound effect player receive damage
                 // Calculate damage as monster's attack minus player's defense, with a minimum of zero.

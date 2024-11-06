@@ -11,6 +11,9 @@ public class OBJ_Sword_Normal extends Entity {
     public OBJ_Sword_Normal(GamePanel gp) {
         super(gp);
 
+        // Define the type of this entity as a sword.
+        type = type_sword;
+
         // Set the name of the sword.
         name = "Normal Sword";
 
@@ -19,6 +22,12 @@ public class OBJ_Sword_Normal extends Entity {
 
         // Set the attack value that this sword provides.
         attackValue = 1;
+
+        // Width of the sword attack collision area.
+        attackArea.width = 36;
+
+        // Height of the sword attack collision area.
+        attackArea.height = 36;
 
         // Provides a short description of the item, shown in the inventory.
         description = "[" + name + "]\n An old sword.";

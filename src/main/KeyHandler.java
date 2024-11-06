@@ -142,6 +142,7 @@ public class KeyHandler implements KeyListener {
                     if (gp.ui.slotCol > 4) gp.ui.slotCol = 0; // Wrap to left if it exceeds the limit
                     gp.playSE(9); // Play sound effect for slot movement
                 }
+                case KeyEvent.VK_ENTER -> gp.player.selectItem();
             }
         }
     }

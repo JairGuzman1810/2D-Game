@@ -52,8 +52,6 @@ public class Player extends Entity {
         solidArea.width = 32;  // Width of the player collision area.
         solidArea.height = 32; // Height of the player collision area.
 
-        attackArea.width = 36; // Width of the player attack collision area.
-        attackArea.height = 36; // Height of the player attack collision area.
 
         // Set the player's initial position and speed.
         setDefaultValues();
@@ -104,8 +102,12 @@ public class Player extends Entity {
     }
 
 
-    // Calculates the player's total attack power based on strength and weapon.
+    // Calculates the player's total attack power based on strength and equipped weapon.
     public int getAttack() {
+        // Update attack area based on the current weapon's attributes.
+        attackArea = currentWeapon.attackArea;
+
+        // Return total attack power by multiplying strength with weapon's attack value.
         return strength * currentWeapon.attackValue;
     }
 
@@ -127,17 +129,30 @@ public class Player extends Entity {
         right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
     }
 
-    // Load the images for the player's attack in all four directions.
+    // Loads the images for the player's attack animations in all four directions based on the equipped weapon.
     public void getPlayerAttackImage() {
         // Use the setup method to load and scale player images for different attacks
-        attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
-        attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
-        attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
-        attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
-        attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
-        attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
-        attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
-        attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+        if (currentWeapon.type == type_sword) {
+            // Load images for sword attack in all four directions
+            attackUp1 = setup("/player/boy_attack_up_1", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_attack_up_2", gp.tileSize, gp.tileSize * 2);
+            attackDown1 = setup("/player/boy_attack_down_1", gp.tileSize, gp.tileSize * 2);
+            attackDown2 = setup("/player/boy_attack_down_2", gp.tileSize, gp.tileSize * 2);
+            attackLeft1 = setup("/player/boy_attack_left_1", gp.tileSize * 2, gp.tileSize);
+            attackLeft2 = setup("/player/boy_attack_left_2", gp.tileSize * 2, gp.tileSize);
+            attackRight1 = setup("/player/boy_attack_right_1", gp.tileSize * 2, gp.tileSize);
+            attackRight2 = setup("/player/boy_attack_right_2", gp.tileSize * 2, gp.tileSize);
+        } else if (currentWeapon.type == type_axe) {
+            // Load images for axe attack in all four directions
+            attackUp1 = setup("/player/boy_axe_up_1", gp.tileSize, gp.tileSize * 2);
+            attackUp2 = setup("/player/boy_axe_up_2", gp.tileSize, gp.tileSize * 2);
+            attackDown1 = setup("/player/boy_axe_down_1", gp.tileSize, gp.tileSize * 2);
+            attackDown2 = setup("/player/boy_axe_down_2", gp.tileSize, gp.tileSize * 2);
+            attackLeft1 = setup("/player/boy_axe_left_1", gp.tileSize * 2, gp.tileSize);
+            attackLeft2 = setup("/player/boy_axe_left_2", gp.tileSize * 2, gp.tileSize);
+            attackRight1 = setup("/player/boy_axe_right_1", gp.tileSize * 2, gp.tileSize);
+            attackRight2 = setup("/player/boy_axe_right_2", gp.tileSize * 2, gp.tileSize);
+        }
     }
 
 
@@ -289,12 +304,28 @@ public class Player extends Entity {
     }
 
 
-    // Handles object interaction.
-    // If the player collides with an object (like a key, door, or chest), this method manages the interaction.
+    // Handles object interaction when the player collides with an object (e.g., key, door, chest).
+    // This method checks if an object is available at the collision point and processes the pickup.
     public void pickUpObject(int i) {
         // Check if an object was found at the collision point (999 indicates no object).
         if (i != 999) {
-            //TODO Add logic later
+            String text;
+
+            // If there is space in the inventory, add the object to the player's inventory.
+            if (inventory.size() != maxInventorySize) {
+                inventory.add(gp.obj[i]);  // Add the object to the inventory
+                gp.playSE(1);              // Play a sound effect (object pick-up)
+                text = "Got a " + gp.obj[i].name + "!";  // Display a message showing the item picked up
+            } else {
+                // If inventory is full, display a message informing the player.
+                text = "You cannot carry more items!";  // Display a message that the inventory is full
+            }
+
+            // Display the interaction message in the UI (message appears on screen).
+            gp.ui.addMessage(text);
+
+            // Set the object in the world to null since it has been picked up.
+            gp.obj[i] = null;
         }
     }
 
@@ -369,6 +400,40 @@ public class Player extends Entity {
         }
     }
 
+    // Selects an item from the inventory and handles its use or equipping.
+// This method checks the type of the selected item and applies the appropriate effect, such as equipping it or using it.
+    public void selectItem() {
+        // Get the index of the item selected in the inventory slot from the UI
+        int itemIndex = gp.ui.getItemIndexOnSlot();
+
+        // Check if the selected index is valid (within bounds of the inventory)
+        if (itemIndex < inventory.size()) {
+            // Retrieve the item from the inventory at the selected index
+            Entity selectedItem = inventory.get(itemIndex);
+
+            // If the selected item is a weapon (either a sword or an axe),
+            // equip it, update the player's attack power, and load the corresponding attack images.
+            if (selectedItem.type == type_sword || selectedItem.type == type_axe) {
+                currentWeapon = selectedItem;  // Equip the weapon
+                attack = getAttack();          // Update the player's attack power based on the equipped weapon
+                getPlayerAttackImage();        // Load the attack animations based on the weapon type
+            }
+
+            // If the selected item is a shield, equip it, and update the player's defense stats.
+            if (selectedItem.type == type_shield) {
+                currentShield = selectedItem;  // Equip the shield
+                defense = getDefense();        // Update the player's defense value based on the shield's defense power
+            }
+
+            // If the selected item is consumable (e.g., a potion),
+            // use it and remove it from the inventory.
+            if (selectedItem.type == type_consumable) {
+                selectedItem.use(this);           // Use the consumable item (e.g., heal or apply effect)
+                inventory.remove(itemIndex);     // Remove the used item from the inventory
+            }
+        }
+    }
+
 
     // Draw the player sprite at the center of the screen, using screenX and screenY.
     public void draw(Graphics2D g2) {
@@ -405,6 +470,4 @@ public class Player extends Entity {
         // Reset transparency
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
-
-
 }

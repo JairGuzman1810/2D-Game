@@ -399,6 +399,12 @@ public class UI {
 
         // Draw player's items in the inventory
         for (int i = 0; i < gp.player.inventory.size(); i++) {
+            // Equip Cursor
+            if (gp.player.inventory.get(i) == gp.player.currentWeapon || gp.player.inventory.get(i) == gp.player.currentShield) {
+                g2.setColor(new Color(240, 190, 90));
+                g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
+            }
+
             g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null); // Draw each item image
             slotX += slotSize; // Move to the next slot position horizontally
 
@@ -418,7 +424,6 @@ public class UI {
         int dFrameY = frameY + frameHeight; // Y position for the description frame
         int dFrameHeight = gp.tileSize * 3; // Height of the description frame
 
-        drawSubWindow(frameX, dFrameY, frameWidth, dFrameHeight); // Draw the description frame
 
         // Draw description text for the currently selected item
         int textX = frameX + 20; // X position for drawing description text
@@ -429,6 +434,8 @@ public class UI {
 
         // Check if the selected item index is valid
         if (itemIndex < gp.player.inventory.size()) {
+
+            drawSubWindow(frameX, dFrameY, frameWidth, dFrameHeight); // Draw the description frame
             // Split the item's description into lines and draw each line
             for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
                 g2.drawString(line, textX, textY); // Draw each line of the description
