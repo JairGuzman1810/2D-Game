@@ -54,13 +54,16 @@ public class Entity {
     // Action Control
     public int actionLockCounter = 0; // Counter to lock entity's action temporarily (e.g., idle/move control).
     public int invincibleCounter = 0; // Tracks duration of invincibility effect.
+    int shotAvailableCounter = 0; // Tracks when player can shoot a projectile again.
     int dyingCounter = 0; // Tracks duration of dying animation.
     int hpBarCounter = 0; // Tracks visibility duration of the HP bar.
 
 
     // Character Status
-    public int maxLife; // Max life points the entity can have.
-    public int life; // Current life points of the entity.
+    public int maxLife;          // Max life points the entity can have.
+    public int life;             // Current life points of the entity.
+    public int maxMana;          // Maximum mana points the entity can reach (full mana for projectiles).
+    public int mana;             // Current mana points; used for shot projectiles.
     // Character Level and Stats
     public int level;            // The entity's current level, affecting stats and abilities.
     public int strength;         // Strength attribute, influencing the entity's attack power.
@@ -73,6 +76,7 @@ public class Entity {
     // Equipment
     public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
     public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
+    public Projectile projectile;       // The entity's currently equipped projectile,
     public boolean invincible = false;  // Flag for invincibility to prevent repeated damage.
     public boolean attacking = false;   // Determines if the entity is attacking, triggering attack animations.
     public boolean alive = true;        // Flag indicating if the entity is alive.
@@ -83,6 +87,7 @@ public class Entity {
     public int attackValue;             // Attack value provided by the current weapon or item.
     public int defenseValue;            // Defense value provided by the current shield or item.
     public String description = "";     // A brief description of the item, which can be displayed in the inventory.
+    public int useCost;                 // The resource cost for using this item (mana for projectiles).
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.

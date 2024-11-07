@@ -11,7 +11,7 @@ public class KeyHandler implements KeyListener {
 
     // Booleans to track the current state of movement keys (W, A, S, D) and action key (Enter)
     // to determine if each key is currently pressed
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
 
     // Boolean to track if draw time debugging is enabled; if true, draw times are printed to the console and show in the UI.
     public boolean checkDrawTime = false;
@@ -80,24 +80,31 @@ public class KeyHandler implements KeyListener {
     private void handlePlayState(int keyCode, boolean isPressed) {
         if (isPressed) {
             switch (keyCode) {
-                case KeyEvent.VK_W -> upPressed = true;    // Sets upPressed to true for moving player up
-                case KeyEvent.VK_S -> downPressed = true;  // Sets downPressed to true for moving player down
-                case KeyEvent.VK_A -> leftPressed = true;  // Sets leftPressed to true for moving player left
-                case KeyEvent.VK_D -> rightPressed = true; // Sets rightPressed to true for moving player right
-                case KeyEvent.VK_T -> checkDrawTime = !checkDrawTime; // Toggles the display of frame rendering times
-                case KeyEvent.VK_P -> gp.gameState = gp.pauseState; // Switches game to pause state if P is pressed
-                case KeyEvent.VK_ENTER -> enterPressed = true; // Tracks Enter key for dialogue and selection actions
+                case KeyEvent.VK_W -> upPressed = true;                 // Sets upPressed to true for moving player up
+                case KeyEvent.VK_S ->
+                        downPressed = true;                             // Sets downPressed to true for moving player down
+                case KeyEvent.VK_A ->
+                        leftPressed = true;                             // Sets leftPressed to true for moving player left
+                case KeyEvent.VK_D ->
+                        rightPressed = true;                             // Sets rightPressed to true for moving player right
+                case KeyEvent.VK_T -> checkDrawTime = !checkDrawTime;   // Toggles the display of frame rendering times
+                case KeyEvent.VK_P -> gp.gameState = gp.pauseState;     // Switches game to pause state if P is pressed
+                case KeyEvent.VK_ENTER ->
+                        enterPressed = true;                            // Tracks Enter key for dialogue and selection actions
                 case KeyEvent.VK_C ->
-                        gp.gameState = gp.characterState; // Switches game to character stats state if C is pressed
+                        gp.gameState = gp.characterState;               // Switches game to character stats state if C is pressed
+                case KeyEvent.VK_F ->
+                        shotKeyPressed = true;                          // Sets shotKeyPressed to true for shot a projectile
             }
         } else {
             // Reset movement keys if they are released
             switch (keyCode) {
-                case KeyEvent.VK_W -> upPressed = false; // Reset upPressed to false
-                case KeyEvent.VK_S -> downPressed = false; // Reset downPressed to false
-                case KeyEvent.VK_A -> leftPressed = false; // Reset leftPressed to false
-                case KeyEvent.VK_D -> rightPressed = false; // Reset rightPressed to false
+                case KeyEvent.VK_W -> upPressed = false;        // Reset upPressed to false
+                case KeyEvent.VK_S -> downPressed = false;      // Reset downPressed to false
+                case KeyEvent.VK_A -> leftPressed = false;      // Reset leftPressed to false
+                case KeyEvent.VK_D -> rightPressed = false;     // Reset rightPressed to false
                 case KeyEvent.VK_ENTER -> enterPressed = false; // Reset enterPressed to false
+                case KeyEvent.VK_F -> shotKeyPressed = false;   // Reset shotKeyPressed to false
             }
         }
     }
@@ -149,9 +156,11 @@ public class KeyHandler implements KeyListener {
 
     // Method to reset all movement keys to false
     public void resetKeyStates() {
-        upPressed = false;   // Resets upPressed state
-        downPressed = false; // Resets downPressed state
-        leftPressed = false; // Resets leftPressed state
-        rightPressed = false; // Resets rightPressed state
+        upPressed = false;      // Resets upPressed state
+        downPressed = false;    // Resets downPressed state
+        leftPressed = false;    // Resets leftPressed state
+        rightPressed = false;   // Resets rightPressed state
+        enterPressed = false;   // Resets enterPressed state
+        shotKeyPressed = false; // Resets shotKeyPressed state
     }
 }

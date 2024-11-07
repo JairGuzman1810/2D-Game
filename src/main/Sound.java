@@ -51,6 +51,9 @@ public class Sound {
 
         // Index 9: Cursor movement sound.
         soundURL[9] = getClass().getResource("/sound/cursor.wav");
+
+        // Index 10: Shoot projectile sound.
+        soundURL[10] = getClass().getResource("/sound/burning.wav");
     }
 
 

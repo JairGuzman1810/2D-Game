@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
@@ -83,6 +84,8 @@ public class Player extends Entity {
         currentWeapon = new OBJ_Sword_Normal(gp);
         // Sets the player's current shield to a wooden shield.
         currentShield = new OBJ_Shield_Wood(gp);
+        // Sets the player's current projectile to a fire ball.
+        projectile = new OBJ_Fireball(gp);
         // Calculates total attack power based on strength and the equipped weapon.
         attack = getAttack();
         // Calculates total defense power based on dexterity and the equipped shield.
@@ -243,6 +246,22 @@ public class Player extends Entity {
 
         }
 
+        // If shot key is pressed and projectile is ready, launch a projectile.
+        // The projectile cannot be launched again until cooldown period (30 frames) has elapsed.
+        if (gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30) {
+            // Set the initial coordinates, direction, and entity that cast the projectile.
+            projectile.set(worldX, worldY, direction, true, this);
+
+            // Add the projectile to the list for rendering and collision logic.
+            gp.projectileList.add(projectile);
+
+            // Reset the shot availability counter after firing the projectile.
+            shotAvailableCounter = 0;
+
+            // Play sound effect for shooting the projectile.
+            gp.playSE(10);
+        }
+
         // If player is invincible, increment the invincibility counter.
         if (invincible) {
             invincibleCounter++; // Track invincibility duration.
@@ -252,6 +271,11 @@ public class Player extends Entity {
                 invincible = false; // End invincibility.
                 invincibleCounter = 0; // Reset counter for next use.
             }
+        }
+
+        // Increment the shot availability counter if it's below cooldown limit.
+        if (shotAvailableCounter < 30) {
+            shotAvailableCounter++; // Increment counter.
         }
 
     }
@@ -288,7 +312,7 @@ public class Player extends Entity {
 
             // Check monster collision with the updated worldX, worldY and solidArea
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            damageMonster(monsterIndex);
+            damageMonster(monsterIndex, attack);
             // After checking collision, restore the original data
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -342,7 +366,7 @@ public class Player extends Entity {
 
     // This method handles damaging a monster by decreasing its life when the player attacks.
     // It checks if the monster is invincible to prevent damage during the invincibility period.
-    public void damageMonster(int i) {
+    public void damageMonster(int i, int attack) {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.

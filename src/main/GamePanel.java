@@ -76,8 +76,10 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity[] npc = new Entity[10];
 
     // Array to hold the game monsters
-    public Entity[] monster = new Entity[20
-            ];
+    public Entity[] monster = new Entity[20];
+
+    // ArrayList to hold all projectiles for rendering in the correct order.
+    public ArrayList<Entity> projectileList = new ArrayList<>();
 
     // ArrayList to hold all entities for rendering in the correct order.
     ArrayList<Entity> entityList = new ArrayList<>();
@@ -204,6 +206,22 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            // Iterate through the array of projectiles in reverse to update their status and remove dead ones
+            for (int i = projectileList.size() - 1; i >= 0; i--) {
+                if (projectileList.get(i) != null) {
+
+                    // If the projectile is alive, update its behavior and position
+                    if (projectileList.get(i).alive) {
+                        projectileList.get(i).update();
+                    }
+
+                    // If the projectile is no longer alive, remove it from the list
+                    if (!projectileList.get(i).alive) {
+                        projectileList.remove(i);
+                    }
+                }
+            }
+
             // Iterate through the array of monsters to update their status and remove dead ones
             for (int i = 0; i < monster.length; i++) {
                 // Check if the current monster slot is not empty
@@ -269,6 +287,12 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entity entity : monster) { // Iterate through the array of monster entities.
                 if (entity != null) { // Check if the entity is not null.
                     entityList.add(entity); // Add the non-null game monster to the entity list.
+                }
+            }
+
+            for (Entity entity : projectileList) { // Iterate through the array of projectiles entities.
+                if (entity != null) { // Check if the entity is not null.
+                    entityList.add(entity); // Add the non-null game projectiles to the entity list.
                 }
             }
 
