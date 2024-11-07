@@ -289,7 +289,6 @@ public class Entity {
 
         // End the animation after 40 frames, resetting relevant flags and counter.
         if (dyingCounter > 40) {
-            dying = false; // Set dying status to false.
             alive = false; // Set alive status to false, indicating the entity is "dead."
             dyingCounter = 0; // Reset dyingCounter for future animations if needed.
         }

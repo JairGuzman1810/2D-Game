@@ -391,7 +391,7 @@ public class Player extends Entity {
         // Verify if a monster is found at the collision point (999 indicates no monster present).
         if (i != 999) {
             // If the player is not invincible, reduce life and activate invincibility.
-            if (!invincible) {
+            if (!invincible && !gp.monster[i].dying) {
                 gp.playSE(6); // Play sound effect receive damage
                 int damage = Math.max(gp.monster[i].attack - defense, 0);
                 life -= damage;
