@@ -2,6 +2,7 @@ package monster;
 
 import entity.Entity;
 import main.GamePanel;
+import object.OBJ_Rock;
 
 import java.util.Random;
 
@@ -20,14 +21,15 @@ public class MON_GreenSlime extends Entity {
 
         this.gp = gp;
 
-        type = type_monster;   // Sets type to type_monster, indicating a monster entity.
-        name = "Green Slime";  // Assigns the name of this monster type.
-        speed = 1;             // Defines the movement speed of the slime.
-        maxLife = 4;           // Sets maximum life for the slime.
-        life = maxLife;        // Initializes life to maxLife.
-        attack = 5;            // Sets the attack power of the slime.
-        defense = 0;           // Sets the defense level of the slime.
-        exp = 2;               // Experience points awarded to the player when this monster is defeated.
+        type = type_monster;                    // Sets type to type_monster, indicating a monster entity.
+        name = "Green Slime";                   // Assigns the name of this monster type.
+        speed = 1;                              // Defines the movement speed of the slime.
+        maxLife = 4;                            // Sets maximum life for the slime.
+        life = maxLife;                         // Initializes life to maxLife.
+        attack = 5;                             // Sets the attack power of the slime.
+        defense = 0;                            // Sets the defense level of the slime.
+        exp = 2;                                // Experience points awarded to the player when this monster is defeated.
+        projectile = new OBJ_Rock(gp);         // Initializes a Rock projectile that the slime can shoot.
         // Defines the solid area for collision detection, setting its position
         // and size, which helps prevent the entity from moving through obstacles.
         solidArea.x = 3;
@@ -77,6 +79,20 @@ public class MON_GreenSlime extends Entity {
             }
 
             actionLockCounter = 0; // Resets the action lock counter.
+        }
+
+        // Randomly triggers a slime shot if conditions are met (1% chance).
+        int i = new Random().nextInt(100) + 1;
+
+        if (i > 99 && !projectile.alive && shotAvailableCounter == 30) {
+            // Sets projectile position, direction, and marks it as active.
+            projectile.set(worldX, worldY, direction, true, this);
+
+            // Adds projectile to the game for slime's ranged attack.
+            gp.projectileList.add(projectile);
+
+            // Resets shot counter to prevent immediate consecutive shots.
+            shotAvailableCounter = 0;
         }
     }
 

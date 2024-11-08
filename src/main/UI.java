@@ -1,8 +1,8 @@
 package main;
 
 import entity.Entity;
-import object.OBJ_Chest;
 import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class UI {
 
     // Logger for logging errors during image loading.
-    private static final Logger logger = Logger.getLogger(OBJ_Chest.class.getName());
+    private static final Logger logger = Logger.getLogger(UI.class.getName());
 
     // Reference to the GamePanel object for accessing game-related data and functionality.
     GamePanel gp;
@@ -29,6 +29,9 @@ public class UI {
 
     // Images representing full, half, and blank hearts for displaying player life status.
     BufferedImage heart_full, heart_half, heart_blank;
+    // Images representing full and blank crystals for displaying player mana status.
+    BufferedImage crystal_full, crystal_blank;
+
 
     // Boolean flag to indicate if a message should be displayed.
     public boolean messageOn = false;
@@ -74,6 +77,11 @@ public class UI {
         heart_full = heart.image;   // Full heart image.
         heart_half = heart.image2;  // Half heart image.
         heart_blank = heart.image3;  // Blank heart image.
+
+        // Create an instance of OBJ_ManaCrystal to load crystal images.
+        Entity crystal = new OBJ_ManaCrystal(gp);
+        crystal_full = crystal.image;   // Full crystal image.
+        crystal_blank = crystal.image2; // Blank crystal image.
     }
 
     // Adds a new message to be displayed on the screen.
@@ -124,7 +132,7 @@ public class UI {
         while (i < gp.player.maxLife / 2) {
             g2.drawImage(heart_blank, x, y, null); // Draw blank heart for max life.
             i++;
-            x += (int) (gp.tileSize * 1.5); // Move X position for the next heart.
+            x += gp.tileSize; // Move X position for the next heart.
         }
 
         x = gp.tileSize / 2; // Reset X position for drawing current life.
@@ -138,7 +146,30 @@ public class UI {
                 g2.drawImage(heart_full, x, y, null); // Draw full heart for each life.
             }
             i++;
-            x += (int) (gp.tileSize * 1.5); // Move X position for the next heart.
+            x += gp.tileSize; // Move X position for the next heart.
+        }
+
+        // Draw max mana
+        x = gp.tileSize / 2 - 5; // Starting X position for drawing crystals.
+        y = (int) (gp.tileSize * 1.5); // Starting Y position for drawing crystals.
+        i = 0; // Reset counter for max mana.
+
+        while (i < gp.player.maxMana) {
+            g2.drawImage(crystal_blank, x, y, null); // Draw blank crystal for max mana.
+            i++;
+            x += 35; // Move X position for the next crystal.
+        }
+
+        // Draw mana
+        x = gp.tileSize / 2 - 5; // Reset X position for drawing current mana.
+        i = 0; // Reset counter for current life.
+
+
+        // Draw current life
+        while (i < gp.player.mana) {
+            g2.drawImage(crystal_full, x, y, null); // Draw crystal if player has only half a complete mana slot.
+            i++;
+            x += 35; // Move X position for the next crystal.
         }
     }
 
@@ -296,6 +327,8 @@ public class UI {
         textY += lineHeight;
         g2.drawString("Life", textX, textY);
         textY += lineHeight;
+        g2.drawString("Mana", textX, textY);
+        textY += lineHeight;
         g2.drawString("Strength", textX, textY);
         textY += lineHeight;
         g2.drawString("Dexterity", textX, textY);
@@ -309,7 +342,7 @@ public class UI {
         g2.drawString("Next Level", textX, textY);
         textY += lineHeight;
         g2.drawString("Coins", textX, textY);
-        textY += lineHeight + 20;
+        textY += lineHeight + 10;
         g2.drawString("Weapon", textX, textY);
         textY += lineHeight + 15;
         g2.drawString("Shield", textX, textY);
@@ -326,6 +359,11 @@ public class UI {
         textY += lineHeight;
 
         value = gp.player.life + "/" + gp.player.maxLife;
+        textX = getXForAlignToRight(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = gp.player.mana + "/" + gp.player.maxMana;
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
@@ -365,10 +403,10 @@ public class UI {
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 14, null);
+        g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 24, null);
         textY += gp.tileSize;
 
-        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 14, null);
+        g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 24, null);
 
     }
 

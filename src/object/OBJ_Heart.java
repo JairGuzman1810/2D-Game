@@ -3,12 +3,9 @@ package object;
 import entity.Entity;
 import main.GamePanel;
 
-import java.util.logging.Logger;
-
+// OBJ_Heart represents a heart object in the game that is used for visualizing the player's
+// current and maximum life.
 public class OBJ_Heart extends Entity {
-
-    // Logger for logging errors during image loading.
-    private static final Logger logger = Logger.getLogger(OBJ_Heart.class.getName());
 
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
@@ -16,6 +13,7 @@ public class OBJ_Heart extends Entity {
     // Constructor that sets the heart's name and loads its image.
     public OBJ_Heart(GamePanel gp) {
         super(gp);
+        this.gp = gp;
         // Set the name of the heart object.
         name = "Heart";
         // Load the hearts image from resources.

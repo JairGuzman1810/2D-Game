@@ -54,7 +54,7 @@ public class Entity {
     // Action Control
     public int actionLockCounter = 0; // Counter to lock entity's action temporarily (e.g., idle/move control).
     public int invincibleCounter = 0; // Tracks duration of invincibility effect.
-    int shotAvailableCounter = 0; // Tracks when player can shoot a projectile again.
+    public int shotAvailableCounter = 0; // Tracks when player can shoot a projectile again.
     int dyingCounter = 0; // Tracks duration of dying animation.
     int hpBarCounter = 0; // Tracks visibility duration of the HP bar.
 
@@ -64,6 +64,7 @@ public class Entity {
     public int life;             // Current life points of the entity.
     public int maxMana;          // Maximum mana points the entity can reach (full mana for projectiles).
     public int mana;             // Current mana points; used for shot projectiles.
+    public int ammo;             // Monster current ammo points; used for shot projectiles.
     // Character Level and Stats
     public int level;            // The entity's current level, affecting stats and abilities.
     public int strength;         // Strength attribute, influencing the entity's attack power.
@@ -158,13 +159,7 @@ public class Entity {
         // Checks if the entity is a monster and has contacted the player.
         // If so, reduces player's life and sets them to invincible to avoid consecutive damage.
         if (this.type == type_monster && contactPlayer) {
-            if (!gp.player.invincible) {
-                gp.playSE(7);// Play sound effect player receive damage
-                // Calculate damage as monster's attack minus player's defense, with a minimum of zero.
-                int damage = Math.max(attack - gp.player.defense, 0);
-                gp.player.life -= damage; // Reduces player's life by the calculated damage amount.
-                gp.player.invincible = true; // Trigger invincibility to prevent repeat hits.
-            }
+            damagePlayer(attack); // Initiates damage process with the monster's attack value.
         }
 
         // If no collision detected, move the entity in the current direction.
@@ -195,6 +190,25 @@ public class Entity {
                 invincible = false; // End invincibility.
                 invincibleCounter = 0; // Reset counter for next use.
             }
+        }
+
+        // Increment the shot availability counter if it's below cooldown limit.
+        if (shotAvailableCounter < 30) {
+            shotAvailableCounter++; // Increment counter.
+        }
+    }
+
+    // Method to handle player damage when hit by a monster or projectile.
+    // Calculates the damage based on the monster's attack and player's defense.
+    public void damagePlayer(int attack) {
+        // Check if the player is not currently invincible to allow damage.
+        if (!gp.player.invincible) {
+            gp.playSE(6); // Play sound effect when player receives damage.
+
+            // Calculate damage as monster's attack minus player's defense, ensuring a minimum of zero damage.
+            int damage = Math.max(attack - gp.player.defense, 0);
+            gp.player.life -= damage; // Reduce player's life by the calculated damage amount.
+            gp.player.invincible = true; // Set player to invincible to prevent consecutive hits.
         }
     }
 

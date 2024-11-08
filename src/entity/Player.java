@@ -74,6 +74,8 @@ public class Player extends Entity {
         // Player stats
         maxLife = 6; // Player's maximum health represented by heart images on the screen.
         life = maxLife; // Sets the player's initial health equal to the maximum, displayed as full hearts.
+        maxMana = 4; // Player's maximum mana represented by crystal images on the screen.
+        mana = maxMana; // Sets the player's initial mana equal to the maximum, displayed as full crystals.
         level = 1; // Player's starting level, which increases as they gain experience.
         strength = 1; // The more strength the player has, the more damage they deal.
         dexterity = 1; // The more dexterity the player has, the less damage they receive.
@@ -248,7 +250,7 @@ public class Player extends Entity {
 
         // If shot key is pressed and projectile is ready, launch a projectile.
         // The projectile cannot be launched again until cooldown period (30 frames) has elapsed.
-        if (gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30) {
+        if (gp.keyH.shotKeyPressed && !projectile.alive && shotAvailableCounter == 30 && projectile.haveResource(this)) {
             // Set the initial coordinates, direction, and entity that cast the projectile.
             projectile.set(worldX, worldY, direction, true, this);
 
@@ -260,6 +262,9 @@ public class Player extends Entity {
 
             // Play sound effect for shooting the projectile.
             gp.playSE(10);
+
+            // Spend mana
+            projectile.subtractResource(this);
         }
 
         // If player is invincible, increment the invincibility counter.

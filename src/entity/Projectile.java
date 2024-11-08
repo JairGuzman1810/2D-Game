@@ -37,6 +37,18 @@ public class Projectile extends Entity {
                 gp.player.damageMonster(monsterIndex, attack); // Inflict damage on the monster
                 alive = false;                                 // Deactivate projectile
             }
+            // If projectile is launched by a monster, checks for contact with the player.
+        } else {
+            // Checks if the projectile collides with the player character.
+            boolean contactPlayer = gp.cChecker.checkPlayer(this);
+
+            // Verifies if player is not in invincible state and contact is confirmed.
+            if (!gp.player.invincible && contactPlayer) {
+                // Calls damagePlayer to reduce player's health based on projectile attack value.
+                damagePlayer(attack);
+                // Sets projectile's state to inactive (not alive) after contact.
+                alive = false;
+            }
         }
 
         // Move projectile based on its direction
@@ -62,4 +74,16 @@ public class Projectile extends Entity {
             spriteCounter = 0;
         }
     }
+
+    // Checks if the entity has enough resources; default is false.
+    // Can be overridden by subclasses if specific resource requirements are needed.
+    public boolean haveResource(Entity entity) {
+        return false;
+    }
+
+    // Deducts resources from the entity if needed; default does nothing.
+    // Can be overridden by subclasses to subtract specific resources (e.g., mana or ammo).
+    public void subtractResource(Entity entity) {
+    }
+
 }

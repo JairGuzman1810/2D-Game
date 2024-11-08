@@ -1,5 +1,6 @@
 package object;
 
+import entity.Entity;
 import entity.Projectile;
 import main.GamePanel;
 
@@ -51,5 +52,21 @@ public class OBJ_Fireball extends Projectile {
         left2 = setup("/projectile/fireball_left_2", gp.tileSize, gp.tileSize);
         right1 = setup("/projectile/fireball_right_1", gp.tileSize, gp.tileSize);
         right2 = setup("/projectile/fireball_right_2", gp.tileSize, gp.tileSize);
+    }
+
+    @Override
+    // Checks if the entity has sufficient mana to use the fireball.
+    public boolean haveResource(Entity entity) {
+        // Returns true if entity's mana is greater than or equal to fireball's mana cost.
+        return entity.mana >= useCost;
+    }
+
+    @Override
+    // Deducts the required mana from the entity to cast the fireball.
+    public void subtractResource(Entity entity) {
+        // Calls the superclass method (if any additional behavior is defined).
+        super.subtractResource(entity);
+        // Reduces the entity's mana by the fireball's mana cost.
+        entity.mana -= useCost;
     }
 }
