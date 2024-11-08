@@ -70,7 +70,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
 
     // Array to hold the game objects, such as keys, doors, and chests
-    public Entity[] obj = new Entity[10];
+    public Entity[] obj = new Entity[20];
 
     // Array to hold the game NPCs
     public Entity[] npc = new Entity[10];
@@ -233,9 +233,11 @@ public class GamePanel extends JPanel implements Runnable {
                         monster[i].update();
                     }
 
-                    // If the monster is no longer alive, remove it from the array by setting it to null
+                    // Check if the monster is no longer alive.
+                    // If dead, call `checkDrop()` to determine if it should drop an item, then remove it from the array.
                     if (!monster[i].alive) {
-                        monster[i] = null;
+                        monster[i].checkDrop(); // Trigger item drop logic, if any.
+                        monster[i] = null;      // Remove the dead monster by setting its slot to null.
                     }
                 }
             }

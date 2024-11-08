@@ -2,6 +2,9 @@ package monster;
 
 import entity.Entity;
 import main.GamePanel;
+import object.OBJ_CoinBronze;
+import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 import object.OBJ_Rock;
 
 import java.util.Random;
@@ -106,5 +109,31 @@ public class MON_GreenSlime extends Entity {
         // Sets the slime's direction to match the player's current facing direction,
         // making the slime appear to react by moving away from the player's attack
         direction = gp.player.direction;
+    }
+
+    @Override
+    // Determines the item dropped by the slime upon defeat:
+    // - 50% chance for a bronze coin.
+    // - 25% chance for a heart.
+    // - 25% chance for a mana crystal.
+    public void checkDrop() {
+        super.checkDrop();
+
+        // Generate a random number between 1 and 100 (inclusive) to determine the drop item.
+        int i = new Random().nextInt(100) + 1;
+
+        // Determine the item to drop based on the random number:
+        // - If i is between 1 and 50, the drop will be a bronze coin (50% chance).
+        if (i <= 50) {
+            dropItem(new OBJ_CoinBronze(gp));
+        }
+        // - If i is between 51 and 75, the drop will be a heart (25% chance).
+        else if (i <= 75) {
+            dropItem(new OBJ_Heart(gp));
+        }
+        // - If i is between 76 and 100, the drop will be a mana crystal (25% chance).
+        else {
+            dropItem(new OBJ_ManaCrystal(gp));
+        }
     }
 }

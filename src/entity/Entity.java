@@ -32,6 +32,7 @@ public class Entity {
     public final int type_axe = 4; // Identifies an axe item.
     public final int type_shield = 5; // Identifies a shield item.
     public final int type_consumable = 6; // Identifies a consumable item, like potions.
+    public final int type_pickupOnly = 7; // Identifies an item as pickup only, like coins.
 
 
     // Position and Movement
@@ -89,6 +90,7 @@ public class Entity {
     public int defenseValue;            // Defense value provided by the current shield or item.
     public String description = "";     // A brief description of the item, which can be displayed in the inventory.
     public int useCost;                 // The resource cost for using this item (mana for projectiles).
+    public int value;                   // Value of the item (like in healing or money)
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
@@ -120,6 +122,25 @@ public class Entity {
     // The `entity` parameter represents the entity that is being used.
     public void use(Entity entity) {
 
+    }
+
+    // Method to check if an item should be dropped by the entity.
+// Can be overridden in subclasses to implement specific drop logic.
+    public void checkDrop() {
+
+    }
+
+    // Method to drop an item in the game world.
+    // Finds the first empty slot in the object array and assigns the dropped item to it.
+    public void dropItem(Entity droppedItem) {
+        for (int i = 0; i < gp.obj.length; i++) {
+            if (gp.obj[i] == null) {
+                gp.obj[i] = droppedItem;       // Place the item in the first available slot.
+                gp.obj[i].worldX = worldX;     // Set item's drop position to entity's worldX.
+                gp.obj[i].worldY = worldY;     // Set item's drop position to entity's worldY.
+                break;
+            }
+        }
     }
 
     // Handles the entity speaking by displaying dialogue text to the player
@@ -277,7 +298,7 @@ public class Entity {
             }
 
             // Draw the entity's image on the screen at the calculated position.
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, null);
 
             // Reset alpha to 1f
             changeAlpha(g2, 1f);

@@ -7,9 +7,6 @@ import main.GamePanel;
 // When consumed by an entity, it increases the entity's life points by a fixed amount.
 public class OBJ_Potion_Red extends Entity {
 
-    // Defines the healing value that this potion provides.
-    int value = 5;
-
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -19,6 +16,9 @@ public class OBJ_Potion_Red extends Entity {
 
         // Store the reference to the GamePanel for further access.
         this.gp = gp;
+
+        // Defines the healing value that this potion provides.
+        value = 5;
 
         // Define the type of this entity as a consumable item.
         type = type_consumable;
@@ -47,9 +47,6 @@ public class OBJ_Potion_Red extends Entity {
 
         // Increase the entity's life by the potion's value.
         entity.life += value;
-
-        // Ensure that the player's life does not exceed the maximum limit.
-        gp.player.life = Math.min(gp.player.life, gp.player.maxLife);
 
         // Play sound effect associated with consuming the potion.
         gp.playSE(2);

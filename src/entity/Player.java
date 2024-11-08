@@ -283,6 +283,12 @@ public class Player extends Entity {
             shotAvailableCounter++; // Increment counter.
         }
 
+        // Ensure that the player's life does not exceed the maximum limit (When using a potion or pick up a heart).
+        life = Math.min(life, maxLife);
+
+        // Ensure that the player's mana does not exceed the maximum limit (When using a potion or pick up a crystal).
+        mana = Math.min(mana, maxMana);
+
     }
 
     // Controls the attack animation by toggling between two frames.
@@ -336,24 +342,29 @@ public class Player extends Entity {
     // Handles object interaction when the player collides with an object (e.g., key, door, chest).
     // This method checks if an object is available at the collision point and processes the pickup.
     public void pickUpObject(int i) {
-        // Check if an object was found at the collision point (999 indicates no object).
+        // Verify that a valid object is present at the collision point (999 indicates no object).
         if (i != 999) {
             String text;
 
-            // If there is space in the inventory, add the object to the player's inventory.
-            if (inventory.size() != maxInventorySize) {
-                inventory.add(gp.obj[i]);  // Add the object to the inventory
-                gp.playSE(1);              // Play a sound effect (object pick-up)
-                text = "Got a " + gp.obj[i].name + "!";  // Display a message showing the item picked up
+            // If the object is of type "pickup only," it cannot be added to the inventory and is used immediately.
+            if (gp.obj[i].type == type_pickupOnly) {
+                gp.obj[i].use(this); // Trigger immediate use of the object (e.g., health or mana pickup).
+
             } else {
-                // If inventory is full, display a message informing the player.
-                text = "You cannot carry more items!";  // Display a message that the inventory is full
+                // Inventory items can be stored if there's space available.
+                if (inventory.size() != maxInventorySize) {
+                    inventory.add(gp.obj[i]);  // Add the object to the inventory list.
+                    gp.playSE(1);              // Play a pickup sound effect to confirm the action.
+                    text = "Got a " + gp.obj[i].name + "!";  // Show a message with the item's name to the player.
+                } else {
+                    // Notify the player when inventory is full and can't carry more items.
+                    text = "You cannot carry more items!";
+                }
+
+                // Display the pickup or inventory message in the UI.
+                gp.ui.addMessage(text);
             }
-
-            // Display the interaction message in the UI (message appears on screen).
-            gp.ui.addMessage(text);
-
-            // Set the object in the world to null since it has been picked up.
+            // Remove the object from the world since it has been picked up.
             gp.obj[i] = null;
         }
     }
