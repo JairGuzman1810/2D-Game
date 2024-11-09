@@ -36,7 +36,7 @@ public class OBJ_CoinBronze extends Entity {
         super.use(entity);
 
         // Play sound effect associated with pickup the coin.
-        gp.playSE(2);
+        gp.playSE(1);
 
         // Display the amount of coin gained
         gp.ui.addMessage("Coin +" + value);

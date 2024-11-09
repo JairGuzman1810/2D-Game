@@ -128,7 +128,7 @@ public class CollisionChecker {
         return index; // Return the index of the object collided with, or 999 if no collision.
     }
 
-    // Method to check if an entity has collided with any in-game NPC.
+    // Method to check if an entity has collided with any in-game entity.
     // It returns the index of the NPC the entity collides with, or 999 if no collision occurred.
     public int checkEntity(Entity entity, Entity[] target) {
         int index = 999; // Initialize index to 999, indicating no collision by default.

@@ -170,12 +170,13 @@ public class Entity {
     public void update() {
         setAction();
         // Check for tile collision.
-        collisionOn = false; // Reset collision state.
-        gp.cChecker.checkTile(this); // Check if the entity is colliding with any tiles.
-        gp.cChecker.checkObject(this, false); // Check if the entity is colliding with any object.
-        gp.cChecker.checkEntity(this, gp.npc); // Check if the entity is colliding with any other NPC.
-        gp.cChecker.checkEntity(this, gp.monster); // Check if the entity is colliding with any other monster.
-        boolean contactPlayer = gp.cChecker.checkPlayer(this); // Check if the entity is colliding with the player, if yes true, no false
+        collisionOn = false;                                          // Reset collision state.
+        gp.cChecker.checkTile(this);                            // Check if the entity is colliding with any tiles.
+        gp.cChecker.checkObject(this, false);             // Check if the entity is colliding with any object.
+        gp.cChecker.checkEntity(this, gp.npc);                  // Check if the entity is colliding with any other NPC.
+        gp.cChecker.checkEntity(this, gp.monster);              // Check if the entity is colliding with any other monster.
+        gp.cChecker.checkEntity(this, gp.iTile);                // Check for collision with interactive tiles.
+        boolean contactPlayer = gp.cChecker.checkPlayer(this);  // Check if the entity is colliding with the player, if yes true, no false
 
         // Checks if the entity is a monster and has contacted the player.
         // If so, reduces player's life and sets them to invincible to avoid consecutive damage.

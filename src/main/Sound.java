@@ -54,6 +54,9 @@ public class Sound {
 
         // Index 10: Shoot projectile sound.
         soundURL[10] = getClass().getResource("/sound/burning.wav");
+
+        // Index 11: Chopping tree sound.
+        soundURL[11] = getClass().getResource("/sound/cuttree.wav");
     }
 
 

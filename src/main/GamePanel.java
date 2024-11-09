@@ -3,6 +3,7 @@ package main;
 import entity.Entity;
 import entity.Player;
 import tile.TileManager;
+import tile_interactive.InteractiveTile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,6 +79,9 @@ public class GamePanel extends JPanel implements Runnable {
     // Array to hold the game monsters
     public Entity[] monster = new Entity[20];
 
+    // Array to hold the interactive tiles
+    public InteractiveTile[] iTile = new InteractiveTile[50];
+
     // ArrayList to hold all projectiles for rendering in the correct order.
     public ArrayList<Entity> projectileList = new ArrayList<>();
 
@@ -141,6 +145,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Calls the AssetSetter to place monsters
         aSetter.setMonster();
+
+        // Calls the AssetSetter to place destructive tiles.
+        aSetter.setInteractiveTile();
 
         // Start playing background music (index 0 in the sound array).
         playMusic(0);
@@ -206,21 +213,6 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // Iterate through the array of projectiles in reverse to update their status and remove dead ones
-            for (int i = projectileList.size() - 1; i >= 0; i--) {
-                if (projectileList.get(i) != null) {
-
-                    // If the projectile is alive, update its behavior and position
-                    if (projectileList.get(i).alive) {
-                        projectileList.get(i).update();
-                    }
-
-                    // If the projectile is no longer alive, remove it from the list
-                    if (!projectileList.get(i).alive) {
-                        projectileList.remove(i);
-                    }
-                }
-            }
 
             // Iterate through the array of monsters to update their status and remove dead ones
             for (int i = 0; i < monster.length; i++) {
@@ -239,6 +231,28 @@ public class GamePanel extends JPanel implements Runnable {
                         monster[i].checkDrop(); // Trigger item drop logic, if any.
                         monster[i] = null;      // Remove the dead monster by setting its slot to null.
                     }
+                }
+            }
+
+            // Iterate through the array of projectiles in reverse to update their status and remove dead ones
+            for (int i = projectileList.size() - 1; i >= 0; i--) {
+                if (projectileList.get(i) != null) {
+
+                    // If the projectile is alive, update its behavior and position
+                    if (projectileList.get(i).alive) {
+                        projectileList.get(i).update();
+                    }
+
+                    // If the projectile is no longer alive, remove it from the list
+                    if (!projectileList.get(i).alive) {
+                        projectileList.remove(i);
+                    }
+                }
+            }
+
+            for (InteractiveTile interactiveTile : iTile) {
+                if (interactiveTile != null) {
+                    interactiveTile.update();
                 }
             }
 
@@ -270,6 +284,13 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Draws the tiles onto the Graphics2D context.
             tileM.draw(g2);
+
+            // Draws the interactive tiles.
+            for (InteractiveTile interactiveTile : iTile) {
+                if (interactiveTile != null) { // Check if the entity is not null.
+                    interactiveTile.draw(g2);  // Draws the interactive tiles onto the Graphics2D context.
+                }
+            }
 
             // Add entities to the list;
             entityList.add(player); // Add the player entity to the list.

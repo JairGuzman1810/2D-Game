@@ -3,6 +3,7 @@ package main;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
 import object.*;
+import tile_interactive.IT_DryTree;
 
 // AssetSetter is responsible for placing objects (like keys, doors, chests)
 // at predefined positions in the game world.
@@ -82,5 +83,49 @@ public class AssetSetter {
         gp.monster[1] = new MON_GreenSlime(gp);
         gp.monster[1].worldX = gp.tileSize * 23;
         gp.monster[1].worldY = gp.tileSize * 37;
+    }
+
+    public void setInteractiveTile() {
+
+        // Set a Dry Tree at coordinates (27, 12) in the world.
+        gp.iTile[0] = new IT_DryTree(gp, 27, 12);
+
+        // Set a Dry Tree at coordinates (28, 12) in the world.
+        gp.iTile[1] = new IT_DryTree(gp, 28, 12);
+
+        // Set a Dry Tree at coordinates (29, 12) in the world.
+        gp.iTile[2] = new IT_DryTree(gp, 29, 12);
+
+        // Set a Dry Tree at coordinates (30, 12) in the world.
+        gp.iTile[3] = new IT_DryTree(gp, 30, 12);
+
+        // Set a Dry Tree at coordinates (31, 12) in the world.
+        gp.iTile[4] = new IT_DryTree(gp, 31, 12);
+
+        // Set a Dry Tree at coordinates (32, 12) in the world.
+        gp.iTile[5] = new IT_DryTree(gp, 32, 12);
+
+        // Set a Dry Tree at coordinates (33, 12) in the world.
+        gp.iTile[6] = new IT_DryTree(gp, 33, 12);
+
+
+        // Set a Dry Tree at coordinates (30, 20) in the world.
+        gp.iTile[7] = new IT_DryTree(gp, 30, 20);
+        // Set a Dry Tree at coordinates (30, 21) in the world.
+        gp.iTile[8] = new IT_DryTree(gp, 30, 21);
+        // Set a Dry Tree at coordinates (30, 22) in the world.
+        gp.iTile[9] = new IT_DryTree(gp, 30, 22);
+        // Set a Dry Tree at coordinates (20, 20) in the world.
+        gp.iTile[10] = new IT_DryTree(gp, 20, 20);
+        // Set a Dry Tree at coordinates (20, 21) in the world.
+        gp.iTile[11] = new IT_DryTree(gp, 20, 21);
+        // Set a Dry Tree at coordinates (20, 22) in the world.
+        gp.iTile[12] = new IT_DryTree(gp, 20, 22);
+        // Set a Dry Tree at coordinates (22, 24) in the world.
+        gp.iTile[13] = new IT_DryTree(gp, 22, 24);
+        // Set a Dry Tree at coordinates (23, 24) in the world.
+        gp.iTile[14] = new IT_DryTree(gp, 23, 24);
+        // Set a Dry Tree at coordinates (24, 24) in the world.
+        gp.iTile[15] = new IT_DryTree(gp, 24, 24);
     }
 }

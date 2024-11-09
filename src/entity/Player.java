@@ -2,10 +2,10 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Axe;
 import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
-import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -83,7 +83,7 @@ public class Player extends Entity {
         nextLevelExp = 5; // The amount of experience required to reach the next level.
         coin = 0; // The player's current number of coins, used for in-game purchases.
         // Sets the player's current weapon to a normal sword.
-        currentWeapon = new OBJ_Sword_Normal(gp);
+        currentWeapon = new OBJ_Axe(gp);
         // Sets the player's current shield to a wooden shield.
         currentShield = new OBJ_Shield_Wood(gp);
         // Sets the player's current projectile to a fire ball.
@@ -206,13 +206,15 @@ public class Player extends Entity {
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
 
-            // Check for collisions with monster
+            // Check for collisions with monster.
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             contactMonster(monsterIndex);
 
+            // Check for collision with interactive tiles.
+            gp.cChecker.checkEntity(this, gp.iTile);
+
             // Check for event
             gp.eHandler.checkEvent();
-
 
             // If no collision detected, move the player in the current direction.
             if (!collisionOn && !keyH.enterPressed) {
@@ -324,6 +326,11 @@ public class Player extends Entity {
             // Check monster collision with the updated worldX, worldY and solidArea
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             damageMonster(monsterIndex, attack);
+
+            // Check interactive tile collision with the updated worldX, worldY and solidArea
+            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
+            damageInteractiveTile(iTileIndex);
+
             // After checking collision, restore the original data
             worldX = currentWorldX;
             worldY = currentWorldY;
@@ -404,6 +411,29 @@ public class Player extends Entity {
                     exp += gp.monster[i].exp; // Add monster's experience points to player
                     checkLevelUp(); // Check if player has leveled up
                 }
+            }
+        }
+    }
+
+    // Handles damaging an interactive tile, such as a destructible object in the game world.
+    public void damageInteractiveTile(int i) {
+
+        // Check if there is a valid interactive tile at index i that is destructible,
+        // can be damaged by the player's current item, and is not currently invincible.
+        if (i != 999 && gp.iTile[i].destructible && gp.iTile[i].isCorrectItem(this) && !gp.iTile[i].invincible) {
+
+            // Play the tile's sound effect for taking damage.
+            gp.iTile[i].playSE();
+
+            // Decrease the tile's life by 1.
+            gp.iTile[i].life--;
+
+            // Set the tile to invincible to prevent immediate consecutive hits.
+            gp.iTile[i].invincible = true;
+
+            // If the tile's life reaches zero, replace it with its destroyed variant.
+            if (gp.iTile[i].life == 0) {
+                gp.iTile[i] = gp.iTile[i].getDestroyedVariant();
             }
         }
     }
