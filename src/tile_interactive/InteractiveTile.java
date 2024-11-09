@@ -3,6 +3,8 @@ package tile_interactive;
 import entity.Entity;
 import main.GamePanel;
 
+import java.awt.*;
+
 // InteractiveTile represents a tile in the game world that can be interacted with
 // and may have specific properties, like being destructible.
 public class InteractiveTile extends Entity {
@@ -37,6 +39,7 @@ public class InteractiveTile extends Entity {
     }
 
     // Updates the tile’s state, including handling temporary invincibility.
+    @Override
     public void update() {
         // Check if the tile is in an invincible state.
         if (invincible) {
@@ -47,6 +50,26 @@ public class InteractiveTile extends Entity {
                 invincible = false; // End invincibility state.
                 invincibleCounter = 0; // Reset the counter for next use.
             }
+        }
+    }
+
+    @Override
+    // Draws the entity on the screen relative to the player's position.
+    public void draw(Graphics2D g2) {
+        // Calculate the object's position on the screen based on the player's position.
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+
+        // Check if the entity is within the player's visible area.
+        if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+                worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+                worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+
+            // Draw the entity's image on the screen at the calculated position.
+            g2.drawImage(down1, screenX, screenY, null);
+
         }
     }
 }

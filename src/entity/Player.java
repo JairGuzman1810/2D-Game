@@ -431,6 +431,9 @@ public class Player extends Entity {
             // Set the tile to invincible to prevent immediate consecutive hits.
             gp.iTile[i].invincible = true;
 
+            // Generate particles.
+            generateParticle(gp.iTile[i], gp.iTile[i]);
+
             // If the tile's life reaches zero, replace it with its destroyed variant.
             if (gp.iTile[i].life == 0) {
                 gp.iTile[i] = gp.iTile[i].getDestroyedVariant();

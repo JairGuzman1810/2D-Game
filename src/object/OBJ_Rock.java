@@ -4,15 +4,17 @@ import entity.Entity;
 import entity.Projectile;
 import main.GamePanel;
 
+import java.awt.*;
+
 // OBJ_Rock defines a rock projectile used in the game, which deals damage when it hits a target.
-// This projectile has a limited lifespan and consumes mana when used.
+// This projectile has a limited lifespan and consumes ammo when used.
 public class OBJ_Rock extends Projectile {
 
     GamePanel gp;
 
-    // Constructor that initializes the fireball's attributes such as name, speed, attack power, and lifespan.
+    // Constructor that initializes the rock's attributes such as name, speed, attack power, and lifespan.
     public OBJ_Rock(GamePanel gp) {
-        super(gp);
+        super(gp); // Initialize the parent class with the GamePanel reference.
 
         // Store the game panel reference.
         this.gp = gp;
@@ -32,7 +34,7 @@ public class OBJ_Rock extends Projectile {
         // Define the attack power of the rock.
         attack = 2;
 
-        // Set the mana cost to cast this rock.
+        // Set the ammo cost to throw this rock.
         useCost = 1;
 
         // Set the initial state of the rock as inactive.
@@ -44,6 +46,7 @@ public class OBJ_Rock extends Projectile {
 
     // Loads images for the rock's animations in all four directions.
     public void getImage() {
+        // Load the image for the rock in different directions: up, down, left, and right.
         up1 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
         up2 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
         down1 = setup("/projectile/rock_down_1", gp.tileSize, gp.tileSize);
@@ -55,18 +58,36 @@ public class OBJ_Rock extends Projectile {
     }
 
     @Override
-    // Checks if the entity has sufficient ammon to use the rock.
+    // Checks if the entity has sufficient ammo to throw the rock.
     public boolean haveResource(Entity entity) {
-        // Returns true if entity's ammo is greater than or equal to rock's ammo cost.
+        // Returns true if the entity's ammo is greater than or equal to the rock's ammo cost.
         return entity.ammo >= useCost;
     }
 
     @Override
     // Deducts the required ammo from the entity to throw the rock.
     public void subtractResource(Entity entity) {
-        // Calls the superclass method (if any additional behavior is defined).
-        super.subtractResource(entity);
         // Reduces the entity's ammo by the rock's ammo cost.
         entity.ammo -= useCost;
+    }
+
+    // Return the particle color when the rock is used.
+    public Color getParticleColor() {
+        return new Color(40, 50, 0); // A dull, earthy color for the rock particles.
+    }
+
+    // Return the particle size when the rock is used.
+    public int getParticleSize() {
+        return 10; // The size of the particles in pixels.
+    }
+
+    // Return the particle speed when the rock is used.
+    public int getParticleSpeed() {
+        return 1; // The speed at which the particles move.
+    }
+
+    // Return the maximum lifetime of the particles after the rock is thrown.
+    public int getParticleMaxLife() {
+        return 20; // Particles will live for 20 frames before disappearing.
     }
 }

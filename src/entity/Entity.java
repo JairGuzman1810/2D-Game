@@ -125,7 +125,7 @@ public class Entity {
     }
 
     // Method to check if an item should be dropped by the entity.
-// Can be overridden in subclasses to implement specific drop logic.
+    // Can be overridden in subclasses to implement specific drop logic.
     public void checkDrop() {
 
     }
@@ -162,6 +162,48 @@ public class Entity {
             case "left" -> direction = "right";
             case "right" -> direction = "left";
         }
+    }
+
+    // Returns the color of the particles. This method can be overridden in subclasses to specify a custom color for different entities' particles.
+    public Color getParticleColor() {
+        return null; // Default implementation returns null, indicating no specific color is set.
+    }
+
+    // Returns the size of the particles. This method can be overridden in subclasses to specify a custom size for different entities' particles.
+    public int getParticleSize() {
+        return 0; // Default implementation returns 0, indicating no specific size is set.
+    }
+
+    // Returns the speed of the particles. This method can be overridden in subclasses to specify a custom speed for different entities' particles.
+    public int getParticleSpeed() {
+        return 0; // Default implementation returns 0, indicating no specific speed is set.
+    }
+
+    // Returns the maximum lifetime of the particles. This method can be overridden in subclasses to specify a custom lifespan for different entities' particles.
+    public int getParticleMaxLife() {
+        return 0; // Default implementation returns 0, indicating no specific maximum life is set.
+    }
+
+    // Generates particles when an entity interacts with another (e.g., cutting a tree or hitting a monster).
+    // This method creates multiple particles with properties determined by the generator entity.
+    public void generateParticle(Entity generator, Entity target) {
+        // Get the particle properties from the generator entity.
+        Color color = generator.getParticleColor(); // The color of the particle.
+        int size = generator.getParticleSize();     // The size of the particle.
+        int speed = generator.getParticleSpeed();   // The speed of the particle.
+        int maxLife = generator.getParticleMaxLife(); // The maximum lifetime of the particle.
+
+        // Create multiple particles with slight variations in their movement direction.
+        Particle p1 = new Particle(gp, target, color, size, speed, maxLife, -2, -1); // Particle with a negative x and y direction.
+        Particle p2 = new Particle(gp, target, color, size, speed, maxLife, 2, -1);  // Particle with a positive x and negative y direction.
+        Particle p3 = new Particle(gp, target, color, size, speed, maxLife, -2, 1);  // Particle with a negative x and positive y direction.
+        Particle p4 = new Particle(gp, target, color, size, speed, maxLife, 2, 1);   // Particle with a positive x and positive y direction.
+
+        // Add the generated particles to the particle list for future updates and rendering.
+        gp.particleList.add(p1);
+        gp.particleList.add(p2);
+        gp.particleList.add(p3);
+        gp.particleList.add(p4);
     }
 
 

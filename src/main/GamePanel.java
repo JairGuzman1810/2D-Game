@@ -70,16 +70,19 @@ public class GamePanel extends JPanel implements Runnable {
     // The Player object that represents the player character in the game.
     public Player player = new Player(this, keyH);
 
-    // Array to hold the game objects, such as keys, doors, and chests
+    // Array to hold the game objects, such as keys, doors, and chests.
     public Entity[] obj = new Entity[20];
 
-    // Array to hold the game NPCs
+    // Array to hold the game NPCs.
     public Entity[] npc = new Entity[10];
 
-    // Array to hold the game monsters
+    // Array to hold the game monsters.
     public Entity[] monster = new Entity[20];
 
-    // Array to hold the interactive tiles
+    // ArrayList to hold all particles.
+    public ArrayList<Entity> particleList = new ArrayList<>();
+
+    // Array to hold the interactive tiles.
     public InteractiveTile[] iTile = new InteractiveTile[50];
 
     // ArrayList to hold all projectiles for rendering in the correct order.
@@ -250,6 +253,22 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            // Iterate through the array of particles in reverse to update their status and remove dead ones
+            for (int i = particleList.size() - 1; i >= 0; i--) {
+                if (particleList.get(i) != null) {
+
+                    // If the particle is alive, update its behavior and position
+                    if (particleList.get(i).alive) {
+                        particleList.get(i).update();
+                    }
+
+                    // If the particle is no longer alive, remove it from the list
+                    if (!particleList.get(i).alive) {
+                        particleList.remove(i);
+                    }
+                }
+            }
+
             for (InteractiveTile interactiveTile : iTile) {
                 if (interactiveTile != null) {
                     interactiveTile.update();
@@ -316,6 +335,12 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entity entity : projectileList) { // Iterate through the array of projectiles entities.
                 if (entity != null) { // Check if the entity is not null.
                     entityList.add(entity); // Add the non-null game projectiles to the entity list.
+                }
+            }
+
+            for (Entity entity : particleList) { // Iterate through the array of particles entities.
+                if (entity != null) { // Check if the entity is not null.
+                    entityList.add(entity); // Add the non-null game particles to the entity list.
                 }
             }
 
