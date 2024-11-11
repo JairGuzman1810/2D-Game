@@ -2,10 +2,10 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import object.OBJ_Axe;
 import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
+import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -83,7 +83,7 @@ public class Player extends Entity {
         nextLevelExp = 5; // The amount of experience required to reach the next level.
         coin = 0; // The player's current number of coins, used for in-game purchases.
         // Sets the player's current weapon to a normal sword.
-        currentWeapon = new OBJ_Axe(gp);
+        currentWeapon = new OBJ_Sword_Normal(gp);
         // Sets the player's current shield to a wooden shield.
         currentShield = new OBJ_Shield_Wood(gp);
         // Sets the player's current projectile to a fire ball.

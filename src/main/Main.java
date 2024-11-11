@@ -4,9 +4,12 @@ import javax.swing.*;
 
 // Main class that serves as the entry point for the game application
 public class Main {
+
+    public static JFrame window;
+
     public static void main(String[] args) {
         // Create a new JFrame to serve as the main window of the game
-        JFrame window = new JFrame();
+        window = new JFrame();
 
         // Set the default close operation to exit the application when the window is closed
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,6 +19,8 @@ public class Main {
 
         // Set the title of the window
         window.setTitle("2D Adventure");
+
+        window.setUndecorated(true);
 
         // Create an instance of GamePanel, which contains the game logic and rendering
         GamePanel gamePanel = new GamePanel();

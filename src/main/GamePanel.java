@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -23,12 +24,18 @@ public class GamePanel extends JPanel implements Runnable {
     public final int tileSize = originalTileSize * scale;
 
     // Maximum number of tile columns and rows displayed on the screen at once.
-    public final int maxScreenCol = 16;  // 16 columns of tiles on the screen.
+    public final int maxScreenCol = 20;  // 20 columns of tiles on the screen.
     public final int maxScreenRow = 12;  // 12 rows of tiles on the screen.
 
     // The total screen width and height in pixels, calculated based on the number of tiles.
-    public final int screenWidth = tileSize * maxScreenCol;  // 768 pixels wide (16 * 48).
+    public final int screenWidth = tileSize * maxScreenCol;  // 960 pixels wide (20 * 48).
     public final int screenHeight = tileSize * maxScreenRow;  // 576 pixels high (12 * 48).
+
+    // Full screen settings
+    int screenWidth2 = screenWidth;     // Sets initial full screen width
+    int screenHeight2 = screenHeight;   // Sets initial full screen height
+    BufferedImage tempScreen;           // Buffered image used for rendering in full screen
+    Graphics2D g2;                      // Graphics object for drawing on the buffered image
 
     // WORLD SETTINGS
     // The total number of tile columns and rows in the entire game world.
@@ -157,6 +164,25 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Set default state to title state.
         gameState = titleState;
+
+        // Prepares a temporary screen for full-screen rendering
+        tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+        // Creates a graphics context from the temporary screen
+        g2 = (Graphics2D) tempScreen.getGraphics();
+        setFullScreen();   // Calls method to enable full-screen mode
+    }
+
+    // Activates full-screen mode and adjusts screen dimensions accordingly
+    public void setFullScreen() {
+        // Get local screen device for full-screen support
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+
+        gd.setFullScreenWindow(Main.window);  // Sets the full-screen window to the main window
+
+        // Updates full screen width and height based on window dimensions
+        screenWidth2 = Main.window.getWidth();
+        screenHeight2 = Main.window.getHeight();
     }
 
     // Method to start the game thread, which runs the game loop.
@@ -193,8 +219,10 @@ public class GamePanel extends JPanel implements Runnable {
                 // 1. UPDATE: update the game state (e.g., player movement).
                 update();
 
-                // 2. DRAW: render the game with the updated state.
-                repaint();
+                // 2. DRAW: draw everything to the buffered image.
+                drawToTempScreen();
+                // Draw the buffered image to the screen.
+                drawToScreen();
 
                 // Decrement delta by 1 to indicate a frame has been processed.
                 delta--;
@@ -281,13 +309,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // paintComponent is called to render the game onto the panel.
-    @Override
-    public void paintComponent(Graphics g) {
-        // Call the superclass method to handle basic rendering.
-        super.paintComponent(g);
-        // Cast Graphics to Graphics2D for more advanced drawing options.
-        Graphics2D g2 = (Graphics2D) g;
+    // drawToTempScreen is called to render the game onto the temp screen.
+    public void drawToTempScreen() {
+
+        // Clears the temporary screen for fresh rendering
+        g2.clearRect(0, 0, screenWidth2, screenHeight2);
 
         // Measure draw time if the checkDrawTime flag is enabled.
         long drawStart = 0;
@@ -366,12 +392,15 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.drawString("Draw Time: " + passed + " ns", 10, 400); // Display draw time on the screen
                 System.out.println("Draw Time: " + passed + " ns"); // Log draw time to the console for further analysis
             }
-
-            // Dispose of the Graphics2D object to free resources.
-            g2.dispose();
         }
+    }
 
-
+    // Draws the contents of the temporary screen to the main display screen
+    public void drawToScreen() {
+        Graphics g = getGraphics();  // Gets the current graphics context
+        // Draws the tempScreen image onto the display screen with specified dimensions
+        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
+        g.dispose();   // Disposes of graphics to free up resources
     }
 
     // Plays background music using the specified sound index.

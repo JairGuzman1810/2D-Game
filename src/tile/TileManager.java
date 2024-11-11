@@ -35,7 +35,7 @@ public class TileManager {
         tiles = new Tile[50]; // Initialize the tile array with a fixed size (50 tiles).
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow]; // Set up the map array based on the world dimensions.
         getTileImage(); // Load the tile images from resources.
-        loadMap("/maps/worldV2.txt"); // Load the map layout from a specified text file.
+        loadMap("/maps/worldV3.txt"); // Load the map layout from a specified text file.
     }
 
     // The getTileImage method loads the images for each type of tile from the resources.

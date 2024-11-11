@@ -305,7 +305,7 @@ public class UI {
     // Draws the character screen for displaying stats of the character in the game.
     public void drawCharacterScreen() {
         // Define the position and size of the dialogue window.
-        int x = gp.tileSize; // X position with padding from the left.
+        int x = gp.tileSize * 2; // X position with padding from the left.
         int y = gp.tileSize;  // Y position with padding from the top.
 
         int width = gp.tileSize * 5; // Width of the dialogue window.
@@ -414,7 +414,7 @@ public class UI {
     // a selection cursor, and item descriptions on the screen.
     public void drawInventory() {
         // Frame position and dimensions
-        int frameX = gp.tileSize * 9; // X position of the inventory frame
+        int frameX = gp.tileSize * 12; // X position of the inventory frame
         int frameY = gp.tileSize; // Y position of the inventory frame
         int frameWidth = gp.tileSize * 6; // Width of the inventory frame
         int frameHeight = gp.tileSize * 5; // Height of the inventory frame
