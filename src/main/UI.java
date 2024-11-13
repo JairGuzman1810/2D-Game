@@ -55,6 +55,8 @@ public class UI {
     // Current row index for item slots in the inventory
     int slotRow = 0;
 
+    int subState = 0;
+
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -119,6 +121,9 @@ public class UI {
             // Draw the character stats screen when the game is in character state.
             drawCharacterScreen();
             drawInventory();
+        } else if (gp.gameState == gp.optionsState) {
+            // Draw the character options screen when the game is in option state.
+            drawOptionsScreen();
         }
     }
 
@@ -478,6 +483,276 @@ public class UI {
             for (String line : gp.player.inventory.get(itemIndex).description.split("\n")) {
                 g2.drawString(line, textX, textY); // Draw each line of the description
                 textY += 32; // Move Y position down for the next line
+            }
+        }
+    }
+
+
+    // Draws the options screen, displaying various game settings such as full screen toggle,
+    // volume controls, and game controls.
+    public void drawOptionsScreen() {
+        // Set the color for drawing text to white
+        g2.setColor(Color.white);
+
+        // Set the font for the options screen text with a size of 32
+        g2.setFont(g2.getFont().deriveFont(32F));
+
+        // Define dimensions for the options sub-window (position and size)
+        int frameX = gp.tileSize * 6;       // X-position for the frame
+        int frameY = gp.tileSize;           // Y-position for the frame
+        int frameWidth = gp.tileSize * 8;   // Frame width, spanning 8 tiles
+        int frameHeight = gp.tileSize * 10; // Frame height, spanning 10 tiles
+
+        // Draw the main options sub-window with specified dimensions
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // Determine which options sub-screen to display based on the `subState` value
+        switch (subState) {
+            case 0 -> options_top(frameX, frameY);                   // Display the main options menu
+            case 1 -> options_fullScreenNotification(frameX, frameY); // Display full-screen notification
+            case 2 -> options_controls(frameX, frameY);              // Display control options
+            case 3 -> options_endGameConfirmation(frameX, frameY);   // Display end-game confirmation
+        }
+
+        // Reset the enter key press flag after processing input on the options screen
+        gp.keyH.enterPressed = false;
+    }
+
+
+    // Displays the main options screen, allowing the player to adjust settings such as
+    // full screen toggle, music and sound effect volumes, control options, and an option
+    // to end the game
+    public void options_top(int frameX, int frameY) {
+        int textX;
+        int textY;
+
+        // Draw the main "Options" title, centered at the top of the frame
+        String text = "Options";
+        textX = getXForCenteredText(text);
+        textY = frameY + gp.tileSize;
+        g2.drawString(text, textX, textY);
+
+        // Draw "Full Screen" toggle option
+        textX = frameX + gp.tileSize;
+        textY += gp.tileSize * 2;
+        g2.drawString("Full Screen", textX, textY);
+        if (commandNum == 0) {
+            g2.drawString(">", textX - 25, textY); // Draws a pointer indicating selection
+            if (gp.keyH.enterPressed) {
+                gp.fullScreenOn = !gp.fullScreenOn; // Toggles full screen
+                subState = 1; // Show confirmation sub-window
+            }
+        }
+
+        // Draw "Music" volume control option
+        textY += gp.tileSize;
+        g2.drawString("Music", textX, textY);
+        if (commandNum == 1) {
+            g2.drawString(">", textX - 25, textY); // Pointer for music selection
+        }
+
+        // Draw "SE" (Sound Effects) volume control option
+        textY += gp.tileSize;
+        g2.drawString("SE", textX, textY);
+        if (commandNum == 2) {
+            g2.drawString(">", textX - 25, textY); // Pointer for SE selection
+        }
+
+        // Draw "Control" option for viewing or changing controls
+        textY += gp.tileSize;
+        g2.drawString("Control", textX, textY);
+        if (commandNum == 3) {
+            g2.drawString(">", textX - 25, textY); // Pointer for control option
+            if (gp.keyH.enterPressed) {
+                subState = 2; // Move to control configuration screen
+                commandNum = 0; // Reset command index for the control menu
+            }
+        }
+
+        // Draw "End Game" option to confirm ending the current game
+        textY += gp.tileSize;
+        g2.drawString("End Game", textX, textY);
+        if (commandNum == 4) {
+            g2.drawString(">", textX - 25, textY); // Pointer for end game selection
+            if (gp.keyH.enterPressed) {
+                subState = 3;   // Move to end game confirmation screen
+                commandNum = 0; // Reset command index for the control menu
+            }
+        }
+
+        // Draw "Back" option to exit options menu and return to game
+        textY += gp.tileSize * 2;
+        g2.drawString("Back", textX, textY);
+        if (commandNum == 5) {
+            g2.drawString(">", textX - 25, textY); // Pointer for back option
+            if (gp.keyH.enterPressed) {
+                gp.gameState = gp.playState; // Switch back to play state
+                commandNum = 0;              // Reset command index for the control menu
+            }
+        }
+
+        // Draw full screen checkbox to indicate current full screen state
+        textX = (int) (frameX + gp.tileSize * 4.5);
+        textY = frameY + gp.tileSize * 2 + 24;
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRect(textX, textY, 24, 24); // Checkbox outline
+        if (gp.fullScreenOn) {
+            g2.fillRect(textX, textY, 24, 24); // Filled if full screen is enabled
+        }
+
+        // Draw volume bar for music, scaled to current music volume
+        textY += gp.tileSize;
+        g2.drawRect(textX, textY, 120, 24); // Outline of music volume bar
+        int volumeWidth = 24 * gp.music.volumeScale; // Width based on volume scale
+        g2.fillRect(textX, textY, volumeWidth, 24); // Fill based on current volume
+
+        // Draw volume bar for sound effects, scaled to current SE volume
+        textY += gp.tileSize;
+        g2.drawRect(textX, textY, 120, 24); // Outline of SE volume bar
+        volumeWidth = 24 * gp.se.volumeScale; // Width based on SE volume scale
+        g2.fillRect(textX, textY, volumeWidth, 24); // Fill based on current volume
+    }
+
+    // Displays a notification informing the player that the full screen change
+// will take effect after restarting the game.
+    public void options_fullScreenNotification(int frameX, int frameY) {
+        // Calculate the position for the text to be drawn based on the frame's position
+        int textX = frameX + gp.tileSize;
+        int textY = frameY + gp.tileSize * 3;
+
+        // The message that will inform the player about the full screen change
+        currentDialogue = "The change will take \neffect after restarting \nthe game.";
+
+        // Loop through each line of the current dialogue and draw it at the appropriate position
+        // Split the message into multiple lines if there is a newline character
+        for (String line : currentDialogue.split("\n")) {
+            g2.drawString(line, textX, textY);  // Draw the text at the calculated position
+            textY += 40;  // Increase the Y position to leave space for the next line
+        }
+
+        // Position the "Back" option at the bottom of the screen
+        textY = frameY + gp.tileSize * 9;
+        g2.drawString("Back", textX, textY);  // Draw the "Back" text option
+
+        // If the "Back" option is selected (commandNum == 0), highlight it with a ">" symbol
+        if (commandNum == 0) {
+            g2.drawString(">", textX - 25, textY); // Indicate the selected option with a pointer
+            if (gp.keyH.enterPressed) {  // Check if the enter key is pressed
+                subState = 0;  // Change the subState to return to the main options menu
+            }
+        }
+    }
+
+    // Displays the controls menu where the player can view the key mappings for various actions.
+    public void options_controls(int frameX, int frameY) {
+        // Set up initial position for centered title
+        int textX;
+        int textY;
+
+        // Draw the title "Controls" at the center of the options screen
+        String text = "Controls";
+        textX = getXForCenteredText(text);  // Get X position to center the text
+        textY = frameY + gp.tileSize;  // Set the Y position below the frame
+        g2.drawString(text, textX, textY);  // Draw the title
+
+        // Set initial position for control options listing
+        textX = frameX + gp.tileSize;  // Set the X position for the control labels
+        textY += gp.tileSize;  // Start the Y position slightly below the title
+
+        // List all control actions with their corresponding keys
+        g2.drawString("Move", textX, textY);  // Draw the action "Move"
+        textY += gp.tileSize;  // Move down for the next option
+
+        g2.drawString("Confirm/Attack", textX, textY);  // Draw the action "Confirm/Attack"
+        textY += gp.tileSize;  // Move down for the next option
+
+        g2.drawString("Shoot/Cast", textX, textY);  // Draw the action "Shoot/Cast"
+        textY += gp.tileSize;  // Move down for the next option
+
+        g2.drawString("Character Screen", textX, textY);  // Draw the action "Character Screen"
+        textY += gp.tileSize;  // Move down for the next option
+
+        g2.drawString("Pause", textX, textY);  // Draw the action "Pause"
+        textY += gp.tileSize;  // Move down for the next option
+
+        g2.drawString("Options", textX, textY);  // Draw the action "Options"
+        textY += gp.tileSize;  // Move down for the next option
+
+        // Set position for the key mappings
+        textX = frameX + gp.tileSize * 6;  // Adjust X for the key display area
+        textY = frameY + gp.tileSize * 2;  // Start the Y position slightly below the control actions
+
+        // Draw key mappings corresponding to the listed controls
+        g2.drawString("WASD", textX, textY);  // Draw the key for "Move"
+        textY += gp.tileSize;  // Move down for the next key mapping
+
+        g2.drawString("ENTER", textX, textY);  // Draw the key for "Confirm/Attack"
+        textY += gp.tileSize;  // Move down for the next key mapping
+
+        g2.drawString("F", textX, textY);  // Draw the key for "Shoot/Cast"
+        textY += gp.tileSize;  // Move down for the next key mapping
+
+        g2.drawString("C", textX, textY);  // Draw the key for "Character Screen"
+        textY += gp.tileSize;  // Move down for the next key mapping
+
+        g2.drawString("P", textX, textY);  // Draw the key for "Pause"
+        textY += gp.tileSize;  // Move down for the next key mapping
+
+        g2.drawString("ESC", textX, textY);  // Draw the key for "Options"
+
+        // Draw "Back" option at the bottom to return to previous menu
+        textX = frameX + gp.tileSize;  // Adjust X position for "Back" option
+        textY = frameY + gp.tileSize * 9;  // Set Y position for the "Back" option
+        g2.drawString("Back", textX, textY);  // Draw the "Back" text option
+
+        // If the "Back" option is selected (commandNum == 0), highlight it with a ">" symbol
+        if (commandNum == 0) {
+            g2.drawString(">", textX - 25, textY);  // Indicate the selected option with a pointer
+            if (gp.keyH.enterPressed) {  // Check if the enter key is pressed
+                subState = 0;  // Return to main options menu
+                commandNum = 3;  // Reset the command number to default control option
+            }
+        }
+    }
+
+    // Displays a confirmation window asking the player if they want to quit the game and return to the title screen.
+    public void options_endGameConfirmation(int frameX, int frameY) {
+        // Set the initial position for the text
+        int textX = frameX + gp.tileSize;
+        int textY = frameY + gp.tileSize * 3;
+
+        // Dialogue for confirmation
+        currentDialogue = "Quit the game and return \nto the title screen?";
+
+        // Split the current dialogue into lines and draw each line at the specified position
+        for (String line : currentDialogue.split("\n")) {
+            g2.drawString(line, textX, textY);  // Draw each line of the dialogue
+            textY += 40;  // Move Y position down for the next line
+        }
+
+        // Draw "Yes" option and handle input to quit the game
+        String text = "Yes";
+        textX = getXForCenteredText(text);  // Center the text
+        textY += gp.tileSize * 3;  // Position below the dialogue text
+        g2.drawString(text, textX, textY);  // Draw the "Yes" option
+        if (commandNum == 0) {  // If "Yes" is selected
+            g2.drawString(">", textX - 25, textY);  // Highlight the selected option
+            if (gp.keyH.enterPressed) {  // Check if the enter key is pressed
+                subState = 0;  // Reset subState
+                gp.gameState = gp.titleState;  // Change game state to title screen
+            }
+        }
+
+        // Draw "No" option and handle input to cancel quitting
+        text = "No";
+        textX = getXForCenteredText(text);  // Center the "No" text
+        textY += gp.tileSize;  // Position below the "Yes" option
+        g2.drawString(text, textX, textY);  // Draw the "No" option
+        if (commandNum == 1) {  // If "No" is selected
+            g2.drawString(">", textX - 25, textY);  // Highlight the selected option
+            if (gp.keyH.enterPressed) {  // Check if the enter key is pressed
+                subState = 0;  // Reset subState
+                commandNum = 4;  // Reset commandNum to a previous value (or default)
             }
         }
     }

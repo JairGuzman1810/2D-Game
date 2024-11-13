@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable {
     int screenHeight2 = screenHeight;   // Sets initial full screen height
     BufferedImage tempScreen;           // Buffered image used for rendering in full screen
     Graphics2D g2;                      // Graphics object for drawing on the buffered image
+    public boolean fullScreenOn = false; // Tracks the full-screen mode state; true if full screen is enabled, false otherwise
 
     // WORLD SETTINGS
     // The total number of tile columns and rows in the entire game world.
@@ -111,6 +112,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogueState = 3;
     // Constant for character stats state.
     public final int characterState = 4;
+    // Constant for options state.
+    public final int optionsState = 5;
 
 
     // Constructor to initialize the GamePanel settings.
@@ -159,9 +162,6 @@ public class GamePanel extends JPanel implements Runnable {
         // Calls the AssetSetter to place destructive tiles.
         aSetter.setInteractiveTile();
 
-        // Start playing background music (index 0 in the sound array).
-        playMusic(0);
-
         // Set default state to title state.
         gameState = titleState;
 
@@ -169,7 +169,7 @@ public class GamePanel extends JPanel implements Runnable {
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB_PRE);
         // Creates a graphics context from the temporary screen
         g2 = (Graphics2D) tempScreen.getGraphics();
-        setFullScreen();   // Calls method to enable full-screen mode
+        //setFullScreen();   // Calls method to enable full-screen mode
     }
 
     // Activates full-screen mode and adjusts screen dimensions accordingly

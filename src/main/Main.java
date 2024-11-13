@@ -20,7 +20,7 @@ public class Main {
         // Set the title of the window
         window.setTitle("2D Adventure");
 
-        window.setUndecorated(true);
+        //window.setUndecorated(true);
 
         // Create an instance of GamePanel, which contains the game logic and rendering
         GamePanel gamePanel = new GamePanel();

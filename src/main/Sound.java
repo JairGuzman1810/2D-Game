@@ -3,6 +3,7 @@ package main;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,15 @@ public class Sound {
 
     // Array to store URLs of different sound files used in the game.
     URL[] soundURL = new URL[30];
+
+    // Controls audio volume at the system level.
+    FloatControl fc;
+
+    // Volume level scale (0 to 5), default set to medium.
+    int volumeScale = 3;
+
+    // Volume in dB based on volumeScale, adjusted in checkVolume().
+    float volume;
 
     // Constructor to initialize sound URLs.
     public Sound() {
@@ -67,7 +77,9 @@ public class Sound {
             AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
             clip = AudioSystem.getClip(); // Get a Clip instance for playback.
             clip.open(ais); // Open the audio stream in the Clip.
-
+            // Sets FloatControl for volume adjustment on the clip and applies the current volume.
+            fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            checkVolume();
         } catch (Exception e) {
             // Log a warning if the sound file could not be loaded or played.
             logger.log(Level.WARNING, "Sound not found!", e);
@@ -87,5 +99,32 @@ public class Sound {
     // Stops the playback of the currently playing sound.
     public void stop() {
         clip.stop();
+    }
+
+    // Adjusts volume based on volumeScale (0 = mute, 5 = max).
+    public void checkVolume() {
+        switch (volumeScale) {
+            case 0:
+                volume = -80f; // Mute
+                break;
+            case 1:
+                volume = -20f; // Low volume
+                break;
+            case 2:
+                volume = -12f; // Moderate volume
+                break;
+            case 3:
+                volume = -5f;  // Default volume level
+                break;
+            case 4:
+                volume = 1f;   // High volume
+                break;
+            case 5:
+                volume = 6f;   // Maximum volume
+                break;
+        }
+
+        // Applies calculated volume to FloatControl.
+        fc.setValue(volume);
     }
 }
