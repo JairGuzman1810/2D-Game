@@ -55,7 +55,8 @@ public class KeyHandler implements KeyListener {
             handleCharacterState(keyCode, isPressed);   // Handle key events for the character stats state
         } else if (gp.gameState == gp.optionsState) {   // Check if the game is in the options state
             handleOptionsState(keyCode, isPressed);     // Handle key events for the options state
-
+        } else if (gp.gameState == gp.gameOverState) {  // Check if the game is in the game over state
+            handleGameOverState(keyCode, isPressed);     // Handle key events for the options state
         }
     }
 
@@ -225,6 +226,45 @@ public class KeyHandler implements KeyListener {
             gp.playSE(9);                                  // Play sound effect to confirm change
         }
     }
+
+    // Handles key events in the "Game Over" state, allowing the user to navigate options and select actions
+    private void handleGameOverState(int keyCode, boolean isPressed) {
+        // Only process the key events when the key is pressed down
+        if (isPressed) {
+            switch (keyCode) {
+                // If the 'W' key is pressed, move up in the command menu
+                case KeyEvent.VK_W -> {
+                    // Decrement commandNum (wraps around to 1 if it goes below 0)
+                    gp.ui.commandNum = (gp.ui.commandNum - 1 + 2) % 2;
+                    gp.playSE(9);  // Play a sound effect to confirm the action
+                }
+
+                // If the 'S' key is pressed, move down in the command menu
+                case KeyEvent.VK_S -> {
+                    // Increment commandNum (wraps around to 0 if it exceeds 1)
+                    gp.ui.commandNum = (gp.ui.commandNum + 1) % 2;
+                    gp.playSE(9);  // Play a sound effect to confirm the action
+                }
+
+                // If the 'Enter' key is pressed, perform the action corresponding to the selected option
+                case KeyEvent.VK_ENTER -> {
+                    // Execute action based on the currently selected command (commandNum)
+                    if (gp.ui.commandNum == 0) {
+                        // If commandNum is 0, restart the game
+                        gp.gameState = gp.playState;  // Transition to play state
+                        gp.retry();  // Reset the game state and start a new game
+
+                    } else if (gp.ui.commandNum == 1) {
+                        // If commandNum is 1, return to the title screen
+                        gp.gameState = gp.titleState;  // Transition to title state
+                        gp.stopMusic();  // Stop the background music
+                        gp.restart();  // Reset the game to its initial state
+                    }
+                }
+            }
+        }
+    }
+
 
     // Method to reset all movement keys to false
     public void resetKeyStates() {

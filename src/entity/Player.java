@@ -61,6 +61,24 @@ public class Player extends Entity {
         setItems();
     }
 
+    // Sets the player's starting position in the world (worldX, worldY) in tile units.
+    // This position is calculated based on the tile size, placing the player at a specific point on the map.
+    public void setDefaultPosition() {
+        worldX = gp.tileSize * 23;  // Sets the player's world X position.
+        worldY = gp.tileSize * 21;  // Sets the player's world Y position.
+
+        // Sets the player's initial movement direction to "down".
+        direction = "down";
+    }
+
+    // Restores the player's life and mana to their maximum values, essentially healing the player.
+    // It also disables invincibility, allowing the player to take damage again.
+    public void restoreLifeAndMana() {
+        life = maxLife;  // Restore the player's health to the maximum.
+        mana = maxMana;  // Restore the player's mana to the maximum.
+        invincible = false;  // Disable invincibility, allowing the player to take damage.
+    }
+
     // Sets the default values for the player's position and speed.
     public void setDefaultValues() {
         // Player's starting position in the world (worldX, worldY) in tile units.
@@ -96,6 +114,10 @@ public class Player extends Entity {
 
     // Sets the initial items for the player's inventory.
     public void setItems() {
+
+        // Clears any items already in the player's inventory.
+        inventory.clear();
+
         // Adds the current weapon to the inventory.
         inventory.add(currentWeapon);
 
@@ -291,6 +313,12 @@ public class Player extends Entity {
         // Ensure that the player's mana does not exceed the maximum limit (When using a potion or pick up a crystal).
         mana = Math.min(mana, maxMana);
 
+        // Checks if the player's life has dropped to 0 or below.
+        // If so, it triggers the game over state and plays a sound effect for game over.
+        if (life <= 0) {
+            gp.gameState = gp.gameOverState;  // Changes the game state to the game over state.
+            gp.playSE(12);  // Plays the game over sound effect.
+        }
     }
 
     // Controls the attack animation by toggling between two frames.

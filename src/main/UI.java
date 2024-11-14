@@ -124,6 +124,9 @@ public class UI {
         } else if (gp.gameState == gp.optionsState) {
             // Draw the character options screen when the game is in option state.
             drawOptionsScreen();
+        } else if (gp.gameState == gp.gameOverState) {
+            // Draw the game over screen when the game is in game over state.
+            drawGameOverScreen();
         }
     }
 
@@ -307,27 +310,28 @@ public class UI {
         }
     }
 
-    // Draws the character screen for displaying stats of the character in the game.
+    // Draws the character screen displaying the player's stats, including health, mana, and abilities.
     public void drawCharacterScreen() {
-        // Define the position and size of the dialogue window.
-        int x = gp.tileSize * 2; // X position with padding from the left.
-        int y = gp.tileSize;  // Y position with padding from the top.
+        // Define the position and size of the character information window.
+        int x = gp.tileSize * 2; // X position with padding from the left edge of the screen.
+        int y = gp.tileSize;  // Y position with padding from the top of the screen.
 
-        int width = gp.tileSize * 5; // Width of the dialogue window.
-        int height = gp.tileSize * 10; // Height of the dialogue window.
+        int width = gp.tileSize * 5; // Width of the character stats window.
+        int height = gp.tileSize * 10; // Height of the character stats window.
 
-        // Draw the sub-window for the dialogue.
+        // Draw the sub-window for displaying character stats.
         drawSubWindow(x, y, width, height);
 
-        // Stats
+        // Set the font and color for displaying text in the character screen.
         g2.setColor(Color.white);
         g2.setFont(g2.getFont().deriveFont(32F));
 
+        // Define the starting position for the text labels.
         int textX = x + 20;
         int textY = y + gp.tileSize;
         final int lineHeight = 35;
 
-        // Labels
+        // Display the labels for character stats (Level, Life, Mana, etc.)
         g2.drawString("Level", textX, textY);
         textY += lineHeight;
         g2.drawString("Life", textX, textY);
@@ -352,67 +356,68 @@ public class UI {
         textY += lineHeight + 15;
         g2.drawString("Shield", textX, textY);
 
-        // Values
-        int tailX = x + width - 30;
-        // Reset textY
-        textY = y + gp.tileSize;
+        // Define the position for displaying the corresponding values of the character stats.
+        int tailX = x + width - 30;  // X position for aligning the values to the right.
+        textY = y + gp.tileSize;  // Reset the Y position for the values.
+
+        // Display the values for each stat next to the corresponding label.
         String value;
 
-        value = String.valueOf(gp.player.level);
+        value = String.valueOf(gp.player.level); // Level value
+        textX = getXForAlignToRight(value, tailX); // Align value to the right
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+
+        value = gp.player.life + "/" + gp.player.maxLife; // Life value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = gp.player.life + "/" + gp.player.maxLife;
+        value = gp.player.mana + "/" + gp.player.maxMana; // Mana value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = gp.player.mana + "/" + gp.player.maxMana;
+        value = String.valueOf(gp.player.strength); // Strength value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.strength);
+        value = String.valueOf(gp.player.dexterity); // Dexterity value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.dexterity);
+        value = String.valueOf(gp.player.attack); // Attack value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.attack);
+        value = String.valueOf(gp.player.defense); // Defense value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.defense);
+        value = String.valueOf(gp.player.exp); // EXP value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.exp);
+        value = String.valueOf(gp.player.nextLevelExp); // Next level EXP value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.nextLevelExp);
+        value = String.valueOf(gp.player.coin); // Coins value
         textX = getXForAlignToRight(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
 
-        value = String.valueOf(gp.player.coin);
-        textX = getXForAlignToRight(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-
+        // Display the player's weapon and shield images.
         g2.drawImage(gp.player.currentWeapon.down1, tailX - gp.tileSize, textY - 24, null);
         textY += gp.tileSize;
 
         g2.drawImage(gp.player.currentShield.down1, tailX - gp.tileSize, textY - 24, null);
-
     }
 
     // Draws the player's inventory, including item slots,
@@ -756,6 +761,51 @@ public class UI {
                 subState = 0;  // Reset subState
                 commandNum = 4;  // Reset commandNum to a previous value (or default)
             }
+        }
+    }
+
+    // Draws the game over screen with an option to retry or quit to the title screen.
+    public void drawGameOverScreen() {
+        // Draw a semi-transparent black overlay to dim the screen during the game over state.
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        int x;
+        int y;
+        String text;
+
+        // Set the font and size for the game over text.
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 110f));
+
+        text = "Game Over"; // Game over message text
+        // Shadow effect for the "Game Over" text
+        g2.setColor(Color.black);
+        x = getXForCenteredText(text); // Center the text horizontally on the screen
+        y = gp.tileSize * 4; // Set the Y position below the top of the screen
+        g2.drawString(text, x, y);
+        // Main text color
+        g2.setColor(Color.white);
+        g2.drawString(text, x - 4, y - 4); // Draw the main "Game Over" text slightly offset to create a shadow effect
+
+        // Set the font and size for the retry option.
+        g2.setFont(g2.getFont().deriveFont(50f));
+        text = "Retry"; // Retry option text
+        x = getXForCenteredText(text); // Center the retry option text
+        y += gp.tileSize * 4; // Set the Y position below the "Game Over" text
+        g2.drawString(text, x, y); // Draw the "Retry" text
+        // Highlight the selected option (if commandNum == 0, show the ">" symbol).
+        if (commandNum == 0) {
+            g2.drawString(">", x - 40, y); // Draw a pointer to indicate the selected option
+        }
+
+        // Draw the "Quit" option text for exiting to the title screen.
+        text = "Quit"; // Quit option text
+        x = getXForCenteredText(text); // Center the quit option text
+        y += 55; // Set the Y position below the retry option
+        g2.drawString(text, x, y); // Draw the "Quit" text
+        // Highlight the selected option (if commandNum == 1, show the ">" symbol).
+        if (commandNum == 1) {
+            g2.drawString(">", x - 40, y); // Draw a pointer to indicate the selected option
         }
     }
 

@@ -117,7 +117,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int characterState = 4;
     // Constant for options state.
     public final int optionsState = 5;
-
+    // Constant for game over state.
+    public final int gameOverState = 6;
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
@@ -177,6 +178,38 @@ public class GamePanel extends JPanel implements Runnable {
         if (fullScreenOn) {
             setFullScreen();   // Calls method to enable full-screen mode.
         }
+    }
+
+    // Resets the player's position, life, and mana to their default values without restarting the entire game.
+// NPCs and monsters are also reset in their positions.
+    public void retry() {
+        player.setDefaultPosition();  // Set player back to the default starting position.
+        player.restoreLifeAndMana();  // Restore player's life and mana to maximum levels.
+
+        // Reset NPCs to their initial positions
+        aSetter.setNPC();
+
+        // Reset monsters to their initial positions
+        aSetter.setMonster();
+    }
+
+    // Resets the game state entirely, including player attributes, inventory, objects, NPCs, monsters, and interactive tiles.
+// This is equivalent to restarting the game.
+    public void restart() {
+        player.setDefaultValues();  // Reset player's life, mana, and other default attributes.
+        player.setItems();  // Reset player's inventory to default items.
+
+        // Reset all objects in the game world
+        aSetter.setObject();
+
+        // Reset NPCs to their initial positions
+        aSetter.setNPC();
+
+        // Reset monsters to their initial positions
+        aSetter.setMonster();
+
+        // Reset interactive tiles to their default state (e.g., traps, destructibles)
+        aSetter.setInteractiveTile();
     }
 
     // Activates full-screen mode and adjusts screen dimensions accordingly

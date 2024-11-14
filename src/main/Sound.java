@@ -67,6 +67,9 @@ public class Sound {
 
         // Index 11: Chopping tree sound.
         soundURL[11] = getClass().getResource("/sound/cuttree.wav");
+
+        // Index 12: Game over sound.
+        soundURL[12] = getClass().getResource("/sound/gameover.wav");
     }
 
 
