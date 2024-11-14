@@ -28,6 +28,15 @@ public class Main {
         // Add the GamePanel to the JFrame
         window.add(gamePanel);
 
+        // Load saved configuration settings, such as full-screen mode preference
+        gamePanel.config.loadConfig();
+
+        // If full-screen mode is enabled in the configuration, remove window decorations
+        if (gamePanel.fullScreenOn) {
+            window.setUndecorated(true);
+        }
+
+
         // Pack the components within the window, sizing it to fit the preferred sizes of its components
         window.pack();
 

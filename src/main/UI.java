@@ -611,6 +611,9 @@ public class UI {
         g2.drawRect(textX, textY, 120, 24); // Outline of SE volume bar
         volumeWidth = 24 * gp.se.volumeScale; // Width based on SE volume scale
         g2.fillRect(textX, textY, volumeWidth, 24); // Fill based on current volume
+
+        // Save game configuration settings.
+        gp.config.saveConfig();
     }
 
     // Displays a notification informing the player that the full screen change
@@ -676,7 +679,6 @@ public class UI {
         textY += gp.tileSize;  // Move down for the next option
 
         g2.drawString("Options", textX, textY);  // Draw the action "Options"
-        textY += gp.tileSize;  // Move down for the next option
 
         // Set position for the key mappings
         textX = frameX + gp.tileSize * 6;  // Adjust X for the key display area

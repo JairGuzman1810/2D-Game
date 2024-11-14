@@ -71,6 +71,9 @@ public class GamePanel extends JPanel implements Runnable {
     // Manages interactive events like damage zones, healing zones, and teleportation within the game world.
     public EventHandler eHandler = new EventHandler(this);
 
+    // Configuration manager to handle game settings.
+    Config config = new Config(this);
+
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
@@ -169,7 +172,11 @@ public class GamePanel extends JPanel implements Runnable {
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB_PRE);
         // Creates a graphics context from the temporary screen
         g2 = (Graphics2D) tempScreen.getGraphics();
-        //setFullScreen();   // Calls method to enable full-screen mode
+
+        // If full-screen mode is enabled, it calls the method to switch to full screen.
+        if (fullScreenOn) {
+            setFullScreen();   // Calls method to enable full-screen mode.
+        }
     }
 
     // Activates full-screen mode and adjusts screen dimensions accordingly
