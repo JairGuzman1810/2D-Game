@@ -317,6 +317,8 @@ public class Player extends Entity {
         // If so, it triggers the game over state and plays a sound effect for game over.
         if (life <= 0) {
             gp.gameState = gp.gameOverState;  // Changes the game state to the game over state.
+            gp.ui.commandNum = -1; // Unselect the option.
+            gp.stopMusic();  // Stop the background music.
             gp.playSE(12);  // Plays the game over sound effect.
         }
     }
@@ -382,15 +384,15 @@ public class Player extends Entity {
             String text;
 
             // If the object is of type "pickup only," it cannot be added to the inventory and is used immediately.
-            if (gp.obj[i].type == type_pickupOnly) {
-                gp.obj[i].use(this); // Trigger immediate use of the object (e.g., health or mana pickup).
+            if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {
+                gp.obj[gp.currentMap][i].use(this); // Trigger immediate use of the object (e.g., health or mana pickup).
 
             } else {
                 // Inventory items can be stored if there's space available.
                 if (inventory.size() != maxInventorySize) {
-                    inventory.add(gp.obj[i]);  // Add the object to the inventory list.
+                    inventory.add(gp.obj[gp.currentMap][i]);  // Add the object to the inventory list.
                     gp.playSE(1);              // Play a pickup sound effect to confirm the action.
-                    text = "Got a " + gp.obj[i].name + "!";  // Show a message with the item's name to the player.
+                    text = "Got a " + gp.obj[gp.currentMap][i].name + "!";  // Show a message with the item's name to the player.
                 } else {
                     // Notify the player when inventory is full and can't carry more items.
                     text = "You cannot carry more items!";
@@ -400,7 +402,7 @@ public class Player extends Entity {
                 gp.ui.addMessage(text);
             }
             // Remove the object from the world since it has been picked up.
-            gp.obj[i] = null;
+            gp.obj[gp.currentMap][i] = null;
         }
     }
 
@@ -411,7 +413,7 @@ public class Player extends Entity {
         if (i != 999 && gp.keyH.enterPressed) {
             attackCancel = true; // Prevent the player from attacking during the dialogue.
             gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
-            gp.npc[i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
+            gp.npc[gp.currentMap][i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
         }
     }
 
@@ -421,22 +423,22 @@ public class Player extends Entity {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.
-            if (!gp.monster[i].invincible) {
+            if (!gp.monster[gp.currentMap][i].invincible) {
                 gp.playSE(5); // Play sound effect indicating a hit on the monster
 
                 // Calculates the damage dealt, ensuring it is at least zero (if defense is higher).
-                int damage = Math.max(attack - gp.monster[i].defense, 0);
+                int damage = Math.max(attack - gp.monster[gp.currentMap][i].defense, 0);
                 gp.ui.addMessage(damage + " damage!"); // Display the amount of damage dealt to the monster
-                gp.monster[i].life -= damage; // Reduce the monster's life by the damage amount
-                gp.monster[i].invincible = true; // Set invincibility to prevent further hits
-                gp.monster[i].damageReaction(); // Trigger the monster's reaction to damage
+                gp.monster[gp.currentMap][i].life -= damage; // Reduce the monster's life by the damage amount
+                gp.monster[gp.currentMap][i].invincible = true; // Set invincibility to prevent further hits
+                gp.monster[gp.currentMap][i].damageReaction(); // Trigger the monster's reaction to damage
 
                 // Mark the monster as dying if its life reaches zero or below
-                if (gp.monster[i].life <= 0) {
-                    gp.monster[i].dying = true;
-                    gp.ui.addMessage("Killed the " + gp.monster[i].name + "!"); // Display a message indicating the monster was killed
-                    gp.ui.addMessage("Exp +" + gp.monster[i].exp); // Display experience gained
-                    exp += gp.monster[i].exp; // Add monster's experience points to player
+                if (gp.monster[gp.currentMap][i].life <= 0) {
+                    gp.monster[gp.currentMap][i].dying = true;
+                    gp.ui.addMessage("Killed the " + gp.monster[gp.currentMap][i].name + "!"); // Display a message indicating the monster was killed
+                    gp.ui.addMessage("Exp +" + gp.monster[gp.currentMap][i].exp); // Display experience gained
+                    exp += gp.monster[gp.currentMap][i].exp; // Add monster's experience points to player
                     checkLevelUp(); // Check if player has leveled up
                 }
             }
@@ -448,23 +450,23 @@ public class Player extends Entity {
 
         // Check if there is a valid interactive tile at index i that is destructible,
         // can be damaged by the player's current item, and is not currently invincible.
-        if (i != 999 && gp.iTile[i].destructible && gp.iTile[i].isCorrectItem(this) && !gp.iTile[i].invincible) {
+        if (i != 999 && gp.iTile[gp.currentMap][i].destructible && gp.iTile[gp.currentMap][i].isCorrectItem(this) && !gp.iTile[gp.currentMap][i].invincible) {
 
             // Play the tile's sound effect for taking damage.
-            gp.iTile[i].playSE();
+            gp.iTile[gp.currentMap][i].playSE();
 
             // Decrease the tile's life by 1.
-            gp.iTile[i].life--;
+            gp.iTile[gp.currentMap][i].life--;
 
             // Set the tile to invincible to prevent immediate consecutive hits.
-            gp.iTile[i].invincible = true;
+            gp.iTile[gp.currentMap][i].invincible = true;
 
             // Generate particles.
-            generateParticle(gp.iTile[i], gp.iTile[i]);
+            generateParticle(gp.iTile[gp.currentMap][i], gp.iTile[gp.currentMap][i]);
 
             // If the tile's life reaches zero, replace it with its destroyed variant.
-            if (gp.iTile[i].life == 0) {
-                gp.iTile[i] = gp.iTile[i].getDestroyedVariant();
+            if (gp.iTile[gp.currentMap][i].life == 0) {
+                gp.iTile[gp.currentMap][i] = gp.iTile[gp.currentMap][i].getDestroyedVariant();
             }
         }
     }
@@ -492,9 +494,9 @@ public class Player extends Entity {
         // Verify if a monster is found at the collision point (999 indicates no monster present).
         if (i != 999) {
             // If the player is not invincible, reduce life and activate invincibility.
-            if (!invincible && !gp.monster[i].dying) {
+            if (!invincible && !gp.monster[gp.currentMap][i].dying) {
                 gp.playSE(6); // Play sound effect receive damage
-                int damage = Math.max(gp.monster[i].attack - defense, 0);
+                int damage = Math.max(gp.monster[gp.currentMap][i].attack - defense, 0);
                 life -= damage;
                 invincible = true; // Set invincibility to prevent immediate further damage.
             }

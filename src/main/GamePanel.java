@@ -42,6 +42,8 @@ public class GamePanel extends JPanel implements Runnable {
     // The total number of tile columns and rows in the entire game world.
     public final int maxWorldCol = 50;  // 50 columns of tiles in the world.
     public final int maxWorldRow = 50;  // 50 rows of tiles in the world.
+    public final int maxMap = 10;       // The maximum number of maps in the game.
+    public int currentMap = 0;          // Tracks the index of the current map being displayed and interacted with.
 
     // Frames per second (FPS) target for smooth gameplay.
     int FPS = 60;  // The game loop will aim to run at 60 frames per second.
@@ -82,19 +84,19 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
 
     // Array to hold the game objects, such as keys, doors, and chests.
-    public Entity[] obj = new Entity[20];
+    public Entity[][] obj = new Entity[maxMap][20];
 
     // Array to hold the game NPCs.
-    public Entity[] npc = new Entity[10];
+    public Entity[][] npc = new Entity[maxMap][10];
 
     // Array to hold the game monsters.
-    public Entity[] monster = new Entity[20];
+    public Entity[][] monster = new Entity[maxMap][20];
 
     // ArrayList to hold all particles.
     public ArrayList<Entity> particleList = new ArrayList<>();
 
     // Array to hold the interactive tiles.
-    public InteractiveTile[] iTile = new InteractiveTile[50];
+    public InteractiveTile[][] iTile = new InteractiveTile[maxMap][50];
 
     // ArrayList to hold all projectiles for rendering in the correct order.
     public ArrayList<Entity> projectileList = new ArrayList<>();
@@ -271,80 +273,88 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // Update method to update the game state each frame.
+    // The update method is responsible for advancing the game state, including all game objects and entities.
     public void update() {
-        // Check if game is in play state to update the player.
+        // Check if the game is currently in the play state to determine if updates should occur.
         if (gameState == playState) {
-            player.update(); // Delegate the update to the player (handles player movement).
 
-            // Update all NPCs.
-            for (Entity entity : npc) {
-                if (entity != null) {
-                    entity.update(); // Calls the update method for each NPC.
+            // Update the player's state.
+            // This includes handling movement, interactions with objects, and any other player-specific logic.
+            player.update();
+
+            // Update all NPCs (non-playable characters) present on the current map.
+            for (int i = 0; i < npc[1].length; i++) {
+                // Check if an NPC exists in the current slot for the active map.
+                if (npc[currentMap][i] != null) {
+                    // Call the NPC's update method to handle its behavior for the current frame.
+                    npc[currentMap][i].update();
                 }
             }
 
-
-            // Iterate through the array of monsters to update their status and remove dead ones
-            for (int i = 0; i < monster.length; i++) {
-                // Check if the current monster slot is not empty
-                if (monster[i] != null) {
-
-                    // If the monster is alive and not in a dying state, update its behavior and position
-                    if (monster[i].alive && !monster[i].dying) {
-                        // Call the update method to handle the monster's actions, movements, and status changes
-                        monster[i].update();
+            // Update all monsters (enemies) present on the current map.
+            for (int i = 0; i < monster[1].length; i++) {
+                // Ensure that the monster slot in the current map is occupied.
+                if (monster[currentMap][i] != null) {
+                    // Only update monsters that are alive and not in the process of dying.
+                    if (monster[currentMap][i].alive && !monster[currentMap][i].dying) {
+                        // Call the monster's update method to manage its AI, movement, or attacks.
+                        monster[currentMap][i].update();
                     }
 
-                    // Check if the monster is no longer alive.
-                    // If dead, call `checkDrop()` to determine if it should drop an item, then remove it from the array.
-                    if (!monster[i].alive) {
-                        monster[i].checkDrop(); // Trigger item drop logic, if any.
-                        monster[i] = null;      // Remove the dead monster by setting its slot to null.
+                    // Handle cleanup for dead monsters.
+                    if (!monster[currentMap][i].alive) {
+                        // Execute any logic for dropping items or rewards from the dead monster.
+                        monster[currentMap][i].checkDrop();
+                        // Remove the monster by setting its slot to null, freeing up memory.
+                        monster[currentMap][i] = null;
                     }
                 }
             }
 
-            // Iterate through the array of projectiles in reverse to update their status and remove dead ones
+            // Iterate over all active projectiles (e.g., bullets, magic spells) to update and clean them up.
             for (int i = projectileList.size() - 1; i >= 0; i--) {
+                // Check if the projectile exists in the list.
                 if (projectileList.get(i) != null) {
-
-                    // If the projectile is alive, update its behavior and position
+                    // Update the projectile if it is still active and moving.
                     if (projectileList.get(i).alive) {
                         projectileList.get(i).update();
                     }
 
-                    // If the projectile is no longer alive, remove it from the list
+                    // Remove projectiles that are no longer alive from the list to conserve resources.
                     if (!projectileList.get(i).alive) {
                         projectileList.remove(i);
                     }
                 }
             }
 
-            // Iterate through the array of particles in reverse to update their status and remove dead ones
+            // Iterate over all active particles (e.g., visual effects like smoke or sparks) for updates and cleanup.
             for (int i = particleList.size() - 1; i >= 0; i--) {
+                // Ensure the particle exists before attempting to update it.
                 if (particleList.get(i) != null) {
-
-                    // If the particle is alive, update its behavior and position
+                    // Update the particle's animation or behavior if it is still active.
                     if (particleList.get(i).alive) {
                         particleList.get(i).update();
                     }
 
-                    // If the particle is no longer alive, remove it from the list
+                    // Remove particles that have finished their life cycle from the list.
                     if (!particleList.get(i).alive) {
                         particleList.remove(i);
                     }
                 }
             }
 
-            for (InteractiveTile interactiveTile : iTile) {
-                if (interactiveTile != null) {
-                    interactiveTile.update();
+            // Update all interactive tiles (e.g., switches, traps) on the current map.
+            for (int i = 0; i < iTile[1].length; i++) {
+                // Ensure the interactive tile exists in the current slot.
+                if (iTile[currentMap][i] != null) {
+                    // Call the update method for the interactive tile to handle its state or behavior.
+                    iTile[currentMap][i].update();
                 }
             }
 
         } else {
-            // Reset keys
+            // If the game is not in the play state (e.g., paused, in a menu),
+            // reset the states of all keys to prevent unwanted input.
             keyH.resetKeyStates();
         }
     }
@@ -371,30 +381,30 @@ public class GamePanel extends JPanel implements Runnable {
             tileM.draw(g2);
 
             // Draws the interactive tiles.
-            for (InteractiveTile interactiveTile : iTile) {
-                if (interactiveTile != null) { // Check if the entity is not null.
-                    interactiveTile.draw(g2);  // Draws the interactive tiles onto the Graphics2D context.
+            for (int i = 0; i < iTile[1].length; i++) {
+                if (iTile[currentMap][i] != null) { // Check if the entity is not null.
+                    iTile[currentMap][i].draw(g2);  // Draws the interactive tiles onto the Graphics2D context.
                 }
             }
 
             // Add entities to the list;
             entityList.add(player); // Add the player entity to the list.
 
-            for (Entity entity : npc) { // Iterate through the array of NPC entities.
-                if (entity != null) { // Check if the entity is not null.
-                    entityList.add(entity); // Add the non-null NPC to the entity list.
+            for (int i = 0; i < npc[1].length; i++) { // Iterate through the array of NPC entities.
+                if (npc[currentMap][i] != null) {  // Check if the entity is not null.
+                    entityList.add(npc[currentMap][i]); // Add the non-null NPC to the entity list.
                 }
             }
 
-            for (Entity entity : obj) { // Iterate through the array of game objects.
-                if (entity != null) { // Check if the entity is not null.
-                    entityList.add(entity); // Add the non-null game object to the entity list.
+            for (int i = 0; i < obj[1].length; i++) { // Iterate through the array of game objects.
+                if (obj[currentMap][i] != null) { // Check if the entity is not null.
+                    entityList.add(obj[currentMap][i]); // Add the non-null game object to the entity list.
                 }
             }
 
-            for (Entity entity : monster) { // Iterate through the array of monster entities.
-                if (entity != null) { // Check if the entity is not null.
-                    entityList.add(entity); // Add the non-null game monster to the entity list.
+            for (int i = 0; i < monster[1].length; i++) { // Iterate through the array of monster entities.
+                if (monster[currentMap][i] != null) { // Check if the entity is not null.
+                    entityList.add(monster[currentMap][i]); // Add the non-null game monster to the entity list.
                 }
             }
 

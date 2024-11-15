@@ -133,11 +133,11 @@ public class Entity {
     // Method to drop an item in the game world.
     // Finds the first empty slot in the object array and assigns the dropped item to it.
     public void dropItem(Entity droppedItem) {
-        for (int i = 0; i < gp.obj.length; i++) {
-            if (gp.obj[i] == null) {
-                gp.obj[i] = droppedItem;       // Place the item in the first available slot.
-                gp.obj[i].worldX = worldX;     // Set item's drop position to entity's worldX.
-                gp.obj[i].worldY = worldY;     // Set item's drop position to entity's worldY.
+        for (int i = 0; i < gp.obj[1].length; i++) {
+            if (gp.obj[gp.currentMap][i] == null) {
+                gp.obj[gp.currentMap][i] = droppedItem;       // Place the item in the first available slot.
+                gp.obj[gp.currentMap][i].worldX = worldX;     // Set item's drop position to entity's worldX.
+                gp.obj[gp.currentMap][i].worldY = worldY;     // Set item's drop position to entity's worldY.
                 break;
             }
         }

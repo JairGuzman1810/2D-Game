@@ -70,6 +70,9 @@ public class Sound {
 
         // Index 12: Game over sound.
         soundURL[12] = getClass().getResource("/sound/gameover.wav");
+
+        // Index 13: Stairs (change location) sound.
+        soundURL[13] = getClass().getResource("/sound/stairs.wav");
     }
 
 

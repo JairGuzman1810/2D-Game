@@ -253,7 +253,7 @@ public class KeyHandler implements KeyListener {
                         // If commandNum is 0, restart the game
                         gp.gameState = gp.playState;  // Transition to play state
                         gp.retry();  // Reset the game state and start a new game
-
+                        gp.playMusic(0);           // Start music
                     } else if (gp.ui.commandNum == 1) {
                         // If commandNum is 1, return to the title screen
                         gp.gameState = gp.titleState;  // Transition to title state

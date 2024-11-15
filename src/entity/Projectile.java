@@ -35,7 +35,7 @@ public class Projectile extends Entity {
             // Deactivate projectile if it hits a monster and inflict damage
             if (monsterIndex != 999) {
                 gp.player.damageMonster(monsterIndex, attack); // Inflict damage on the monster
-                generateParticle(entity.projectile, gp.monster[monsterIndex]); // Generate particles when projectile hit monster.
+                generateParticle(entity.projectile, gp.monster[gp.currentMap][monsterIndex]); // Generate particles when projectile hit monster.
                 alive = false;                                 // Deactivate projectile
             }
             // If projectile is launched by a monster, checks for contact with the player.

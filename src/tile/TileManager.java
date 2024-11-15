@@ -26,16 +26,17 @@ public class TileManager {
     public Tile[] tiles;
 
     // 2D array representing the map layout, where each element corresponds to a tile type.
-    public int[][] mapTileNum;
+    public int[][][] mapTileNum;
 
     // Constructor that initializes the TileManager with a reference to GamePanel.
     // It also prepares the tile images and loads the map layout.
     public TileManager(GamePanel gp) {
         this.gp = gp; // Assign the GamePanel reference to this TileManager instance.
         tiles = new Tile[50]; // Initialize the tile array with a fixed size (50 tiles).
-        mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow]; // Set up the map array based on the world dimensions.
+        mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow]; // Set up the map array based on the world dimensions.
         getTileImage(); // Load the tile images from resources.
-        loadMap("/maps/worldV3.txt"); // Load the map layout from a specified text file.
+        loadMap("/maps/worldV3.txt", 0); // Load the map layout from a specified text file.
+        loadMap("/maps/interior01.txt", 1); // Load the hut map.
     }
 
     // The getTileImage method loads the images for each type of tile from the resources.
@@ -94,6 +95,12 @@ public class TileManager {
         setup(39, "earth", false); // Earth tile with no collision properties.
         setup(40, "wall", true);   // Wall tile with collision properties.
         setup(41, "tree", true);   // Tree tile with collision properties.
+
+        setup(42, "hut", false);   // Hut tile with no collision properties.
+        setup(43, "floor01", false);   // Floor tile with no collision properties.
+        setup(44, "table01", true);   // Table tile with collision properties.
+
+
     }
 
 
@@ -121,7 +128,7 @@ public class TileManager {
 
     // The loadMap method reads a map layout from a specified text file.
     // It populates the mapTileNum array with the tile indices.
-    public void loadMap(String filePath) {
+    public void loadMap(String filePath, int map) {
         try {
             // Open the map file and read it line by line.
             InputStream is = getClass().getResourceAsStream(filePath);
@@ -140,7 +147,7 @@ public class TileManager {
 
                     int num = Integer.parseInt(numbers[col]); // Parse the tile index as an integer.
 
-                    mapTileNum[col][row] = num; // Store the tile index in the map array.
+                    mapTileNum[map][col][row] = num; // Store the tile index in the map array.
                     col++; // Move to the next column.
                 }
 
@@ -166,7 +173,7 @@ public class TileManager {
 
         // Loop through the mapTileNum array and draw each tile.
         while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
-            int tileNum = mapTileNum[worldCol][worldRow]; // Get the tile index for the current position.
+            int tileNum = mapTileNum[gp.currentMap][worldCol][worldRow]; // Get the tile index for the current position.
 
             // Calculate the world and screen coordinates for drawing the tile.
             int worldX = worldCol * gp.tileSize;
