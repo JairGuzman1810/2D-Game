@@ -31,5 +31,8 @@ public class OBJ_Axe extends Entity {
 
         // Provides a short description of the item, displayed in the inventory.
         description = "[" + name + "]\nA bit rusty but still \ncan cut some trees.";
+
+        // Sets the price in the in-game currency, determining its value for purchasing.
+        price = 75;
     }
 }

@@ -1,5 +1,6 @@
 package main;
 
+import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
 import object.OBJ_Axe;
@@ -39,6 +40,13 @@ public class AssetSetter {
         gp.npc[mapNum][0] = new NPC_OldMan(gp);
         gp.npc[mapNum][0].worldX = gp.tileSize * 21;
         gp.npc[mapNum][0].worldY = gp.tileSize * 21;
+
+        mapNum = 1;
+
+        // Set a Merchant at coordinates (21, 21) in the world.
+        gp.npc[mapNum][0] = new NPC_Merchant(gp);
+        gp.npc[mapNum][0].worldX = gp.tileSize * 12;
+        gp.npc[mapNum][0].worldY = gp.tileSize * 7;
     }
 
     // The setMonster method places various game monsters

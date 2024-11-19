@@ -31,5 +31,8 @@ public class OBJ_Sword_Normal extends Entity {
 
         // Provides a short description of the item, shown in the inventory.
         description = "[" + name + "]\n An old sword.";
+
+        // Sets the price in the in-game currency, determining its value for purchasing.
+        price = 20;
     }
 }

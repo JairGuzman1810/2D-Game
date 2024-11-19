@@ -1,5 +1,7 @@
 package main;
 
+import entity.Entity;
+
 // Handles game events such as damage pits, healing pools, and teleport tiles.
 // The EventHandler class manages these events by checking if the player collides with specific event locations.
 public class EventHandler {
@@ -14,6 +16,10 @@ public class EventHandler {
     int previousEventX, previousEventY;
     // Indicates if the player can trigger a new event, reset when moving away from last event.
     boolean canTouchEvent = false;
+
+    // Temporary variables to store target map, column, and row during a teleportation event.
+    // These values are used for transitioning the player to the specified location.
+    int tempMap, tempCol, tempRow;
 
     // Constructor initializes the EventHandler with the game environment and configures the event rectangle.
     public EventHandler(GamePanel gp) {
@@ -69,6 +75,7 @@ public class EventHandler {
             else if (hit(0, 23, 12, "up")) healingPool(gp.dialogueState); // Healing pool event.
             else if (hit(0, 10, 40, "any")) teleport(1, 12, 13); // Teleport event.
             else if (hit(1, 12, 13, "any")) teleport(0, 10, 40); // Teleport event.
+            else if (hit(1, 12, 9, "up")) speak(gp.npc[1][0]); // Initiate dialogue with an NPC when facing up.
         }
     }
 
@@ -108,16 +115,14 @@ public class EventHandler {
         return hit; // Returns true if an event was triggered, false otherwise.
     }
 
-    // Triggers the teleport event, moving the player to a new map.
+    // Triggers the teleport event, moving the player to a new map and position.
     public void teleport(int map, int col, int row) {
-        gp.currentMap = map;
-        gp.player.worldX = gp.tileSize * col; // New X position for player.
-        gp.player.worldY = gp.tileSize * row; // New Y position for player.
-        previousEventX = gp.player.worldX;
-        previousEventY = gp.player.worldY;
-        gp.playSE(13);
-        // Temporarily disables further event triggering until player moves away.
-        canTouchEvent = false;
+        gp.gameState = gp.transitionState; // Change the game state to a transition state.
+        tempMap = map; // Store the target map for the teleportation.
+        tempCol = col; // Store the target column for the teleportation.
+        tempRow = row; // Store the target row for the teleportation.
+        canTouchEvent = false; // Prevent further events until the player moves away.
+        gp.playSE(13); // Play the sound effect for teleportation.
     }
 
     // Triggers the damage pit event, reducing player life by one.
@@ -140,6 +145,16 @@ public class EventHandler {
             gp.ui.currentDialogue = "You drink the water. \n Your HP has been recovered."; // Healing dialogue.
             gp.player.life = gp.player.maxLife; // Restore player's life to maximum.
             gp.aSetter.setMonster(); // Respawn the monster
+        }
+    }
+
+    // Initiates a dialogue with the specified NPC entity.
+    // This is triggered when the player presses the "enter" key while near the NPC.
+    public void speak(Entity entity) {
+        if (gp.keyH.enterPressed) { // Check if the "enter" key is pressed.
+            gp.gameState = gp.dialogueState; // Change the game state to dialogue mode.
+            gp.player.attackCancel = true; // Cancel any ongoing attack animations.
+            entity.speak(); // Trigger the NPC's specific dialogue logic.
         }
     }
 }

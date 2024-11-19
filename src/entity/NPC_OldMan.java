@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 
+import java.awt.*;
 import java.util.Random;
 
 // NPC_OldMan represents an NPC character that simulates an old man within the game.
@@ -16,6 +17,15 @@ public class NPC_OldMan extends Entity {
 
         direction = "down"; // Sets the initial direction for the NPC to "down".
         speed = 1;          // Sets the movement speed of the NPC.
+
+        // Define the solid area for the old man, which will be used for collision detection.
+        solidArea = new Rectangle();
+        solidArea.x = 8;  // Offset of the solid area within the player's sprite.
+        solidArea.y = 16; // Offset within the sprite.
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+        solidArea.width = 32;  // Width of the player collision area.
+        solidArea.height = 32; // Height of the player collision area.
 
         getImage(); // Loads images for the NPC's directional movement animations.
 

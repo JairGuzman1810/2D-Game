@@ -31,6 +31,9 @@ public class OBJ_Potion_Red extends Entity {
 
         // Provides a short description of the item, displayed in the inventory.
         description = "[" + name + "]\nHeals your life by " + value + ".";
+
+        // Sets the price in the in-game currency, determining its value for purchasing.
+        price = 25;
     }
 
     @Override

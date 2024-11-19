@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,6 +76,8 @@ public class Entity {
     public int exp;              // Experience points accumulated by the entity.
     public int nextLevelExp;     // Experience required to reach the next level.
     public int coin;             // Number of coins the entity currently has (for purchasing items, etc.).
+    public ArrayList<Entity> inventory = new ArrayList<>();         // Inventory list that holds items collected by the entity, such as weapons, shields, etc.
+    public final int maxInventorySize = 20;                         // Maximum number of items that the entity can carry in the inventory.
     // Equipment
     public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
     public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
@@ -91,6 +94,7 @@ public class Entity {
     public String description = "";     // A brief description of the item, which can be displayed in the inventory.
     public int useCost;                 // The resource cost for using this item (mana for projectiles).
     public int value;                   // Value of the item (like in healing or money)
+    public int price;                   // The price of the item, used in the trading system to determine its cost for purchasing.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
@@ -239,8 +243,8 @@ public class Entity {
         // Increment spriteCounter to control the animation frame rate.
         spriteCounter++;
 
-        // Toggle between two sprites every 12 frames to create walking animation.
-        if (spriteCounter > 12) {
+        // Toggle between two sprites every 24 frames to create walking animation.
+        if (spriteCounter > 24) {
             spriteNum = (spriteNum == 1) ? 2 : 1;
             spriteCounter = 0;
         }

@@ -9,7 +9,6 @@ import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 // The Player class extends the Entity class, inheriting common attributes like position and speed.
 // It adds specific logic for handling player movement, drawing, and now, collision detection and object interaction.
@@ -28,12 +27,6 @@ public class Player extends Entity {
     // Indicates whether an attack can be canceled, such as when interacting with an NPC.
     public boolean attackCancel = false;
 
-    // Inventory list that holds items collected by the player, such as weapons, shields, etc.
-    public ArrayList<Entity> inventory = new ArrayList<>();
-
-    // Maximum number of items that the player can carry in the inventory.
-    public final int maxInventorySize = 20;
-
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
@@ -47,7 +40,7 @@ public class Player extends Entity {
         // Define the solid area for the player, which will be used for collision detection.
         solidArea = new Rectangle();
         solidArea.x = 8;  // Offset of the solid area within the player's sprite.
-        solidArea.y = 16; // Offset within the sprite.
+        solidArea.y = 14; // Offset within the sprite.
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;  // Width of the player collision area.
@@ -504,10 +497,10 @@ public class Player extends Entity {
     }
 
     // Selects an item from the inventory and handles its use or equipping.
-// This method checks the type of the selected item and applies the appropriate effect, such as equipping it or using it.
+    // This method checks the type of the selected item and applies the appropriate effect, such as equipping it or using it.
     public void selectItem() {
         // Get the index of the item selected in the inventory slot from the UI
-        int itemIndex = gp.ui.getItemIndexOnSlot();
+        int itemIndex = gp.ui.getItemIndexOnSlot(gp.ui.playerSlotCol, gp.ui.playerSlotRow);
 
         // Check if the selected index is valid (within bounds of the inventory)
         if (itemIndex < inventory.size()) {

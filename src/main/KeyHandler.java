@@ -56,7 +56,9 @@ public class KeyHandler implements KeyListener {
         } else if (gp.gameState == gp.optionsState) {   // Check if the game is in the options state
             handleOptionsState(keyCode, isPressed);     // Handle key events for the options state
         } else if (gp.gameState == gp.gameOverState) {  // Check if the game is in the game over state
-            handleGameOverState(keyCode, isPressed);     // Handle key events for the options state
+            handleGameOverState(keyCode, isPressed);    // Handle key events for the game over state
+        } else if (gp.gameState == gp.tradeState) {     // Check if the game is in the trade state
+            handleTradeState(keyCode, isPressed);       // Handle key events for the trade state
         }
     }
 
@@ -137,27 +139,9 @@ public class KeyHandler implements KeyListener {
             switch (keyCode) {
                 case KeyEvent.VK_C ->
                         gp.gameState = gp.playState; // Pressing 'C' exits character state and returns to play state
-                case KeyEvent.VK_W -> { // Pressing 'W' moves the slot selector up
-                    gp.ui.slotRow--; // Decrease row index to move up
-                    if (gp.ui.slotRow < 0) gp.ui.slotRow = 3; // Wrap to bottom if it goes above the limit
-                    gp.playSE(9); // Play sound effect for slot movement
-                }
-                case KeyEvent.VK_S -> { // Pressing 'S' moves the slot selector down
-                    gp.ui.slotRow++; // Increase row index to move down
-                    if (gp.ui.slotRow > 3) gp.ui.slotRow = 0; // Wrap to top if it exceeds the limit
-                    gp.playSE(9); // Play sound effect for slot movement
-                }
-                case KeyEvent.VK_A -> { // Pressing 'A' moves the slot selector left
-                    gp.ui.slotCol--; // Decrease column index to move left
-                    if (gp.ui.slotCol < 0) gp.ui.slotCol = 4; // Wrap to right if it goes beyond the limit
-                    gp.playSE(9); // Play sound effect for slot movement
-                }
-                case KeyEvent.VK_D -> { // Pressing 'D' moves the slot selector right
-                    gp.ui.slotCol++; // Increase column index to move right
-                    if (gp.ui.slotCol > 4) gp.ui.slotCol = 0; // Wrap to left if it exceeds the limit
-                    gp.playSE(9); // Play sound effect for slot movement
-                }
-                case KeyEvent.VK_ENTER -> gp.player.selectItem();
+                case KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D ->
+                        handlePlayerSlotMovement(keyCode); // Handle player slot movement
+                case KeyEvent.VK_ENTER -> gp.player.selectItem(); // Select an item
             }
         }
     }
@@ -245,7 +229,6 @@ public class KeyHandler implements KeyListener {
                     gp.ui.commandNum = (gp.ui.commandNum + 1) % 2;
                     gp.playSE(9);  // Play a sound effect to confirm the action
                 }
-
                 // If the 'Enter' key is pressed, perform the action corresponding to the selected option
                 case KeyEvent.VK_ENTER -> {
                     // Execute action based on the currently selected command (commandNum)
@@ -265,6 +248,113 @@ public class KeyHandler implements KeyListener {
         }
     }
 
+    // Handles key events in the "Trade" state, enabling navigation and actions based on the current substate
+    private void handleTradeState(int keyCode, boolean isPressed) {
+        // Only process the key events when the key is pressed down
+        if (isPressed) {
+            // Substate 0: Main trade menu navigation
+            if (gp.ui.subState == 0) {
+                switch (keyCode) {
+                    case KeyEvent.VK_W -> {
+                        // Move up in the command menu; wraps to the last option if at the top
+                        gp.ui.commandNum = (gp.ui.commandNum - 1 + 3) % 3;
+                        gp.playSE(9);  // Play sound effect for menu navigation
+                    }
+                    case KeyEvent.VK_S -> {
+                        // Move down in the command menu; wraps to the first option if at the bottom
+                        gp.ui.commandNum = (gp.ui.commandNum + 1) % 3;
+                        gp.playSE(9);  // Play sound effect for menu navigation
+                    }
+                    case KeyEvent.VK_ENTER -> // Mark the "Enter" key as pressed to perform the selected action
+                            enterPressed = true;
+                }
+            }
+            // Substate 1: NPC inventory navigation
+            else if (gp.ui.subState == 1) {
+                handleNPCSlotMovement(keyCode); // Manage NPC slot navigation
+                switch (keyCode) {
+                    case KeyEvent.VK_ESCAPE -> // Return to the main trade menu
+                            gp.ui.subState = 0;
+                    case KeyEvent.VK_ENTER -> // Mark the "Enter" key as pressed to select the current slot/item
+                            enterPressed = true;
+                }
+            }
+            // Substate 2: Player inventory navigation
+            else if (gp.ui.subState == 2) {
+                handlePlayerSlotMovement(keyCode); // Manage player slot navigation
+                switch (keyCode) {
+                    case KeyEvent.VK_ESCAPE -> // Return to the main trade menu
+                            gp.ui.subState = 0;
+                    case KeyEvent.VK_ENTER -> // Mark the "Enter" key as pressed to select the current slot/item
+                            enterPressed = true;
+                }
+            }
+        }
+    }
+
+    // Handles player inventory slot navigation during trade interactions
+    private void handlePlayerSlotMovement(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.VK_W -> {
+                // Move up in the inventory
+                gp.ui.playerSlotRow--;
+                // Wrap to the last row if at the top row
+                if (gp.ui.playerSlotRow < 0) gp.ui.playerSlotRow = 3;
+            }
+            case KeyEvent.VK_S -> {
+                // Move down in the inventory
+                gp.ui.playerSlotRow++;
+                // Wrap to the first row if at the bottom row
+                if (gp.ui.playerSlotRow > 3) gp.ui.playerSlotRow = 0;
+            }
+            case KeyEvent.VK_A -> {
+                // Move left in the inventory
+                gp.ui.playerSlotCol--;
+                // Wrap to the last column if at the first column
+                if (gp.ui.playerSlotCol < 0) gp.ui.playerSlotCol = 4;
+            }
+            case KeyEvent.VK_D -> {
+                // Move right in the inventory
+                gp.ui.playerSlotCol++;
+                // Wrap to the first column if at the last column
+                if (gp.ui.playerSlotCol > 4) gp.ui.playerSlotCol = 0;
+            }
+        }
+        // Play sound effect to indicate slot navigation
+        gp.playSE(9);
+    }
+
+    // Handles NPC inventory slot navigation during trade interactions
+    private void handleNPCSlotMovement(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.VK_W -> {
+                // Move up in the NPC's inventory
+                gp.ui.npcSlotRow--;
+                // Wrap to the last row if at the top row
+                if (gp.ui.npcSlotRow < 0) gp.ui.npcSlotRow = 3;
+            }
+            case KeyEvent.VK_S -> {
+                // Move down in the NPC's inventory
+                gp.ui.npcSlotRow++;
+                // Wrap to the first row if at the bottom row
+                if (gp.ui.npcSlotRow > 3) gp.ui.npcSlotRow = 0;
+            }
+            case KeyEvent.VK_A -> {
+                // Move left in the NPC's inventory
+                gp.ui.npcSlotCol--;
+                // Wrap to the last column if at the first column
+                if (gp.ui.npcSlotCol < 0) gp.ui.npcSlotCol = 4;
+            }
+            case KeyEvent.VK_D -> {
+                // Move right in the NPC's inventory
+                gp.ui.npcSlotCol++;
+                // Wrap to the first column if at the last column
+                if (gp.ui.npcSlotCol > 4) gp.ui.npcSlotCol = 0;
+            }
+        }
+        // Play sound effect to indicate slot navigation
+        gp.playSE(9);
+    }
 
     // Method to reset all movement keys to false
     public void resetKeyStates() {

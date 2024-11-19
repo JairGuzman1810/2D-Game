@@ -25,5 +25,8 @@ public class OBJ_Shield_Wood extends Entity {
 
         // Provides a short description of the item, shown in the inventory.
         description = "[" + name + "]\nMade with wood.";
+
+        // Sets the price in the in-game currency, determining its value for purchasing.
+        price = 35;
     }
 }

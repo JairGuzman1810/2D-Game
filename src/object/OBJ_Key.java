@@ -6,10 +6,6 @@ import main.GamePanel;
 // OBJ_Key defines the key object in the game, which can be collected by the player.
 public class OBJ_Key extends Entity {
 
-
-    // Reference to the GamePanel, which holds game-related settings and properties.
-    GamePanel gp;
-
     // Constructor that sets the key's name and loads its image.
     public OBJ_Key(GamePanel gp) {
         super(gp);
@@ -20,5 +16,8 @@ public class OBJ_Key extends Entity {
 
         // Provides a short description of the item, shown in the inventory.
         description = "[" + name + "]\nIt opens a door.";
+
+        // Sets the price in the in-game currency, determining its value for purchasing.
+        price = 100;
     }
 }
