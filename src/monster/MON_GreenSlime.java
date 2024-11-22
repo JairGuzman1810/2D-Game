@@ -59,56 +59,111 @@ public class MON_GreenSlime extends Entity {
     }
 
     @Override
-    // Defines the Green Slime's behavior by selecting a random movement direction
-    // every 120 frames, updating the direction and resetting the action lock counter.
-    public void setAction() {
-        super.setAction();
-        actionLockCounter++;
+    // Updates the slime's behavior based on its proximity to the player.
+    // The slime may enter 'aggro' mode when the player is close and will pursue the player.
+    // If the slime moves too far from the player, it will stop pursuing.
+    public void update() {
+        // Calls the superclass's update method to handle general updates
+        super.update();
 
-        // Changes direction if actionLockCounter reaches 120, ensuring the slime
-        // moves in random directions periodically.
-        if (actionLockCounter == 120) {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1; // Generates a random number between 1 and 100.
+        // Calculates the absolute distance between the slime and the player on both X and Y axes
+        int xDistance = Math.abs(worldX - gp.player.worldX);
+        int yDistance = Math.abs(worldY - gp.player.worldY);
 
-            if (i <= 25) {
-                direction = "up"; // 25% chance for "up" direction.
-            } else if (i <= 50) {
-                direction = "down"; // 25% chance for "down" direction.
-            } else if (i <= 75) {
-                direction = "left"; // 25% chance for "left" direction.
-            } else {
-                direction = "right"; // 25% chance for "right" direction.
+        // Determines the total tile distance between the slime and the player, in terms of tile units
+        int tileDistance = (xDistance + yDistance) / gp.tileSize;
+
+        // Checks if the slime is not already in aggro mode and the player is nearby (less than 5 tiles away)
+        // If true, there's a chance for the slime to go into aggro mode and pursue the player.
+        if (!onPath && tileDistance < 5) {
+            int i = new Random().nextInt(100) + 1; // Generates a random number between 1 and 100.
+
+            // 50% chance to enter aggro mode if the player is within 5 tiles.
+            if (i > 50) {
+                onPath = true; // Slime becomes aggressive and starts pursuing the player.
             }
-
-            actionLockCounter = 0; // Resets the action lock counter.
         }
 
-        // Randomly triggers a slime shot if conditions are met (1% chance).
-        int i = new Random().nextInt(100) + 1;
+        // If the slime is already in aggro mode and the player moves too far away (more than 20 tiles),
+        // the slime will lose interest and stop pursuing the player.
+        if (onPath && tileDistance > 20) {
+            onPath = false; // Slime stops pursuing the player when the distance exceeds 20 tiles.
+        }
 
-        if (i > 99 && !projectile.alive && shotAvailableCounter == 30) {
-            // Sets projectile position, direction, and marks it as active.
-            projectile.set(worldX, worldY, direction, true, this);
+    }
 
-            // Adds projectile to the game for slime's ranged attack.
-            gp.projectileList.add(projectile);
+    @Override
+    // Defines the Green Slime's behavior, making it either pursue the player if it's in an aggro state
+    // or move randomly when it's not. It also handles the slime's ranged attack when certain conditions are met.
+    public void setAction() {
 
-            // Resets shot counter to prevent immediate consecutive shots.
-            shotAvailableCounter = 0;
+        // If the slime is in aggro mode (onPath is true), it will pursue the player
+        if (onPath) {
+
+            // Calculates the column and row position of the player on the map grid
+            int goalCol = (gp.player.worldX + gp.player.solidArea.x) / gp.tileSize;
+            int goalRow = (gp.player.worldY + gp.player.solidArea.y) / gp.tileSize;
+
+            // Makes the slime search for a path to the player's position
+            searchPath(goalCol, goalRow);
+
+            // Random chance for the slime to fire a shot if it's aggro
+            int i = new Random().nextInt(200) + 1;
+
+            // If the random chance exceeds 197, and the slime is not already shooting a projectile
+            // and the shot is available, the slime will shoot.
+            if (i > 197 && !projectile.alive && shotAvailableCounter == 30) {
+                // Sets the projectile's position, direction, and makes it active
+                projectile.set(worldX, worldY, direction, true, this);
+
+                // Adds the projectile to the game, allowing the slime to fire it
+                gp.projectileList.add(projectile);
+
+                // Resets the shot counter to prevent consecutive shots without delay
+                shotAvailableCounter = 0;
+            }
+
+        } else { // If the slime is not in aggro mode, it will move randomly
+
+            // Increments the actionLockCounter to control the timing of the slime's movements
+            actionLockCounter++;
+
+            // Every 120 frames (controlled by actionLockCounter), the slime will choose a new direction
+            if (actionLockCounter == 120) {
+                // Generates a random number to determine the direction of movement
+                Random random = new Random();
+                int i = random.nextInt(100) + 1; // Random number between 1 and 100.
+
+                // 25% chance to move up, down, left, or right
+                if (i <= 25) {
+                    direction = "up"; // 25% chance for "up"
+                } else if (i <= 50) {
+                    direction = "down"; // 25% chance for "down"
+                } else if (i <= 75) {
+                    direction = "left"; // 25% chance for "left"
+                } else {
+                    direction = "right"; // 25% chance for "right"
+                }
+
+                // Resets the action lock counter to allow the slime to change direction after 120 frames
+                actionLockCounter = 0;
+            }
+
         }
     }
 
     @Override
-    // Handles the slime's reaction to damage by resetting its action counter
-    // and changing direction to match the player's current facing direction.
+    // Handles the slime's reaction to damage by resetting its action counter,
+    // and changing its state to aggro. The slime will immediately start
+    // following the player after taking damage.
     public void damageReaction() {
         super.damageReaction();
+
         // Resets the action lock counter to allow an immediate response after taking damage
         actionLockCounter = 0;
-        // Sets the slime's direction to match the player's current facing direction,
-        // making the slime appear to react by moving away from the player's attack
-        direction = gp.player.direction;
+
+        // Changes the slime's state to aggro, causing it to pursue the player
+        onPath = true;
     }
 
     @Override

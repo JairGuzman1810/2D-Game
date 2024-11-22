@@ -58,30 +58,48 @@ public class NPC_OldMan extends Entity {
     // Changes direction every 120 frames and resets the action lock counter.
     public void setAction() {
         super.setAction();
-        actionLockCounter++;
 
-        if (actionLockCounter == 120) {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1; // Generates a random number between 1 and 100.
+        // If the NPC is on a path, it will head towards a specific goal (goalCol, goalRow).
+        if (onPath) {
+            int goalCol = 12; // Column position on the map where the NPC should go.
+            int goalRow = 9;  // Row position on the map where the NPC should go.
 
-            if (i <= 25) {
-                direction = "up"; // 25% chance for "up" direction.
-            } else if (i <= 50) {
-                direction = "down"; // 25% chance for "down" direction.
-            } else if (i <= 75) {
-                direction = "left"; // 25% chance for "left" direction.
-            } else {
-                direction = "right"; // 25% chance for "right" direction.
+            // Instructs the NPC to move towards the goal.
+            searchPath(goalCol, goalRow);
+
+        } else {
+            actionLockCounter++;
+
+            // Changes direction if actionLockCounter reaches 120, ensuring random movement.
+            if (actionLockCounter == 120) {
+                Random random = new Random();
+                int i = random.nextInt(100) + 1; // Generates a random number between 1 and 100.
+
+                // 25% chance for each direction.
+                if (i <= 25) {
+                    direction = "up"; // 25% chance for "up" direction.
+                } else if (i <= 50) {
+                    direction = "down"; // 25% chance for "down" direction.
+                } else if (i <= 75) {
+                    direction = "left"; // 25% chance for "left" direction.
+                } else {
+                    direction = "right"; // 25% chance for "right" direction.
+                }
+
+                actionLockCounter = 0; // Resets the action lock counter.
             }
-
-            actionLockCounter = 0; // Resets the action lock counter.
         }
+
     }
 
     @Override
     // Triggers the speak method inherited from Entity, which will manage dialogue display
     // and align the NPC’s direction towards the player during interaction.
+    // Once the player talks to the NPC, the NPC starts moving towards a specific location on the map.
     public void speak() {
         super.speak();
+
+        // Once the player speaks to the NPC, set onPath to true, indicating NPC will move.
+        onPath = true;
     }
 }

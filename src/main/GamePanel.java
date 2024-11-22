@@ -1,5 +1,6 @@
 package main;
 
+import ai.PathFinder;
 import entity.Entity;
 import entity.Player;
 import tile.TileManager;
@@ -50,7 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //SYSTEM
     // TileManager handles the loading and drawing of the tiles in the game world.
-    TileManager tileM = new TileManager(this);
+    public TileManager tileM = new TileManager(this);
 
     // KeyHandler captures and manages player keyboard inputs for movement.
     public KeyHandler keyH = new KeyHandler(this);
@@ -75,6 +76,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Configuration manager to handle game settings.
     Config config = new Config(this);
+
+    // Calculates paths for entities, considering obstacles.
+    public PathFinder pFinder = new PathFinder(this);
 
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;

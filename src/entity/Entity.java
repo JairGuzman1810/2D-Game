@@ -82,11 +82,13 @@ public class Entity {
     public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
     public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
     public Projectile projectile;       // The entity's currently equipped projectile,
+    // State
     public boolean invincible = false;  // Flag for invincibility to prevent repeated damage.
     public boolean attacking = false;   // Determines if the entity is attacking, triggering attack animations.
     public boolean alive = true;        // Flag indicating if the entity is alive.
     public boolean dying = false;       // Flag indicating if the entity is in the process of dying.
     boolean hpBarOn = false;            // Flag to display the health bar when true.
+    public boolean onPath = false;      // Flag indicating if the entity needs to move to a specific location or follow the player.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -210,11 +212,10 @@ public class Entity {
         gp.particleList.add(p4);
     }
 
+    // Determines if the entity is colliding with tiles, objects, NPCs, monsters, or the player.
+    // It resets the collision state, performs collision checks, and applies effects like damaging the player if applicable.
+    public void checkCollision() {
 
-    // Updates the entity's state each frame, handling movement, collision detection,
-    // and animation updates. This ensures smooth movement and interaction with the game world.
-    public void update() {
-        setAction();
         // Check for tile collision.
         collisionOn = false;                                          // Reset collision state.
         gp.cChecker.checkTile(this);                            // Check if the entity is colliding with any tiles.
@@ -225,10 +226,17 @@ public class Entity {
         boolean contactPlayer = gp.cChecker.checkPlayer(this);  // Check if the entity is colliding with the player, if yes true, no false
 
         // Checks if the entity is a monster and has contacted the player.
-        // If so, reduces player's life and sets them to invincible to avoid consecutive damage.
+        // If so, reduces player's life and sets them invincible to avoid consecutive damage.
         if (this.type == type_monster && contactPlayer) {
             damagePlayer(attack); // Initiates damage process with the monster's attack value.
         }
+    }
+
+    // Updates the entity's state each frame, handling movement, collision detection,
+    // and animation updates. This ensures smooth movement and interaction with the game world.
+    public void update() {
+        setAction();
+        checkCollision();
 
         // If no collision detected, move the entity in the current direction.
         if (!collisionOn) {
@@ -398,5 +406,81 @@ public class Entity {
         }
 
         return image; // Return the scaled image
+    }
+
+    // The searchPath method calculates the path to a specified goal location using a pathfinding algorithm.
+    // It sets the next movement direction for the entity based on its position and collision checks.
+    // If the entity reaches the goal, it stops following the path.
+    public void searchPath(int goalCol, int goalRow) {
+
+        // Calculate the entity's starting column and row based on its world position and solid area.
+        int startCol = (worldX + solidArea.x) / gp.tileSize;
+        int startRow = (worldY + solidArea.y) / gp.tileSize;
+
+        // Set up the start and goal nodes for the pathfinding algorithm.
+        gp.pFinder.setNodes(startCol, startRow, goalCol, goalRow);
+
+        // If a path is found, determine the next step towards the goal.
+        if (gp.pFinder.search()) {
+            // Get the next target position in the path.
+            int nextX = gp.pFinder.pathList.get(0).col * gp.tileSize;
+            int nextY = gp.pFinder.pathList.get(0).row * gp.tileSize;
+
+            // Calculate the entity's current solid area position.
+            int enLeftX = worldX + solidArea.x;
+            int enRightX = worldX + solidArea.x + solidArea.width;
+            int enTopY = worldY + solidArea.y;
+            int enBottomY = worldY + solidArea.y + solidArea.height;
+
+            // Determine the direction based on the next position in the path.
+            if (enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize) {
+                direction = "up";
+            } else if (enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize) {
+                direction = "down";
+            } else if (enTopY >= nextY && enBottomY < nextY + gp.tileSize) {
+                // Move left or right based on horizontal position.
+                if (enLeftX > nextX) {
+                    direction = "left";
+                }
+                if (enLeftX < nextX) {
+                    direction = "right";
+                }
+            } else if (enTopY > nextY && enLeftX > nextX) {
+                // Move up or left, with collision checks.
+                direction = "up";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "left";
+                }
+            } else if (enTopY > nextY && enLeftX < nextX) {
+                // Move up or right, with collision checks.
+                direction = "up";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "right";
+                }
+            } else if (enTopY < nextY && enLeftX > nextX) {
+                // Move down or left, with collision checks.
+                direction = "down";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "left";
+                }
+            } else if (enTopY < nextY && enLeftX < nextX) {
+                // Move down or right, with collision checks.
+                direction = "down";
+                checkCollision();
+                if (collisionOn) {
+                    direction = "right";
+                }
+            }
+
+            // Check if the entity has reached the goal.
+            int nextCol = gp.pFinder.pathList.get(0).col;
+            int nextRow = gp.pFinder.pathList.get(0).row;
+            if (nextCol == goalCol && nextRow == goalRow) {
+                onPath = false; // Stop following the path.
+            }
+        }
     }
 }
