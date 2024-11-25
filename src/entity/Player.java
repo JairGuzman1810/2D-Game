@@ -77,8 +77,10 @@ public class Player extends Entity {
         // Player's starting position in the world (worldX, worldY) in tile units.
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
+        // The base movement speed of the player.
+        defaultSpeed = 4;
         // Set the player's movement speed.
-        speed = 4;
+        speed = defaultSpeed;
         // Default movement direction.
         direction = "down";
 
@@ -272,7 +274,12 @@ public class Player extends Entity {
             projectile.set(worldX, worldY, direction, true, this);
 
             // Add the projectile to the list for rendering and collision logic.
-            gp.projectileList.add(projectile);
+            for (int i = 0; i < gp.projectile[i].length; i++) {
+                if (gp.projectile[gp.currentMap][i] == null) {
+                    gp.projectile[gp.currentMap][i] = projectile;
+                    break;
+                }
+            }
 
             // Reset the shot availability counter after firing the projectile.
             shotAvailableCounter = 0;
@@ -348,11 +355,15 @@ public class Player extends Entity {
 
             // Check monster collision with the updated worldX, worldY and solidArea
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            damageMonster(monsterIndex, attack);
+            damageMonster(monsterIndex, attack, currentWeapon.knockBackPower);
 
             // Check interactive tile collision with the updated worldX, worldY and solidArea
             int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
             damageInteractiveTile(iTileIndex);
+
+            // Check projectile collision with the updated worldX, worldY and solidArea
+            int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
+            damageProjectile(projectileIndex);
 
             // After checking collision, restore the original data
             worldX = currentWorldX;
@@ -412,12 +423,17 @@ public class Player extends Entity {
 
     // This method handles damaging a monster by decreasing its life when the player attacks.
     // It checks if the monster is invincible to prevent damage during the invincibility period.
-    public void damageMonster(int i, int attack) {
+    public void damageMonster(int i, int attack, int knockBackPower) {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.
             if (!gp.monster[gp.currentMap][i].invincible) {
                 gp.playSE(5); // Play sound effect indicating a hit on the monster
+
+                // Apply knockback if the knockBackPower is greater than 0.
+                if (knockBackPower > 0) {
+                    knockBack(gp.monster[gp.currentMap][i], knockBackPower); // Push the monster back.
+                }
 
                 // Calculates the damage dealt, ensuring it is at least zero (if defense is higher).
                 int damage = Math.max(attack - gp.monster[gp.currentMap][i].defense, 0);
@@ -437,6 +453,15 @@ public class Player extends Entity {
             }
         }
     }
+
+    // Applies a knockback effect to the specified entity.
+    // This temporarily increases the entity's speed and sets its direction to match the attacker.
+    public void knockBack(Entity entity, int knockBackPower) {
+        entity.direction = direction;        // Set the entity's direction to the attacker's direction.
+        entity.speed += knockBackPower;      // Increase the entity's speed by the knockback power.
+        entity.knockBack = true;             // Enable the knockback effect for the entity.
+    }
+
 
     // Handles damaging an interactive tile, such as a destructible object in the game world.
     public void damageInteractiveTile(int i) {
@@ -463,6 +488,21 @@ public class Player extends Entity {
             }
         }
     }
+
+    // Handles damaging an interactive tile (e.g., a rock) using a projectile.
+    // Deactivates the projectile upon impact and generates particles at its position.
+    public void damageProjectile(int i) {
+
+        if (i != 999) { // Check if a valid projectile index is provided.
+
+            Entity projectile = gp.projectile[gp.currentMap][i]; // Retrieve the projectile entity.
+
+            projectile.alive = false; // Mark the projectile as inactive upon impact.
+
+            generateParticle(projectile, projectile); // Generate impact particles at the projectile's position.
+        }
+    }
+
 
     // Method to handle leveling up the player based on experience gained.
     public void checkLevelUp() {

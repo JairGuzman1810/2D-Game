@@ -102,8 +102,8 @@ public class GamePanel extends JPanel implements Runnable {
     // Array to hold the interactive tiles.
     public InteractiveTile[][] iTile = new InteractiveTile[maxMap][50];
 
-    // ArrayList to hold all projectiles for rendering in the correct order.
-    public ArrayList<Entity> projectileList = new ArrayList<>();
+    // Array to hold all projectiles for rendering in the correct order.
+    public Entity[][] projectile = new Entity[maxMap][50];
 
     // ArrayList to hold all entities for rendering in the correct order.
     ArrayList<Entity> entityList = new ArrayList<>();
@@ -320,17 +320,17 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // Iterate over all active projectiles (e.g., bullets, magic spells) to update and clean them up.
-            for (int i = projectileList.size() - 1; i >= 0; i--) {
+            for (int i = 0; i < projectile[1].length; i++) {
                 // Check if the projectile exists in the list.
-                if (projectileList.get(i) != null) {
+                if (projectile[currentMap][i] != null) {
                     // Update the projectile if it is still active and moving.
-                    if (projectileList.get(i).alive) {
-                        projectileList.get(i).update();
+                    if (projectile[currentMap][i].alive) {
+                        projectile[currentMap][i].update();
                     }
 
                     // Remove projectiles that are no longer alive from the list to conserve resources.
-                    if (!projectileList.get(i).alive) {
-                        projectileList.remove(i);
+                    if (!projectile[currentMap][i].alive) {
+                        projectile[currentMap][i] = null;
                     }
                 }
             }
@@ -416,9 +416,9 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            for (Entity entity : projectileList) { // Iterate through the array of projectiles entities.
-                if (entity != null) { // Check if the entity is not null.
-                    entityList.add(entity); // Add the non-null game projectiles to the entity list.
+            for (int i = 0; i < projectile[1].length; i++) { // Iterate through the array of projectiles entities.
+                if (projectile[currentMap][i] != null) { // Check if the entity is not null.
+                    entityList.add(projectile[currentMap][i]); // Add the non-null game projectiles to the entity list.
                 }
             }
 

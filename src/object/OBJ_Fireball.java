@@ -34,6 +34,9 @@ public class OBJ_Fireball extends Projectile {
         // Define the attack power of the fireball.
         attack = 2;
 
+        // Sets the strength of the knockback effect when hitting an enemy, pushing them away.
+        knockBackPower = 0;
+
         // Set the mana cost to cast this fireball.
         useCost = 1;
 

@@ -26,7 +26,8 @@ public class MON_GreenSlime extends Entity {
 
         type = type_monster;                    // Sets type to type_monster, indicating a monster entity.
         name = "Green Slime";                   // Assigns the name of this monster type.
-        speed = 1;                              // Defines the movement speed of the slime.
+        defaultSpeed = 1;                       // The base movement speed of the slime.
+        speed = defaultSpeed;                   // Current movement speed, initially set to the defaultSpeed.
         maxLife = 4;                            // Sets maximum life for the slime.
         life = maxLife;                         // Initializes life to maxLife.
         attack = 5;                             // Sets the attack power of the slime.
@@ -117,8 +118,12 @@ public class MON_GreenSlime extends Entity {
                 projectile.set(worldX, worldY, direction, true, this);
 
                 // Adds the projectile to the game, allowing the slime to fire it
-                gp.projectileList.add(projectile);
-
+                for (int j = 0; j < gp.projectile[j].length; j++) {
+                    if (gp.projectile[gp.currentMap][j] == null) {
+                        gp.projectile[gp.currentMap][j] = projectile;
+                        break;
+                    }
+                }
                 // Resets the shot counter to prevent consecutive shots without delay
                 shotAvailableCounter = 0;
             }

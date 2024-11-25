@@ -34,5 +34,8 @@ public class OBJ_Axe extends Entity {
 
         // Sets the price in the in-game currency, determining its value for purchasing.
         price = 75;
+
+        // Sets the strength of the knockback effect when hitting an enemy, pushing them away.
+        knockBackPower = 10;
     }
 }

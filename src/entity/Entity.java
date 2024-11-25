@@ -39,6 +39,7 @@ public class Entity {
     // Position and Movement
     public int worldX, worldY; // Entity's position in the game world.
     public int speed; // Movement speed of the entity.
+    public int defaultSpeed; // Stores the original speed of the entity.
     public String direction = "down"; // Current movement direction (up, down, left, right).
 
     // Animation
@@ -59,7 +60,7 @@ public class Entity {
     public int shotAvailableCounter = 0; // Tracks when player can shoot a projectile again.
     int dyingCounter = 0; // Tracks duration of dying animation.
     int hpBarCounter = 0; // Tracks visibility duration of the HP bar.
-
+    int knockBackCounter = 0; // Counter to track the duration of the knockback effect.
 
     // Character Status
     public int maxLife;          // Max life points the entity can have.
@@ -89,6 +90,7 @@ public class Entity {
     public boolean dying = false;       // Flag indicating if the entity is in the process of dying.
     boolean hpBarOn = false;            // Flag to display the health bar when true.
     public boolean onPath = false;      // Flag indicating if the entity needs to move to a specific location or follow the player.
+    public boolean knockBack = false;   // Flag to determine if the entity is currently in a knockback state.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -97,6 +99,7 @@ public class Entity {
     public int useCost;                 // The resource cost for using this item (mana for projectiles).
     public int value;                   // Value of the item (like in healing or money)
     public int price;                   // The price of the item, used in the trading system to determine its cost for purchasing.
+    public int knockBackPower;          // Determines the intensity of the knockback effect.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
@@ -232,45 +235,79 @@ public class Entity {
         }
     }
 
-    // Updates the entity's state each frame, handling movement, collision detection,
-    // and animation updates. This ensures smooth movement and interaction with the game world.
+    // Updates the entity's state each frame, managing movement, collision detection, animation,
+    // and effects like knockback and invincibility.
     public void update() {
-        setAction();
-        checkCollision();
 
-        // If no collision detected, move the entity in the current direction.
-        if (!collisionOn) {
-            switch (direction) {
-                case "up" -> worldY -= speed;  // Move up in the world (Y-axis).
-                case "down" -> worldY += speed; // Move down.
-                case "left" -> worldX -= speed; // Move left on the X-axis.
-                case "right" -> worldX += speed; // Move right.
+        // Handles knockback state, where the entity is pushed back upon certain events (e.g., being hit).
+        if (knockBack) {
+
+            checkCollision(); // Check if the entity collides with something during knockback.
+
+            if (collisionOn) {
+                // Stop knockback if a collision is detected, resetting speed and state.
+                knockBackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed;
+            } else {
+                // Apply movement based on knockback direction.
+                switch (direction) {
+                    case "up" -> worldY -= speed;  // Push upward.
+                    case "down" -> worldY += speed; // Push downward.
+                    case "left" -> worldX -= speed; // Push to the left.
+                    case "right" -> worldX += speed; // Push to the right.
+                }
+            }
+
+            knockBackCounter++; // Increment knockback duration.
+
+            // End knockback effect after a specific time frame (e.g., 10 frames).
+            if (knockBackCounter == 10) {
+                knockBackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed; // Reset speed to default.
+            }
+
+        } else {
+            // Regular entity behavior when not in knockback state.
+
+            setAction(); // Determine the entity's action (e.g., AI, movement logic).
+            checkCollision(); // Check for collisions before moving.
+
+            // If no collision is detected, move in the current direction.
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up" -> worldY -= speed;  // Move up.
+                    case "down" -> worldY += speed; // Move down.
+                    case "left" -> worldX -= speed; // Move left.
+                    case "right" -> worldX += speed; // Move right.
+                }
             }
         }
 
-        // Increment spriteCounter to control the animation frame rate.
-        spriteCounter++;
+        // Handle animation by toggling between sprites to simulate movement.
+        spriteCounter++; // Increment the sprite frame counter.
 
-        // Toggle between two sprites every 24 frames to create walking animation.
+        // Change to the next sprite frame every 24 frames.
         if (spriteCounter > 24) {
-            spriteNum = (spriteNum == 1) ? 2 : 1;
-            spriteCounter = 0;
+            spriteNum = (spriteNum == 1) ? 2 : 1; // Toggle between sprite 1 and 2.
+            spriteCounter = 0; // Reset the sprite counter.
         }
 
-        // If entity is invincible, increment the invincibility counter.
+        // Manage invincibility duration if the entity is in an invincible state.
         if (invincible) {
-            invincibleCounter++; // Track invincibility duration.
+            invincibleCounter++; // Count frames of invincibility.
 
-            // Disable invincibility after 40 frames and reset the counter.
+            // End invincibility after 40 frames and reset the counter.
             if (invincibleCounter > 40) {
-                invincible = false; // End invincibility.
-                invincibleCounter = 0; // Reset counter for next use.
+                invincible = false; // Disable invincibility.
+                invincibleCounter = 0; // Reset the counter for reuse.
             }
         }
 
-        // Increment the shot availability counter if it's below cooldown limit.
+        // Handle projectile cooldown by incrementing the shot availability counter up to its limit.
         if (shotAvailableCounter < 30) {
-            shotAvailableCounter++; // Increment counter.
+            shotAvailableCounter++; // Increment the counter to track shot cooldown.
         }
     }
 
