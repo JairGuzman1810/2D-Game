@@ -4,6 +4,9 @@ import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
 import object.OBJ_Axe;
+import object.OBJ_Chest;
+import object.OBJ_Door;
+import object.OBJ_Key;
 import tile_interactive.IT_DryTree;
 
 // AssetSetter is responsible for placing objects (like keys, doors, chests)
@@ -25,10 +28,25 @@ public class AssetSetter {
         int mapNum = 0;
 
         // Place an axe at tile coordinates (33, 7)
-        gp.obj[mapNum][3] = new OBJ_Axe(gp);
-        gp.obj[mapNum][3].worldX = gp.tileSize * 33;
-        gp.obj[mapNum][3].worldY = gp.tileSize * 7;
+        gp.obj[mapNum][0] = new OBJ_Axe(gp);
+        gp.obj[mapNum][0].worldX = gp.tileSize * 33;
+        gp.obj[mapNum][0].worldY = gp.tileSize * 7;
 
+
+        // Place an door at tile coordinates (14, 28)
+        gp.obj[mapNum][1] = new OBJ_Door(gp);
+        gp.obj[mapNum][1].worldX = gp.tileSize * 14;
+        gp.obj[mapNum][1].worldY = gp.tileSize * 28;
+
+        // Place a door at tile coordinates (12, 12)
+        gp.obj[mapNum][2] = new OBJ_Door(gp);
+        gp.obj[mapNum][2].worldX = gp.tileSize * 12;
+        gp.obj[mapNum][2].worldY = gp.tileSize * 12;
+
+        // Place a chest at tile coordinates (30, 29)
+        gp.obj[mapNum][2] = new OBJ_Chest(gp, new OBJ_Key(gp));
+        gp.obj[mapNum][2].worldX = gp.tileSize * 30;
+        gp.obj[mapNum][2].worldY = gp.tileSize * 28;
     }
 
     // The setNPC method places various game NPC

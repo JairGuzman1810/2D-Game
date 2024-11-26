@@ -33,7 +33,7 @@ public class OBJ_ManaCrystal extends Entity {
     @Override
     // Overrides the `use` method to action of restore mana.
     // Restores the entity's mana.
-    public void use(Entity entity) {
+    public boolean use(Entity entity) {
         super.use(entity);
 
         // Play sound effect associated with pickup the crystal.
@@ -44,5 +44,7 @@ public class OBJ_ManaCrystal extends Entity {
 
         // Increase the entity's mana by the crystal's value.
         entity.mana += value;
+
+        return true;
     }
 }

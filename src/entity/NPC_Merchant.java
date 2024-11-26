@@ -21,12 +21,12 @@ public class NPC_Merchant extends Entity {
 
         // Define the solid area for the merchant, which will be used for collision detection.
         solidArea = new Rectangle();
-        solidArea.x = 8;  // Offset of the solid area within the player's sprite.
+        solidArea.x = 8;  // Offset of the solid area within the merchant's sprite.
         solidArea.y = 16; // Offset within the sprite.
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = 32;  // Width of the player collision area.
-        solidArea.height = 32; // Height of the player collision area.
+        solidArea.width = 32;  // Width of the merchant collision area.
+        solidArea.height = 32; // Height of the merchant collision area.
 
         getImage();    // Loads images for the NPC's directional movement animations.
 

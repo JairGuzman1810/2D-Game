@@ -389,24 +389,40 @@ public class Player extends Entity {
 
             // If the object is of type "pickup only," it cannot be added to the inventory and is used immediately.
             if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {
-                gp.obj[gp.currentMap][i].use(this); // Trigger immediate use of the object (e.g., health or mana pickup).
+                // Trigger immediate use of the object (e.g., health or mana pickup).
+                gp.obj[gp.currentMap][i].use(this);
+                // Remove the object from the world since it has been picked up.
+                gp.obj[gp.currentMap][i] = null;
+
+            } else if (gp.obj[gp.currentMap][i].type == type_obstacle) {
+                // Check if the player has pressed the enter key to interact with an obstacle object.
+                if (keyH.enterPressed) {
+                    attackCancel = true;  // Cancel any ongoing attack.
+                    // Trigger interaction with the obstacle object (e.g., open a door or chest).
+                    gp.obj[gp.currentMap][i].interact();
+                }
 
             } else {
                 // Inventory items can be stored if there's space available.
                 if (inventory.size() != maxInventorySize) {
-                    inventory.add(gp.obj[gp.currentMap][i]);  // Add the object to the inventory list.
-                    gp.playSE(1);              // Play a pickup sound effect to confirm the action.
-                    text = "Got a " + gp.obj[gp.currentMap][i].name + "!";  // Show a message with the item's name to the player.
+                    // Add the object to the inventory list.
+                    inventory.add(gp.obj[gp.currentMap][i]);
+                    // Play a pickup sound effect to confirm the action.
+                    gp.playSE(1);
+                    // Show a message with the item's name to the player.
+                    text = "Got a " + gp.obj[gp.currentMap][i].name + "!";
+
                 } else {
                     // Notify the player when inventory is full and can't carry more items.
                     text = "You cannot carry more items!";
                 }
 
+                // Remove the object from the world since it has been picked up.
+                gp.obj[gp.currentMap][i] = null;
+
                 // Display the pickup or inventory message in the UI.
                 gp.ui.addMessage(text);
             }
-            // Remove the object from the world since it has been picked up.
-            gp.obj[gp.currentMap][i] = null;
         }
     }
 
@@ -564,8 +580,11 @@ public class Player extends Entity {
             // If the selected item is consumable (e.g., a potion),
             // use it and remove it from the inventory.
             if (selectedItem.type == type_consumable) {
-                selectedItem.use(this);           // Use the consumable item (e.g., heal or apply effect)
-                inventory.remove(itemIndex);     // Remove the used item from the inventory
+                // Use the consumable item (e.g., heal or apply effect)
+                if (selectedItem.use(this)) {
+                    inventory.remove(itemIndex);     // Remove the used item from the inventory
+
+                }
             }
         }
     }

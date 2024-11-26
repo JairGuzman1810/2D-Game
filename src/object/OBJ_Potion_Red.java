@@ -39,7 +39,7 @@ public class OBJ_Potion_Red extends Entity {
     @Override
     // Overrides the `use` method to apply the red potion effect.
     // Restores the entity's health, displays a message, and plays a sound.
-    public void use(Entity entity) {
+    public boolean use(Entity entity) {
         super.use(entity);
 
         // Set the game state to dialogue state to display potion usage message.
@@ -53,5 +53,7 @@ public class OBJ_Potion_Red extends Entity {
 
         // Play sound effect associated with consuming the potion.
         gp.playSE(2);
+
+        return true;
     }
 }

@@ -33,7 +33,7 @@ public class OBJ_Heart extends Entity {
     @Override
     // Overrides the `use` method to action of restore health.
     // Restores the entity's health.
-    public void use(Entity entity) {
+    public boolean use(Entity entity) {
         super.use(entity);
 
         // Play sound effect associated with pickup the heart.
@@ -44,5 +44,7 @@ public class OBJ_Heart extends Entity {
 
         // Increase the entity's life by the heart's value.
         entity.life += value;
+
+        return true;
     }
 }

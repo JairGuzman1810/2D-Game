@@ -34,7 +34,7 @@ public class Entity {
     public final int type_shield = 5; // Identifies a shield item.
     public final int type_consumable = 6; // Identifies a consumable item, like potions.
     public final int type_pickupOnly = 7; // Identifies an item as pickup only, like coins.
-
+    public final int type_obstacle = 8;     // Identifies an obstacle, like a door or chest.
 
     // Position and Movement
     public int worldX, worldY; // Entity's position in the game world.
@@ -114,6 +114,35 @@ public class Entity {
         this.gp = gp;
     }
 
+    // Gets the leftmost X coordinate of the entity's collision area.
+    public int getLeftX() {
+        return worldX + solidArea.x; // Adds the solid area's offset to the entity's world position.
+    }
+
+    // Gets the rightmost X coordinate of the entity's collision area.
+    public int getRightX() {
+        return getLeftX() + solidArea.height; // Adds the height of the solid area to its left X position.
+    }
+
+    // Gets the topmost Y coordinate of the entity's collision area.
+    public int getTopY() {
+        return worldY + solidArea.y; // Adds the solid area's offset to the entity's world position.
+    }
+
+    // Gets the bottommost Y coordinate of the entity's collision area.
+    public int getBottomY() {
+        return getTopY() + solidArea.width; // Adds the width of the solid area to its top Y position.
+    }
+
+    // Calculates the entity's column position on the game grid.
+    public int getCol() {
+        return (worldX + solidArea.x) / gp.tileSize; // Converts the X position to a grid column.
+    }
+
+    // Calculates the entity's row position on the game grid.
+    public int getRow() {
+        return (worldY + solidArea.y) / gp.tileSize; // Converts the Y position to a grid row.
+    }
 
     // Sets the action for the entity, such as determining its direction or behavior.
     // This method can be overridden by subclasses to customize entity behavior.
@@ -129,8 +158,9 @@ public class Entity {
 
     // Method to use a consumable item, like a potion. Can be overridden in subclasses to implement specific effects.
     // The `entity` parameter represents the entity that is being used.
-    public void use(Entity entity) {
+    public boolean use(Entity entity) {
 
+        return false;
     }
 
     // Method to check if an item should be dropped by the entity.
@@ -171,6 +201,11 @@ public class Entity {
             case "left" -> direction = "right";
             case "right" -> direction = "left";
         }
+    }
+
+    // Handles player interactions with objects like doors or chests; override in subclasses.
+    public void interact() {
+        // Default: No interaction behavior. Subclasses define specific logic.
     }
 
     // Returns the color of the particles. This method can be overridden in subclasses to specify a custom color for different entities' particles.
@@ -519,5 +554,38 @@ public class Entity {
                 onPath = false; // Stop following the path.
             }
         }
+    }
+
+    // Detects nearby objects matching a target name in the direction the user is facing.
+    public int getDetected(Entity user, Entity[][] target, String targetName) {
+        int index = 999; // Default value indicating no target found.
+
+        // Determine the position of the next tile in the user's movement direction.
+        int nextWorldX = user.getLeftX();
+        int nextWorldY = user.getTopY();
+        switch (user.direction) {
+            case "up" -> nextWorldY -= user.speed;
+            case "down" -> nextWorldY = user.getBottomY() + user.speed;
+            case "left" -> nextWorldX -= user.speed;
+            case "right" -> nextWorldX = user.getRightX() + user.speed;
+        }
+
+        // Calculate the grid coordinates of the tile being checked.
+        int col = nextWorldX / gp.tileSize;
+        int row = nextWorldY / gp.tileSize;
+
+        // Iterate through the target entities in the current map to find a match.
+        for (int i = 0; i < target[1].length; i++) {
+            if (target[gp.currentMap][i] != null) {
+                // Check if the target's position and name match the specified conditions.
+                if (target[gp.currentMap][i].getCol() == col &&
+                        target[gp.currentMap][i].getRow() == row &&
+                        target[gp.currentMap][i].name.equals(targetName)) {
+                    index = i; // Set the index of the detected target.
+                    break;
+                }
+            }
+        }
+        return index; // Return the index or 999 if no entity is detected.
     }
 }

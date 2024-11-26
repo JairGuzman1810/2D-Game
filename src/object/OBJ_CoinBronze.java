@@ -32,8 +32,7 @@ public class OBJ_CoinBronze extends Entity {
     @Override
     // Overrides the `use` method to apply the red potion effect.
     // Increase the entity's coin counter.
-    public void use(Entity entity) {
-        super.use(entity);
+    public boolean use(Entity entity) {
 
         // Play sound effect associated with pickup the coin.
         gp.playSE(1);
@@ -43,5 +42,7 @@ public class OBJ_CoinBronze extends Entity {
 
         // Increase the entity coins counter.
         gp.player.coin += value;
+
+        return true;
     }
 }
