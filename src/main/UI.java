@@ -442,8 +442,8 @@ public class UI {
     }
 
     // Draws an inventory interface for a specified entity (player or NPC), including item slots,
-// an optional selection cursor, and item descriptions.
-// The cursor is displayed only if the 'cursor' parameter is true.
+    // an optional selection cursor, and item descriptions.
+    // The cursor is displayed only if the 'cursor' parameter is true.
     public void drawInventory(Entity entity, boolean cursor) {
 
         // Initialize frame position, dimensions, and slot tracking variables
@@ -489,6 +489,24 @@ public class UI {
             }
 
             g2.drawImage(entity.inventory.get(i).down1, slotX, slotY, null); // Draw item image
+
+// Display the amount of the item if greater than 1.
+            if (entity.inventory.get(i).amount > 1) {
+                g2.setFont(g2.getFont().deriveFont(32f)); // Set font size for the amount.
+
+                // Calculate X and Y positions for the amount text.
+                int amountX = getXForAlignToRight(String.valueOf(entity.inventory.get(i).amount), slotX + 44);
+                int amountY = slotY + gp.tileSize;
+
+                // Draw a shadow for the text to enhance visibility.
+                g2.setColor(new Color(60, 60, 60));
+                g2.drawString(String.valueOf(entity.inventory.get(i).amount), amountX, amountY);
+
+                // Draw the amount in white to display it clearly.
+                g2.setColor(Color.white);
+                g2.drawString(String.valueOf(entity.inventory.get(i).amount), amountX - 3, amountY - 3);
+            }
+
             slotX += slotSize; // Move to the next horizontal slot
 
             // Move to the next row after every 5 items
@@ -992,18 +1010,18 @@ public class UI {
                     subState = 0;
                     gp.gameState = gp.dialogueState;
                     currentDialogue = "You need more coin to buy that!"; // Not enough coins
+                } else {
+
+                    if (gp.player.canObtainItem(npc.inventory.get(itemIndex))) {
+                        gp.player.coin -= npc.inventory.get(itemIndex).price; // Deduct the price from player's coins
+                    } else {
+                        subState = 0;
+                        gp.gameState = gp.dialogueState;
+                        currentDialogue = "You cannot carry any more!"; // Inventory is full
+                    }
+
                 }
-                // Check if the player has space in their inventory
-                else if (gp.player.inventory.size() == gp.player.maxInventorySize) {
-                    subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "You cannot carry any more!"; // Inventory is full
-                }
-                // If the player can afford the item and has space, purchase it
-                else {
-                    gp.player.coin -= npc.inventory.get(itemIndex).price; // Deduct the price from player's coins
-                    gp.player.inventory.add(npc.inventory.get(itemIndex)); // Add the item to the player's inventory
-                }
+
             }
         }
     }
@@ -1058,8 +1076,12 @@ public class UI {
                     currentDialogue = "You cannot sell an equipped item!"; // Show error message for equipped items
                 } else {
                     // Remove the item from the player's inventory and add its price to the player's coins
-                    gp.player.inventory.remove(itemIndex);
-                    gp.player.coin += price; // Player gains coins from selling the item
+                    if (gp.player.inventory.get(itemIndex).amount > 1) {
+                        gp.player.inventory.get(itemIndex).amount--;
+                    } else {
+                        gp.player.inventory.remove(itemIndex);
+                        gp.player.coin += price; // Player gains coins from selling the item
+                    }
                 }
             }
         }

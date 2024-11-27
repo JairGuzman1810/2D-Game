@@ -100,6 +100,8 @@ public class Entity {
     public int value;                   // Value of the item (like in healing or money)
     public int price;                   // The price of the item, used in the trading system to determine its cost for purchasing.
     public int knockBackPower;          // Determines the intensity of the knockback effect.
+    public boolean stackable = false;   // Determines if the item can stack in inventory.
+    public int amount = 1;              // Quantity of the item in inventory (if stackable).
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.

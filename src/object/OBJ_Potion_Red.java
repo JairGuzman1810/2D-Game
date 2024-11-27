@@ -34,6 +34,9 @@ public class OBJ_Potion_Red extends Entity {
 
         // Sets the price in the in-game currency, determining its value for purchasing.
         price = 25;
+
+        // Indicates if the item is stackable (multiple instances of the same item can occupy one inventory slot).
+        stackable = true;
     }
 
     @Override

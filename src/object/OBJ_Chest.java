@@ -68,12 +68,10 @@ public class OBJ_Chest extends Entity {
             sb.append("You open the chest and find a ").append(loot.name).append("!");
 
             // Check if the player's inventory is full.
-            if (gp.player.inventory.size() == gp.player.maxInventorySize) {
+            if (!gp.player.canObtainItem(loot)) {
                 sb.append("\n... But you cannot carry any more!");
             } else {
                 sb.append("\nYou obtain the ").append(loot.name).append("!");
-                // Add the loot to the player's inventory.
-                gp.player.inventory.add(loot);
                 // Change the chest's appearance to the opened state.
                 down1 = image2;
                 isOpen = true;

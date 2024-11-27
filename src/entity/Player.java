@@ -385,7 +385,6 @@ public class Player extends Entity {
     public void pickUpObject(int i) {
         // Verify that a valid object is present at the collision point (999 indicates no object).
         if (i != 999) {
-            String text;
 
             // If the object is of type "pickup only," it cannot be added to the inventory and is used immediately.
             if (gp.obj[gp.currentMap][i].type == type_pickupOnly) {
@@ -403,10 +402,10 @@ public class Player extends Entity {
                 }
 
             } else {
+                String text;
+
                 // Inventory items can be stored if there's space available.
-                if (inventory.size() != maxInventorySize) {
-                    // Add the object to the inventory list.
-                    inventory.add(gp.obj[gp.currentMap][i]);
+                if (canObtainItem(gp.obj[gp.currentMap][i])) {
                     // Play a pickup sound effect to confirm the action.
                     gp.playSE(1);
                     // Show a message with the item's name to the player.
@@ -582,11 +581,52 @@ public class Player extends Entity {
             if (selectedItem.type == type_consumable) {
                 // Use the consumable item (e.g., heal or apply effect)
                 if (selectedItem.use(this)) {
-                    inventory.remove(itemIndex);     // Remove the used item from the inventory
+
+                    if (selectedItem.amount > 1) {
+                        selectedItem.amount--;
+                    } else {
+                        inventory.remove(itemIndex);     // Remove the used item from the inventory
+                    }
 
                 }
             }
         }
+    }
+
+    // Searches for an item in the inventory by name.
+    // Returns its index or 999 if not found.
+    public int searchItemInInventory(String itemName) {
+        int itemIndex = 999; // Default index for not found.
+
+        // Loop through the inventory to find the item.
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).name.equals(itemName)) {
+                itemIndex = i; // Found the item, set its index.
+                break;         // Exit the loop.
+            }
+        }
+
+        return itemIndex; // Return the item's index or 999.
+    }
+
+    // Checks if an item can be added to the inventory.
+    public boolean canObtainItem(Entity item) {
+        // If the item is stackable, check for it in the inventory.
+        if (item.stackable) {
+            int index = searchItemInInventory(item.name);
+            if (index != 999) {
+                inventory.get(index).amount++; // Increase the item's amount.
+                return true; // Successfully updated.
+            }
+        }
+
+        // If inventory has space, add the item.
+        if (inventory.size() < maxInventorySize) {
+            inventory.add(item);
+            return true; // Successfully added.
+        }
+
+        return false; // Inventory is full, cannot add.
     }
 
 

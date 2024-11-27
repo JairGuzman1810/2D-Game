@@ -3,10 +3,7 @@ package main;
 import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
-import object.OBJ_Axe;
-import object.OBJ_Chest;
-import object.OBJ_Door;
-import object.OBJ_Key;
+import object.*;
 import tile_interactive.IT_DryTree;
 
 // AssetSetter is responsible for placing objects (like keys, doors, chests)
@@ -47,6 +44,16 @@ public class AssetSetter {
         gp.obj[mapNum][2] = new OBJ_Chest(gp, new OBJ_Key(gp));
         gp.obj[mapNum][2].worldX = gp.tileSize * 30;
         gp.obj[mapNum][2].worldY = gp.tileSize * 28;
+
+        // Place a potion at tile coordinates (21, 20)
+        gp.obj[mapNum][3] = new OBJ_Potion_Red(gp);
+        gp.obj[mapNum][3].worldX = gp.tileSize * 21;
+        gp.obj[mapNum][3].worldY = gp.tileSize * 20;
+
+        // Place a potion at tile coordinates (20, 20)
+        gp.obj[mapNum][4] = new OBJ_Potion_Red(gp);
+        gp.obj[mapNum][4].worldX = gp.tileSize * 20;
+        gp.obj[mapNum][4].worldY = gp.tileSize * 20;
     }
 
     // The setNPC method places various game NPC
