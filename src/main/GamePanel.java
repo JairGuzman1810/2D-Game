@@ -3,6 +3,7 @@ package main;
 import ai.PathFinder;
 import entity.Entity;
 import entity.Player;
+import environment.EnvironmentManager;
 import tile.TileManager;
 import tile_interactive.InteractiveTile;
 
@@ -79,6 +80,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Calculates paths for entities, considering obstacles.
     public PathFinder pFinder = new PathFinder(this);
+
+    // Manages environmental effects, such as lighting, for enhancing the game's atmosphere.
+    EnvironmentManager eManager = new EnvironmentManager(this);
 
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
@@ -175,6 +179,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Calls the AssetSetter to place destructive tiles.
         aSetter.setInteractiveTile();
+
+        // Sets up environmental effects, such as lighting.
+        eManager.setup();
 
         // Set default state to title state.
         gameState = titleState;
@@ -438,6 +445,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Clear the entity list to prepare for the next frame's rendering.
             entityList.clear();
+
+            // Draws environmental effects.
+            eManager.draw(g2);
 
             // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
             ui.draw(g2);

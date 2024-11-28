@@ -46,7 +46,7 @@ public class Main {
         // Make the window visible
         window.setVisible(true);
 
-        // Call the setup method to place objects in the game worlwd
+        // Call the setup method to place objects in the game world
         gamePanel.setupGame();
 
         // Start the game loop in the GamePanel
