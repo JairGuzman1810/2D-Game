@@ -27,6 +27,9 @@ public class Player extends Entity {
     // Indicates whether an attack can be canceled, such as when interacting with an NPC.
     public boolean attackCancel = false;
 
+    // Indicates whether the player's light source (e.g., lantern) has been updated.
+    public boolean lightUpdated = false;
+
     // Constructor initializes the Player with references to the game environment and key handler.
     public Player(GamePanel gp, KeyHandler keyH) {
         super(gp);
@@ -574,6 +577,16 @@ public class Player extends Entity {
             if (selectedItem.type == type_shield) {
                 currentShield = selectedItem;  // Equip the shield
                 defense = getDefense();        // Update the player's defense value based on the shield's defense power
+            }
+
+            // Toggle the selected item as a light source and trigger a lighting update.
+            if (selectedItem.type == type_light) {
+                if (currentLight == selectedItem) {
+                    currentLight = null; // Turn off the light if it's already equipped.
+                } else {
+                    currentLight = selectedItem; // Equip the light source.
+                }
+                lightUpdated = true; // Signal that lighting needs to be recalculated.
             }
 
             // If the selected item is consumable (e.g., a potion),

@@ -482,8 +482,8 @@ public class UI {
 
         // Iterate through the entity's inventory and draw each item
         for (int i = 0; i < entity.inventory.size(); i++) {
-            // Highlight equipped items (e.g., current weapon or shield)
-            if (entity.inventory.get(i) == entity.currentWeapon || entity.inventory.get(i) == entity.currentShield) {
+            // Highlight equipped items (e.g., current weapon, shield or light)
+            if (entity.inventory.get(i) == entity.currentWeapon || entity.inventory.get(i) == entity.currentShield || entity.inventory.get(i) == entity.currentLight) {
                 g2.setColor(new Color(240, 190, 90)); // Highlight color
                 g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
             }

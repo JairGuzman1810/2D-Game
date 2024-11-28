@@ -367,6 +367,9 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            // Updates the environmental effects, such as lighting, to reflect the current game state.
+            eManager.update();
+
         } else {
             // If the game is not in the play state (e.g., paused, in a menu),
             // reset the states of all keys to prevent unwanted input.

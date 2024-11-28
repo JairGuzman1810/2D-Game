@@ -16,12 +16,17 @@ public class EnvironmentManager {
         this.gp = gp;
     }
 
-    // Setup method initializes the lighting with a specific radius.
-    public void setup() {
-        lighting = new Lighting(gp, 350);
+    // Updates the environments effect, ensuring it reflects any changes, such as when the player switches.
+    public void update() {
+        lighting.update();
     }
 
-    // Draw method renders the lighting effect.
+    // Setup method initializes the environments.
+    public void setup() {
+        lighting = new Lighting(gp);
+    }
+
+    // Draw method renders the environment effect.
     public void draw(Graphics2D g2) {
         lighting.draw(g2);
     }

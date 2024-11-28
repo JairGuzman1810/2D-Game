@@ -26,21 +26,22 @@ public class Entity {
 
     // Constants representing different types of entities or items in the game.
     // These help the game identify the entity and apply specific behavior based on its type.
-    public final int type_player = 0; // Identifies the player character.
-    public final int type_npc = 1; // Identifies a non-player character (NPC).
-    public final int type_monster = 2; // Identifies a monster or enemy.
-    public final int type_sword = 3; // Identifies a sword item.
-    public final int type_axe = 4; // Identifies an axe item.
-    public final int type_shield = 5; // Identifies a shield item.
-    public final int type_consumable = 6; // Identifies a consumable item, like potions.
-    public final int type_pickupOnly = 7; // Identifies an item as pickup only, like coins.
+    public final int type_player = 0;       // Identifies the player character.
+    public final int type_npc = 1;          // Identifies a non-player character (NPC).
+    public final int type_monster = 2;      // Identifies a monster or enemy.
+    public final int type_sword = 3;        // Identifies a sword item.
+    public final int type_axe = 4;          // Identifies an axe item.
+    public final int type_shield = 5;       // Identifies a shield item.
+    public final int type_consumable = 6;   // Identifies a consumable item, like potions.
+    public final int type_pickupOnly = 7;   // Identifies an item as pickup only, like coins.
     public final int type_obstacle = 8;     // Identifies an obstacle, like a door or chest.
+    public final int type_light = 9;        // Identifies a light source, such as a lantern or torch, that can illuminate surroundings.
 
     // Position and Movement
-    public int worldX, worldY; // Entity's position in the game world.
-    public int speed; // Movement speed of the entity.
-    public int defaultSpeed; // Stores the original speed of the entity.
-    public String direction = "down"; // Current movement direction (up, down, left, right).
+    public int worldX, worldY;          // Entity's position in the game world.
+    public int speed;                   // Movement speed of the entity.
+    public int defaultSpeed;            // Stores the original speed of the entity.
+    public String direction = "down";   // Current movement direction (up, down, left, right).
 
     // Animation
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // Movement animation frames.
@@ -82,6 +83,7 @@ public class Entity {
     // Equipment
     public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
     public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
+    public Entity currentLight;         // The entity's currently equipped light source for the entity, dynamically affecting the lighting system.
     public Projectile projectile;       // The entity's currently equipped projectile,
     // State
     public boolean invincible = false;  // Flag for invincibility to prevent repeated damage.
@@ -102,6 +104,7 @@ public class Entity {
     public int knockBackPower;          // Determines the intensity of the knockback effect.
     public boolean stackable = false;   // Determines if the item can stack in inventory.
     public int amount = 1;              // Quantity of the item in inventory (if stackable).
+    public int lightRadius;
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.

@@ -29,7 +29,6 @@ public class AssetSetter {
         gp.obj[mapNum][0].worldX = gp.tileSize * 33;
         gp.obj[mapNum][0].worldY = gp.tileSize * 7;
 
-
         // Place an door at tile coordinates (14, 28)
         gp.obj[mapNum][1] = new OBJ_Door(gp);
         gp.obj[mapNum][1].worldX = gp.tileSize * 14;
@@ -54,6 +53,12 @@ public class AssetSetter {
         gp.obj[mapNum][4] = new OBJ_Potion_Red(gp);
         gp.obj[mapNum][4].worldX = gp.tileSize * 20;
         gp.obj[mapNum][4].worldY = gp.tileSize * 20;
+
+        // Place a lantern at tile coordinates (20, 20)
+        gp.obj[mapNum][4] = new OBJ_Lantern(gp);
+        gp.obj[mapNum][4].worldX = gp.tileSize * 18;
+        gp.obj[mapNum][4].worldY = gp.tileSize * 20;
+
     }
 
     // The setNPC method places various game NPC
