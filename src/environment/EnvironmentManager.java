@@ -9,7 +9,7 @@ import java.awt.*;
 public class EnvironmentManager {
 
     GamePanel gp; // Reference to the game panel.
-    Lighting lighting; // Lighting effect instance.
+    public Lighting lighting; // Lighting effect instance.
 
     // Constructor initializes the environment manager with the game panel.
     public EnvironmentManager(GamePanel gp) {

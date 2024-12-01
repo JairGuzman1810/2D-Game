@@ -59,6 +59,11 @@ public class AssetSetter {
         gp.obj[mapNum][4].worldX = gp.tileSize * 18;
         gp.obj[mapNum][4].worldY = gp.tileSize * 20;
 
+        // Place a tent at tile coordinates (19, 20)
+        gp.obj[mapNum][5] = new OBJ_Tent(gp);
+        gp.obj[mapNum][5].worldX = gp.tileSize * 19;
+        gp.obj[mapNum][5].worldY = gp.tileSize * 20;
+
     }
 
     // The setNPC method places various game NPC

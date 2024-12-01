@@ -73,6 +73,9 @@ public class Sound {
 
         // Index 13: Stairs (change location) sound.
         soundURL[13] = getClass().getResource("/sound/stairs.wav");
+
+        // Index 14: Sleep (use tent) sound.
+        soundURL[14] = getClass().getResource("/sound/sleep.wav");
     }
 
 

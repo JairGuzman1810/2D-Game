@@ -154,6 +154,19 @@ public class Player extends Entity {
         right2 = setup("/player/boy_right_2", gp.tileSize, gp.tileSize);
     }
 
+    // Sets all player movement images to the provided sleeping image.
+    public void getSleepingImage(BufferedImage image) {
+        // Use the setup method to load and scale player images for different movements
+        up1 = image;
+        up2 = image;
+        down1 = image;
+        down2 = image;
+        left1 = image;
+        left2 = image;
+        right1 = image;
+        right2 = image;
+    }
+
     // Loads the images for the player's attack animations in all four directions based on the equipped weapon.
     public void getPlayerAttackImage() {
         // Use the setup method to load and scale player images for different attacks

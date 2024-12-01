@@ -133,6 +133,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int transitionState = 7;
     // Constant for trade state.
     public final int tradeState = 8;
+    // Constant for sleep state.
+    public final int sleepState = 9;
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {

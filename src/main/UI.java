@@ -148,6 +148,9 @@ public class UI {
         } else if (gp.gameState == gp.tradeState) {
             // Draw the trade screen when the game is in trade state.
             drawTradeScreen();
+        } else if (gp.gameState == gp.sleepState) {
+            // Draw the sleep screen when the game is in sleep state.
+            drawSleepScreen();
         }
     }
 
@@ -1083,6 +1086,33 @@ public class UI {
                         gp.player.coin += price; // Player gains coins from selling the item
                     }
                 }
+            }
+        }
+    }
+
+    // Draw the sleep screen transition effect by gradually adjusting the lighting filter's transparency.
+    public void drawSleepScreen() {
+        // Increment the transition counter.
+        counter++;
+
+        // Gradually darken the screen during the first 120 frames.
+        if (counter < 120) {
+            gp.eManager.lighting.filterAlpha += 0.01f;
+            if (gp.eManager.lighting.filterAlpha > 1f) {
+                gp.eManager.lighting.filterAlpha = 1f; // Cap the alpha value at 1 (fully dark).
+            }
+        }
+
+        // Gradually brighten the screen after 120 frames.
+        if (counter >= 120) {
+            gp.eManager.lighting.filterAlpha -= 0.01f;
+            if (gp.eManager.lighting.filterAlpha < 0f) {
+                gp.eManager.lighting.filterAlpha = 0f; // Reset the alpha value to 0 (fully bright).
+                counter = 0; // Reset the counter for the next transition.
+                gp.eManager.lighting.dayState = gp.eManager.lighting.day; // Reset to daytime state.
+                gp.eManager.lighting.dayCounter = 0; // Reset the day counter.
+                gp.gameState = gp.playState; // Return to the play state.
+                gp.player.getPlayerImage(); // Reload the player's regular images.
             }
         }
     }
