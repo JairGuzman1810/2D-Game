@@ -59,6 +59,8 @@ public class KeyHandler implements KeyListener {
             handleGameOverState(keyCode, isPressed);    // Handle key events for the game over state
         } else if (gp.gameState == gp.tradeState) {     // Check if the game is in the trade state
             handleTradeState(keyCode, isPressed);       // Handle key events for the trade state
+        } else if (gp.gameState == gp.mapState) {       // Check if the game is in the map state
+            handleMapState(keyCode, isPressed);         // Handle key events for the map state
         }
     }
 
@@ -105,6 +107,10 @@ public class KeyHandler implements KeyListener {
                         shotKeyPressed = true;                          // Sets shotKeyPressed to true for shot a projectile
                 case KeyEvent.VK_ESCAPE ->
                         gp.gameState = gp.optionsState;                 // Switches game to options state if ESC is pressed
+                case KeyEvent.VK_M ->
+                        gp.gameState = gp.mapState;                     // Switches game to map state if M is pressed
+                case KeyEvent.VK_X -> gp.map.miniMapOn =
+                        !gp.map.miniMapOn;                              // Toggles the display of minimap
             }
         } else {
             // Reset movement keys if they are released
@@ -288,6 +294,17 @@ public class KeyHandler implements KeyListener {
                     case KeyEvent.VK_ENTER -> // Mark the "Enter" key as pressed to select the current slot/item
                             enterPressed = true;
                 }
+            }
+        }
+    }
+
+    // Handles key events in the "Map" state, allowing navigation and exiting the map screen
+    private void handleMapState(int keyCode, boolean isPressed) {
+        // Check if the key is pressed to prevent repeated processing of the same event
+        if (isPressed) {
+            // Pressing 'M' exits the map view and returns to the play state
+            if (keyCode == KeyEvent.VK_M) {
+                gp.gameState = gp.playState;
             }
         }
     }

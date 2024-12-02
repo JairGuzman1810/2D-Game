@@ -4,6 +4,7 @@ import ai.PathFinder;
 import entity.Entity;
 import entity.Player;
 import environment.EnvironmentManager;
+import tile.Map;
 import tile.TileManager;
 import tile_interactive.InteractiveTile;
 
@@ -84,6 +85,8 @@ public class GamePanel extends JPanel implements Runnable {
     // Manages environmental effects, such as lighting, for enhancing the game's atmosphere.
     EnvironmentManager eManager = new EnvironmentManager(this);
 
+    Map map = new Map(this);
+
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
@@ -135,6 +138,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int tradeState = 8;
     // Constant for sleep state.
     public final int sleepState = 9;
+    // Constant for map state.
+    public final int mapState = 10;
 
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
@@ -395,6 +400,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == titleState) {
             //Draw title screen
             ui.draw(g2);
+        } else if (gameState == mapState) {
+            //Draw full map screen
+            map.drawFullMapScreen(g2);
         } else {
 
             // Draws the tiles onto the Graphics2D context.
@@ -453,6 +461,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Draws environmental effects.
             eManager.draw(g2);
+
+            // Draws minimap
+            map.drawMiniMap(g2);
 
             // Draw the UI elements (key count, messages, game over screen) using the Graphics2D context.
             ui.draw(g2);

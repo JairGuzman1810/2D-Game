@@ -26,7 +26,7 @@ public class UI {
     Graphics2D g2;
 
     // Font objects for displaying text in the UI (Arial with size 40 and bold Arial with size 80).
-    Font pixelOperator;
+    public Font pixelOperator;
 
     // Images representing full, half, and blank hearts for displaying player life status.
     BufferedImage heart_full, heart_half, heart_blank;
