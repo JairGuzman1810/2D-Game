@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -149,10 +150,117 @@ public class Entity {
         return (worldY + solidArea.y) / gp.tileSize; // Converts the Y position to a grid row.
     }
 
+    // Calculates the absolute horizontal distance (in pixels) between this entity and the target entity.
+    public int getXDistance(Entity target) {
+        return Math.abs(worldX - target.worldX);
+    }
+
+    // Calculates the absolute vertical distance (in pixels) between this entity and the target entity.
+    public int getYDistance(Entity target) {
+        return Math.abs(worldY - target.worldY);
+    }
+
+    // Calculates the tile distance between this entity and the target entity using Manhattan distance.
+    // Divides the sum of X and Y distances by 2 to get the distance in terms of tiles.
+    public int getTileDistance(Entity target) {
+        return (getXDistance(target) + getYDistance(target)) / gp.tileSize;
+    }
+
+    // Determines the target's column index in the tile grid by converting its world position.
+    // Adds the target's solidArea.x offset to account for its precise location.
+    public int getGoalCol(Entity target) {
+        return (target.worldX + target.solidArea.x) / gp.tileSize;
+    }
+
+    // Determines the target's row index in the tile grid by converting its world position.
+    // Adds the target's solidArea.y offset to account for its precise location.
+    public int getGoalRow(Entity target) {
+        return (target.worldY + target.solidArea.y) / gp.tileSize;
+    }
+
     // Sets the action for the entity, such as determining its direction or behavior.
     // This method can be overridden by subclasses to customize entity behavior.
     public void setAction() {
 
+    }
+
+    // Determines if the entity should fire a projectile based on random chance, firing rate, and interval.
+// Ensures the entity can only fire when the projectile is not already active and the cooldown has expired.
+    public void checkIsShooting(int rate, int interval) {
+        // Generate a random number to decide if the entity fires a shot
+        int i = new Random().nextInt(rate);
+
+        // If conditions are met, initialize the projectile and add it to the game
+        if (i > 0 && !projectile.alive && shotAvailableCounter == interval) {
+            // Sets the projectile's initial position, direction, and active state
+            projectile.set(worldX, worldY, direction, true, this);
+
+            // Add the projectile to the active list for the current map
+            for (int j = 0; j < gp.projectile[gp.currentMap].length; j++) {
+                if (gp.projectile[gp.currentMap][j] == null) {
+                    gp.projectile[gp.currentMap][j] = projectile;
+                    break;
+                }
+            }
+
+            // Reset the shot counter to introduce a delay before the next shot
+            shotAvailableCounter = 0;
+        }
+    }
+
+    // Checks if the entity should start chasing the target based on proximity and random chance.
+// Activates the pathfinding behavior when within the specified distance.
+    public void checkIsStartChasing(Entity target, int distance, int rate) {
+        // If the target is within the specified tile distance
+        if (getTileDistance(target) < distance) {
+            // Random chance to start chasing
+            int i = new Random().nextInt(rate);
+            if (i == 0) {
+                onPath = true; // Enable pathfinding
+            }
+        }
+    }
+
+    // Checks if the entity should stop chasing the target based on proximity and random chance.
+// Deactivates the pathfinding behavior when outside the specified distance.
+    public void checkIsStopChasing(Entity target, int distance, int rate) {
+        // If the target is beyond the specified tile distance
+        if (getTileDistance(target) > distance) {
+            // Random chance to stop chasing
+            int i = new Random().nextInt(rate);
+            if (i == 0) {
+                onPath = false; // Disable pathfinding
+            }
+        }
+    }
+
+    // Determines a random direction for the entity's movement at regular intervals.
+    public void getRandomDirection() {
+
+        // Increment the counter that tracks how long the entity has been in its current state.
+        actionLockCounter++;
+
+        // Every 120 frames, decide on a new direction.
+        if (actionLockCounter == 120) {
+            // Generate a random number between 1 and 100 to select a direction.
+            Random random = new Random();
+            int i = random.nextInt(100) + 1; // Values range from 1 to 100.
+
+            // Assign a direction based on random chance:
+            // 25% chance for each possible direction: "up", "down", "left", or "right".
+            if (i <= 25) {
+                direction = "up"; // Move upwards.
+            } else if (i <= 50) {
+                direction = "down"; // Move downwards.
+            } else if (i <= 75) {
+                direction = "left"; // Move left.
+            } else {
+                direction = "right"; // Move right.
+            }
+
+            // Reset the counter to repeat this process after another 120 frames.
+            actionLockCounter = 0;
+        }
     }
 
     // Defines the reaction of the entity upon receiving damage.
