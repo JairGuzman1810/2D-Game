@@ -1112,7 +1112,7 @@ public class UI {
                 gp.eManager.lighting.dayState = gp.eManager.lighting.day; // Reset to daytime state.
                 gp.eManager.lighting.dayCounter = 0; // Reset the day counter.
                 gp.gameState = gp.playState; // Return to the play state.
-                gp.player.getPlayerImage(); // Reload the player's regular images.
+                gp.player.getImage(); // Reload the player's regular images.
             }
         }
     }

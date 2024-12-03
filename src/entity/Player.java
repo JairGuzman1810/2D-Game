@@ -52,8 +52,9 @@ public class Player extends Entity {
 
         // Set the player's initial position and speed.
         setDefaultValues();
-        getPlayerImage();
-        getPlayerAttackImage();
+        getImage();
+        getAttackImage();
+        getGuardImage();
         setItems();
     }
 
@@ -148,7 +149,7 @@ public class Player extends Entity {
     }
 
     // Load the images for the player's movement in all four directions.
-    public void getPlayerImage() {
+    public void getImage() {
         // Use the setup method to load and scale player images for different movements
         up1 = setup("/player/boy_up_1", gp.tileSize, gp.tileSize);
         up2 = setup("/player/boy_up_2", gp.tileSize, gp.tileSize);
@@ -174,7 +175,7 @@ public class Player extends Entity {
     }
 
     // Loads the images for the player's attack animations in all four directions based on the equipped weapon.
-    public void getPlayerAttackImage() {
+    public void getAttackImage() {
         // Use the setup method to load and scale player images for different attacks
         if (currentWeapon.type == type_sword) {
             // Load images for sword attack in all four directions
@@ -199,6 +200,14 @@ public class Player extends Entity {
         }
     }
 
+    // Load the images for the player's blocking in all four directions.
+    public void getGuardImage() {
+        guardUp = setup("/player/boy_guard_up", gp.tileSize, gp.tileSize);
+        guardDown = setup("/player/boy_guard_down", gp.tileSize, gp.tileSize);
+        guardLeft = setup("/player/boy_guard_left", gp.tileSize, gp.tileSize);
+        guardRight = setup("/player/boy_guard_right", gp.tileSize, gp.tileSize);
+    }
+
 
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
@@ -206,6 +215,9 @@ public class Player extends Entity {
         if (attacking) {
             // Call method of attacking
             attacking();
+        } else if (keyH.spacePressed) {
+            // Sets the guarding state to true when the space key is pressed.
+            guarding = true;
         }
         // Check if no movement keys are pressed to keep the player idle
         else if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed && !keyH.enterPressed) {
@@ -277,6 +289,9 @@ public class Player extends Entity {
 
             // Reset the enter key state to avoid repeated interactions in the same frame.
             gp.keyH.enterPressed = false;
+
+            // Reset the enter guarding state.
+            guarding = false;
 
             // Increment spriteCounter to control the animation frame rate.
             spriteCounter++;
@@ -524,7 +539,7 @@ public class Player extends Entity {
             if (selectedItem.type == type_sword || selectedItem.type == type_axe) {
                 currentWeapon = selectedItem;  // Equip the weapon
                 attack = getAttack();          // Update the player's attack power based on the equipped weapon
-                getPlayerAttackImage();        // Load the attack animations based on the weapon type
+                getAttackImage();        // Load the attack animations based on the weapon type
             }
 
             // If the selected item is a shield, equip it, and update the player's defense stats.
@@ -597,13 +612,13 @@ public class Player extends Entity {
     }
 
 
-    // Draw the player sprite at the center of the screen, using screenX and screenY.
+    // Draws the player sprite, adjusting position and appearance based on direction, attack, and guarding status.
     public void draw(Graphics2D g2) {
-        // Adjust tempScreenX and tempScreenY based on direction to position the attack animation properly.
+        // Adjust tempScreenX and tempScreenY for attack animation positioning.
         int tempScreenX = screenX;
         int tempScreenY = screenY;
 
-        // Adjust Y-coordinate when direction is up or down
+        // Adjust position for attack animations in specific directions.
         if (attacking) {
             switch (direction) {
                 case "up" -> tempScreenY = screenY - gp.tileSize;
@@ -611,25 +626,29 @@ public class Player extends Entity {
             }
         }
 
-        // Choose the correct animation frame based on direction and attack status.
+        // Select the correct sprite based on direction, guarding, or attacking status.
         BufferedImage image = switch (direction) {
-            case "up" -> attacking ? (spriteNum == 1 ? attackUp1 : attackUp2) : (spriteNum == 1 ? up1 : up2);
-            case "down" -> attacking ? (spriteNum == 1 ? attackDown1 : attackDown2) : (spriteNum == 1 ? down1 : down2);
-            case "left" -> attacking ? (spriteNum == 1 ? attackLeft1 : attackLeft2) : (spriteNum == 1 ? left1 : left2);
+            case "up" ->
+                    guarding ? guardUp : (attacking ? (spriteNum == 1 ? attackUp1 : attackUp2) : (spriteNum == 1 ? up1 : up2));
+            case "down" ->
+                    guarding ? guardDown : (attacking ? (spriteNum == 1 ? attackDown1 : attackDown2) : (spriteNum == 1 ? down1 : down2));
+            case "left" ->
+                    guarding ? guardLeft : (attacking ? (spriteNum == 1 ? attackLeft1 : attackLeft2) : (spriteNum == 1 ? left1 : left2));
             case "right" ->
-                    attacking ? (spriteNum == 1 ? attackRight1 : attackRight2) : (spriteNum == 1 ? right1 : right2);
-            default -> down1; // Default to down1 if direction is unrecognized.
+                    guarding ? guardRight : (attacking ? (spriteNum == 1 ? attackRight1 : attackRight2) : (spriteNum == 1 ? right1 : right2));
+            default -> down1; // Default to a neutral sprite if the direction is unrecognized.
         };
 
-        // Apply invincibility blinking effect
+        // Apply transparency effect if the player is invincible (e.g., during a damage phase).
         if (invincible) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
         }
 
-        // Draw the player sprite
+        // Draw the selected sprite at the calculated position.
         g2.drawImage(image, tempScreenX, tempScreenY, null);
 
-        // Reset transparency
+        // Reset transparency to normal after rendering.
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
+
 }

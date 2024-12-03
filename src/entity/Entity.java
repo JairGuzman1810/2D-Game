@@ -47,6 +47,7 @@ public class Entity {
     // Animation
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // Movement animation frames.
     public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2; // Attack animation frames.
+    public BufferedImage guardUp, guardDown, guardLeft, guardRight; // Guarding sprites for the player or entity, displayed when in a guarding state (facing up, down, left, or right).
     public int spriteCounter = 0; // Counts frames elapsed for animation.
     public int spriteNum = 1; // Current sprite frame number (1 or 2) for animation.
 
@@ -97,6 +98,7 @@ public class Entity {
     public boolean onPath = false;      // Flag indicating if the entity needs to move to a specific location or follow the player.
     public boolean knockBack = false;   // Flag to determine if the entity is currently in a knockback state.
     public String knockBackDirection;   // Direction in which the entity will be knocked back.
+    public boolean guarding = false;    // Flag indicating if the entity is in a guarding state.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.

@@ -76,6 +76,12 @@ public class Sound {
 
         // Index 14: Sleep (use tent) sound.
         soundURL[14] = getClass().getResource("/sound/sleep.wav");
+
+        // Index 15: Block attack sound.
+        soundURL[15] = getClass().getResource("/sound/blocked.wav");
+
+        // Index 16: Parry attack sound.
+        soundURL[16] = getClass().getResource("/sound/parry.wav");
     }
 
 

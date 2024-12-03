@@ -11,7 +11,7 @@ public class KeyHandler implements KeyListener {
 
     // Booleans to track the current state of movement keys (W, A, S, D) and action key (Enter)
     // to determine if each key is currently pressed
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed, spacePressed;
 
     // Boolean to track if draw time debugging is enabled; if true, draw times are printed to the console and show in the UI.
     public boolean checkDrawTime = false;
@@ -111,6 +111,8 @@ public class KeyHandler implements KeyListener {
                         gp.gameState = gp.mapState;                     // Switches game to map state if M is pressed
                 case KeyEvent.VK_X -> gp.map.miniMapOn =
                         !gp.map.miniMapOn;                              // Toggles the display of minimap
+                case KeyEvent.VK_SPACE ->
+                        spacePressed = true;                            // Tracks space key for blocking attacks
             }
         } else {
             // Reset movement keys if they are released
@@ -121,6 +123,7 @@ public class KeyHandler implements KeyListener {
                 case KeyEvent.VK_D -> rightPressed = false;     // Reset rightPressed to false
                 case KeyEvent.VK_ENTER -> enterPressed = false; // Reset enterPressed to false
                 case KeyEvent.VK_F -> shotKeyPressed = false;   // Reset shotKeyPressed to false
+                case KeyEvent.VK_SPACE -> spacePressed = false; // Reset spacePressed to false
             }
         }
     }
