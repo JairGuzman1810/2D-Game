@@ -3,6 +3,7 @@ package main;
 import entity.NPC_Merchant;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
+import monster.MON_Orc;
 import object.*;
 import tile_interactive.IT_DryTree;
 
@@ -64,6 +65,7 @@ public class AssetSetter {
         gp.obj[mapNum][5].worldX = gp.tileSize * 19;
         gp.obj[mapNum][5].worldY = gp.tileSize * 20;
 
+
     }
 
     // The setNPC method places various game NPC
@@ -97,6 +99,10 @@ public class AssetSetter {
         gp.monster[mapNum][1] = new MON_GreenSlime(gp);
         gp.monster[mapNum][1].worldX = gp.tileSize * 23;
         gp.monster[mapNum][1].worldY = gp.tileSize * 37;
+
+        gp.monster[mapNum][2] = new MON_Orc(gp);
+        gp.monster[mapNum][2].worldX = gp.tileSize * 12;
+        gp.monster[mapNum][2].worldY = gp.tileSize * 33;
     }
 
     public void setInteractiveTile() {
