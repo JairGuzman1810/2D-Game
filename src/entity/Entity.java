@@ -94,6 +94,7 @@ public class Entity {
     boolean hpBarOn = false;            // Flag to display the health bar when true.
     public boolean onPath = false;      // Flag indicating if the entity needs to move to a specific location or follow the player.
     public boolean knockBack = false;   // Flag to determine if the entity is currently in a knockback state.
+    public String knockBackDirection;   // Direction in which the entity will be knocked back.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -106,6 +107,8 @@ public class Entity {
     public boolean stackable = false;   // Determines if the item can stack in inventory.
     public int amount = 1;              // Quantity of the item in inventory (if stackable).
     public int lightRadius;
+
+    public Entity attacker;             // The entity causing the knockback effect.
 
     // Dialogue
     String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
@@ -399,7 +402,7 @@ public class Entity {
                 speed = defaultSpeed;
             } else {
                 // Apply movement based on knockback direction.
-                switch (direction) {
+                switch (knockBackDirection) {
                     case "up" -> worldY -= speed;  // Push upward.
                     case "down" -> worldY += speed; // Push downward.
                     case "left" -> worldX -= speed; // Push to the left.
@@ -471,6 +474,14 @@ public class Entity {
             gp.player.life -= damage; // Reduce player's life by the calculated damage amount.
             gp.player.invincible = true; // Set player to invincible to prevent consecutive hits.
         }
+    }
+
+    // Applies a knockback effect to the target entity, pushing it in the direction of the attacker.
+    public void setKnockBack(Entity target, Entity attacker, int knockBackPower) {
+        this.attacker = attacker;                 // Set the attacker entity.
+        target.knockBackDirection = attacker.direction; // Set knockback direction based on attacker.
+        target.speed += knockBackPower;          // Increase target's speed temporarily.
+        target.knockBack = true;                 // Activate knockback effect on target.
     }
 
     // Draws the entity on the screen relative to the player's position.

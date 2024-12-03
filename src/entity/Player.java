@@ -371,7 +371,7 @@ public class Player extends Entity {
 
             // Check monster collision with the updated worldX, worldY and solidArea
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            damageMonster(monsterIndex, attack, currentWeapon.knockBackPower);
+            damageMonster(monsterIndex, this, attack, currentWeapon.knockBackPower);
 
             // Check interactive tile collision with the updated worldX, worldY and solidArea
             int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
@@ -454,7 +454,7 @@ public class Player extends Entity {
 
     // This method handles damaging a monster by decreasing its life when the player attacks.
     // It checks if the monster is invincible to prevent damage during the invincibility period.
-    public void damageMonster(int i, int attack, int knockBackPower) {
+    public void damageMonster(int i, Entity attacker, int attack, int knockBackPower) {
         // Ensure the monster index is valid (not 999, which indicates no monster).
         if (i != 999) {
             // Check if the monster is not currently invincible.
@@ -463,7 +463,7 @@ public class Player extends Entity {
 
                 // Apply knockback if the knockBackPower is greater than 0.
                 if (knockBackPower > 0) {
-                    knockBack(gp.monster[gp.currentMap][i], knockBackPower); // Push the monster back.
+                    setKnockBack(gp.monster[gp.currentMap][i], attacker, knockBackPower); // Push the monster back.
                 }
 
                 // Calculates the damage dealt, ensuring it is at least zero (if defense is higher).
@@ -483,14 +483,6 @@ public class Player extends Entity {
                 }
             }
         }
-    }
-
-    // Applies a knockback effect to the specified entity.
-    // This temporarily increases the entity's speed and sets its direction to match the attacker.
-    public void knockBack(Entity entity, int knockBackPower) {
-        entity.direction = direction;        // Set the entity's direction to the attacker's direction.
-        entity.speed += knockBackPower;      // Increase the entity's speed by the knockback power.
-        entity.knockBack = true;             // Enable the knockback effect for the entity.
     }
 
 

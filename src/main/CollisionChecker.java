@@ -27,8 +27,14 @@ public class CollisionChecker {
         int entityTopRow = entityTopWorldY / gp.tileSize;
         int entityBottomRow = entityBottomWorldY / gp.tileSize;
 
+
+        String direction = entity.direction;
+        if (entity.knockBack) {
+            direction = entity.knockBackDirection;
+        }
+
         // Adjust the row or column based on the entity's direction and speed.
-        switch (entity.direction) {
+        switch (direction) {
             case "up" -> entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
             case "down" -> entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
             case "left" -> entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
@@ -59,6 +65,12 @@ public class CollisionChecker {
     public int checkObject(Entity entity, boolean player) {
         int index = 999; // Initialize index to 999, indicating no collision by default.
 
+        // Use a temporal direction when it's in knockback state
+        String direction = entity.direction;
+        if (entity.knockBack) {
+            direction = entity.knockBackDirection;
+        }
+
         // Loop through all objects in the game to check for potential collisions.
         for (int i = 0; i < gp.obj[1].length; i++) {
             if (gp.obj[gp.currentMap][i] != null) {
@@ -70,7 +82,7 @@ public class CollisionChecker {
                 gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].worldY + gp.obj[gp.currentMap][i].solidArea.y;
 
                 // Check collision based on the entity's movement direction.
-                switch (entity.direction) {
+                switch (direction) {
                     case "up" -> {
                         entity.solidArea.y -= entity.speed; // Move entity's solid area up based on speed.
                         if (entity.solidArea.intersects(gp.obj[gp.currentMap][i].solidArea)) { // Check for collision.
