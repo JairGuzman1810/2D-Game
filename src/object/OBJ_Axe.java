@@ -37,5 +37,11 @@ public class OBJ_Axe extends Entity {
 
         // Sets the strength of the knockback effect when hitting an enemy, pushing them away.
         knockBackPower = 10;
+
+        // Sets the duration of the first attack motion phase (e.g., wind-up animation).
+        motion1_duration = 20;
+
+        // Sets the duration of the second attack motion phase (e.g., wind-up animation).
+        motion2_duration = 40;
     }
 }

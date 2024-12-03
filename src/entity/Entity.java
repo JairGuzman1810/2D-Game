@@ -81,6 +81,8 @@ public class Entity {
     public int coin;             // Number of coins the entity currently has (for purchasing items, etc.).
     public ArrayList<Entity> inventory = new ArrayList<>();         // Inventory list that holds items collected by the entity, such as weapons, shields, etc.
     public final int maxInventorySize = 20;                         // Maximum number of items that the entity can carry in the inventory.
+    public int motion1_duration; // Duration for the first attack animation frame.
+    public int motion2_duration; // Duration for the second attack animation frame.
     // Equipment
     public Entity currentWeapon;        // The entity's currently equipped weapon, affecting attack stats.
     public Entity currentShield;        // The entity's currently equipped shield, affecting defense stats.
@@ -187,8 +189,60 @@ public class Entity {
 
     }
 
+    // Checks if the player is in range based on direction and distance.
+    // Initiates an attack with a chance based on the given rate.
+    public void checkIsAttacking(int rate, int straight, int horizontal) {
+
+        // Flag to check if the target is within attack range.
+        boolean targetInRange = false;
+
+        // Calculate the horizontal and vertical distances to the player.
+        int xDis = getXDistance(gp.player);
+        int yDis = getYDistance(gp.player);
+
+        // Determine if the player is within range based on direction.
+        switch (direction) {
+            case "up" -> {
+                // Checks if the player is above and within the straight and horizontal range.
+                if (gp.player.worldY < worldY && yDis < straight && xDis < horizontal) {
+                    targetInRange = true;
+                }
+            }
+            case "down" -> {
+                // Checks if the player is below and within the straight and horizontal range.
+                if (gp.player.worldY > worldY && yDis < straight && xDis < horizontal) {
+                    targetInRange = true;
+                }
+            }
+            case "left" -> {
+                // Checks if the player is to the left and within the straight and horizontal range.
+                if (gp.player.worldX < worldX && xDis < straight && yDis < horizontal) {
+                    targetInRange = true;
+                }
+            }
+            case "right" -> {
+                // Checks if the player is to the right and within the straight and horizontal range.
+                if (gp.player.worldX > worldX && xDis < straight && yDis < horizontal) {
+                    targetInRange = true;
+                }
+            }
+        }
+
+        // If the player is within range, initiate a chance to attack.
+        if (targetInRange) {
+            int i = new Random().nextInt(rate); // Random chance based on the attack rate.
+            if (i == 0) { // Initiate attack if the random value matches.
+                attacking = true;           // Set attacking state to true.
+                spriteNum = 1;              // Start attack animation from the first frame.
+                spriteCounter = 0;          // Reset sprite counter for animation timing.
+                shotAvailableCounter = 0;  // Reset shot availability for ranged attacks.
+            }
+        }
+    }
+
+
     // Determines if the entity should fire a projectile based on random chance, firing rate, and interval.
-// Ensures the entity can only fire when the projectile is not already active and the cooldown has expired.
+    // Ensures the entity can only fire when the projectile is not already active and the cooldown has expired.
     public void checkIsShooting(int rate, int interval) {
         // Generate a random number to decide if the entity fires a shot
         int i = new Random().nextInt(rate);
@@ -419,6 +473,8 @@ public class Entity {
                 speed = defaultSpeed; // Reset speed to default.
             }
 
+        } else if (attacking) {
+            attacking();
         } else {
             // Regular entity behavior when not in knockback state.
 
@@ -434,15 +490,15 @@ public class Entity {
                     case "right" -> worldX += speed; // Move right.
                 }
             }
-        }
 
-        // Handle animation by toggling between sprites to simulate movement.
-        spriteCounter++; // Increment the sprite frame counter.
+            // Handle animation by toggling between sprites to simulate movement.
+            spriteCounter++; // Increment the sprite frame counter.
 
-        // Change to the next sprite frame every 24 frames.
-        if (spriteCounter > 24) {
-            spriteNum = (spriteNum == 1) ? 2 : 1; // Toggle between sprite 1 and 2.
-            spriteCounter = 0; // Reset the sprite counter.
+            // Change to the next sprite frame every 24 frames.
+            if (spriteCounter > 24) {
+                spriteNum = (spriteNum == 1) ? 2 : 1; // Toggle between sprite 1 and 2.
+                spriteCounter = 0; // Reset the sprite counter.
+            }
         }
 
         // Manage invincibility duration if the entity is in an invincible state.
@@ -459,6 +515,73 @@ public class Entity {
         // Handle projectile cooldown by incrementing the shot availability counter up to its limit.
         if (shotAvailableCounter < 30) {
             shotAvailableCounter++; // Increment the counter to track shot cooldown.
+        }
+    }
+
+    // Controls the attack animation by toggling between two frames.
+    public void attacking() {
+        spriteCounter++; // Increment counter for frame control.
+
+
+        // Determine the attack phase based on spriteCounter.
+        if (spriteCounter <= motion1_duration) {
+            spriteNum = 1; // Initial attack phase.
+        } else if (spriteCounter <= motion2_duration) {
+            spriteNum = 2; // Second phase during attack.
+
+            // Save the current worldX, worldY, solidArea
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+
+            // Adjust player's worldX/Y for the attackArea
+            switch (direction) {
+                case "up" -> worldY -= attackArea.height;
+                case "down" -> worldY += attackArea.height;
+                case "left" -> worldX -= attackArea.width;
+                case "right" -> worldX += attackArea.width;
+            }
+
+            // attackArea becomes solidArea
+            solidArea.width = attackArea.width;
+            solidArea.height = attackArea.height;
+
+            if (type == type_monster) {
+                if (gp.cChecker.checkPlayer(this)) {
+                    damagePlayer(attack);
+                }
+
+            } else { // Player
+
+                // Check monster collision with the updated worldX, worldY and solidArea
+                int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+                gp.player.damageMonster(monsterIndex, this, attack, currentWeapon.knockBackPower);
+
+                // Check interactive tile collision with the updated worldX, worldY and solidArea
+                int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
+                gp.player.damageInteractiveTile(iTileIndex);
+
+                // Check projectile collision with the updated worldX, worldY and solidArea
+                int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
+                gp.player.damageProjectile(projectileIndex);
+
+
+            }
+
+
+            // After checking collision, restore the original data
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+
+
+        } else {
+            spriteNum = 1; // Reset phase after completing the attack.
+            spriteCounter = 0; // Reset sprite counter.
+            attacking = false; // End attacking animation.
         }
     }
 
@@ -499,12 +622,28 @@ public class Entity {
                 worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                 worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
+            // Adjust tempScreenX and tempScreenY based on direction to position the attack animation properly.
+            int tempScreenX = screenX;
+            int tempScreenY = screenY;
+
+            // Adjust Y-coordinate when direction is up or down
+            if (attacking) {
+                switch (direction) {
+                    case "up" -> tempScreenY = screenY - gp.tileSize;
+                    case "left" -> tempScreenX = screenX - gp.tileSize;
+                }
+            }
+
+            // Choose the correct animation frame based on direction and attack status.
             image = switch (direction) {
-                case "up" -> (spriteNum == 1) ? up1 : up2;
-                case "down" -> (spriteNum == 1) ? down1 : down2;
-                case "left" -> (spriteNum == 1) ? left1 : left2;
-                case "right" -> (spriteNum == 1) ? right1 : right2;
-                default -> down1;
+                case "up" -> attacking ? (spriteNum == 1 ? attackUp1 : attackUp2) : (spriteNum == 1 ? up1 : up2);
+                case "down" ->
+                        attacking ? (spriteNum == 1 ? attackDown1 : attackDown2) : (spriteNum == 1 ? down1 : down2);
+                case "left" ->
+                        attacking ? (spriteNum == 1 ? attackLeft1 : attackLeft2) : (spriteNum == 1 ? left1 : left2);
+                case "right" ->
+                        attacking ? (spriteNum == 1 ? attackRight1 : attackRight2) : (spriteNum == 1 ? right1 : right2);
+                default -> down1; // Default to down1 if direction is unrecognized.
             };
 
             // Monster HP bar
@@ -549,7 +688,7 @@ public class Entity {
             }
 
             // Draw the entity's image on the screen at the calculated position.
-            g2.drawImage(image, screenX, screenY, null);
+            g2.drawImage(image, tempScreenX, tempScreenY, null);
 
             // Reset alpha to 1f
             changeAlpha(g2, 1f);

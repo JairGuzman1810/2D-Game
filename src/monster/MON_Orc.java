@@ -47,6 +47,12 @@ public class MON_Orc extends Entity {
         attackArea.width = 48;
         attackArea.height = 48;
 
+        // Sets the duration of the first attack motion phase (e.g., wind-up animation).
+        motion1_duration = 40;
+        // Sets the duration of the second attack motion phase (e.g., strike animation).
+        motion2_duration = 85;
+
+
         // Initializes images for movement and attack animations.
         getImage();
         getAttackImage();
@@ -92,6 +98,11 @@ public class MON_Orc extends Entity {
 
             // Moves in a random direction when not chasing.
             getRandomDirection();
+        }
+
+        // Checks if the orc should initiate an attack based on the player's range and a probability rate.
+        if (!attacking) {
+            checkIsAttacking(30, gp.tileSize * 4, gp.tileSize);
         }
     }
 

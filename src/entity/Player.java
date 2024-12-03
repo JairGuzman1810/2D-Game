@@ -127,12 +127,18 @@ public class Player extends Entity {
     }
 
 
-    // Calculates the player's total attack power based on strength and equipped weapon.
+    // Returns the player's total attack power based on their strength and equipped weapon.
     public int getAttack() {
-        // Update attack area based on the current weapon's attributes.
+        // Sets the attack area size according to the equipped weapon.
         attackArea = currentWeapon.attackArea;
 
-        // Return total attack power by multiplying strength with weapon's attack value.
+        // Sets the duration of the first motion phase for the weapon's attack.
+        motion1_duration = currentWeapon.motion1_duration;
+
+        // Sets the duration of the second motion phase for the weapon's attack.
+        motion2_duration = currentWeapon.motion2_duration;
+
+        // Calculates the total attack power as strength multiplied by the weapon's attack value.
         return strength * currentWeapon.attackValue;
     }
 
@@ -338,63 +344,6 @@ public class Player extends Entity {
             gp.playSE(12);  // Plays the game over sound effect.
         }
     }
-
-    // Controls the attack animation by toggling between two frames.
-    private void attacking() {
-        spriteCounter++; // Increment counter for frame control.
-
-
-        // Determine the attack phase based on spriteCounter.
-        if (spriteCounter <= 5) {
-            spriteNum = 1; // Initial attack phase.
-        } else if (spriteCounter <= 25) {
-            spriteNum = 2; // Second phase during attack.
-
-            // Save the current worldX, worldY, solidArea
-            int currentWorldX = worldX;
-            int currentWorldY = worldY;
-
-            int solidAreaWidth = solidArea.width;
-            int solidAreaHeight = solidArea.height;
-
-            // Adjust player's worldX/Y for the attackArea
-            switch (direction) {
-                case "up" -> worldY -= attackArea.height;
-                case "down" -> worldY += attackArea.height;
-                case "left" -> worldX -= attackArea.width;
-                case "right" -> worldX += attackArea.width;
-            }
-
-            // attackArea becomes solidArea
-            solidArea.width = attackArea.width;
-            solidArea.height = attackArea.height;
-
-            // Check monster collision with the updated worldX, worldY and solidArea
-            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            damageMonster(monsterIndex, this, attack, currentWeapon.knockBackPower);
-
-            // Check interactive tile collision with the updated worldX, worldY and solidArea
-            int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
-            damageInteractiveTile(iTileIndex);
-
-            // Check projectile collision with the updated worldX, worldY and solidArea
-            int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
-            damageProjectile(projectileIndex);
-
-            // After checking collision, restore the original data
-            worldX = currentWorldX;
-            worldY = currentWorldY;
-            solidArea.width = solidAreaWidth;
-            solidArea.height = solidAreaHeight;
-
-
-        } else {
-            spriteNum = 1; // Reset phase after completing the attack.
-            spriteCounter = 0; // Reset sprite counter.
-            attacking = false; // End attacking animation.
-        }
-    }
-
 
     // Handles object interaction when the player collides with an object (e.g., key, door, chest).
     // This method checks if an object is available at the collision point and processes the pickup.
