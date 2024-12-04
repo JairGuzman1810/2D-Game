@@ -540,25 +540,24 @@ public class Entity {
         }
     }
 
-    // Controls the attack animation by toggling between two frames.
+    // Method to control the attack animation and handle collision checks during the attack.
     public void attacking() {
-        spriteCounter++; // Increment counter for frame control.
-
+        spriteCounter++; // Increment counter to control the animation frame.
 
         // Determine the attack phase based on spriteCounter.
         if (spriteCounter <= motion1_duration) {
-            spriteNum = 1; // Initial attack phase.
+            spriteNum = 1; // First phase of the attack animation.
         } else if (spriteCounter <= motion2_duration) {
-            spriteNum = 2; // Second phase during attack.
+            spriteNum = 2; // Second phase of the attack animation, which includes attack mechanics.
 
-            // Save the current worldX, worldY, solidArea
+            // Save the current position and solid area dimensions to restore them after attack calculations.
             int currentWorldX = worldX;
             int currentWorldY = worldY;
 
             int solidAreaWidth = solidArea.width;
             int solidAreaHeight = solidArea.height;
 
-            // Adjust player's worldX/Y for the attackArea
+            // Adjust the entity's position based on the direction of the attack, simulating attack reach.
             switch (direction) {
                 case "up" -> worldY -= attackArea.height;
                 case "down" -> worldY += attackArea.height;
@@ -566,46 +565,48 @@ public class Entity {
                 case "right" -> worldX += attackArea.width;
             }
 
-            // attackArea becomes solidArea
+            // Temporarily change the solid area to match the attack area for collision detection.
             solidArea.width = attackArea.width;
             solidArea.height = attackArea.height;
 
             if (type == type_monster) {
+                // If the entity is a monster, check if it collides with the player.
                 if (gp.cChecker.checkPlayer(this)) {
+                    // Inflict damage to the player if collision is detected.
                     damagePlayer(attack);
+
+                    // Apply a knockback effect to the player, pushing them away from the monster.
+                    setKnockBack(gp.player, this, knockBackPower);
                 }
+            } else { // If the entity is the player.
 
-            } else { // Player
-
-                // Check monster collision with the updated worldX, worldY and solidArea
+                // Check for collisions with monsters and apply damage if detected.
                 int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
                 gp.player.damageMonster(monsterIndex, this, attack, currentWeapon.knockBackPower);
 
-                // Check interactive tile collision with the updated worldX, worldY and solidArea
+                // Check for collisions with interactive tiles and handle their effects.
                 int iTileIndex = gp.cChecker.checkEntity(this, gp.iTile);
                 gp.player.damageInteractiveTile(iTileIndex);
 
-                // Check projectile collision with the updated worldX, worldY and solidArea
+                // Check for collisions with projectiles and handle their effects.
                 int projectileIndex = gp.cChecker.checkEntity(this, gp.projectile);
                 gp.player.damageProjectile(projectileIndex);
-
-
             }
 
-
-            // After checking collision, restore the original data
+            // After all collision checks, restore the original position and solid area dimensions.
             worldX = currentWorldX;
             worldY = currentWorldY;
             solidArea.width = solidAreaWidth;
             solidArea.height = solidAreaHeight;
 
-
         } else {
-            spriteNum = 1; // Reset phase after completing the attack.
-            spriteCounter = 0; // Reset sprite counter.
-            attacking = false; // End attacking animation.
+            // Reset animation and attack state after completing the attack phases.
+            spriteNum = 1; // Return to the initial sprite.
+            spriteCounter = 0; // Reset the animation counter.
+            attacking = false; // Mark the end of the attack.
         }
     }
+
 
     // Method to handle player damage when hit by a monster or projectile.
     // This method calculates the damage, taking into account whether the player is guarding.

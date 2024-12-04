@@ -5,7 +5,6 @@ import main.GamePanel;
 import object.OBJ_CoinBronze;
 import object.OBJ_Heart;
 import object.OBJ_ManaCrystal;
-import object.OBJ_Rock;
 
 import java.util.Random;
 
@@ -33,7 +32,7 @@ public class MON_Orc extends Entity {
         attack = 8;                             // Attack power of the orc.
         defense = 2;                            // Defense level of the orc.
         exp = 10;                               // Experience points granted when defeated.
-        projectile = new OBJ_Rock(gp);          // Projectile the orc uses for ranged attacks.
+        knockBackPower = 5;                     // Knockback power determines the force with which the target is pushed back.
 
         // Defines the solid area for collision detection.
         solidArea.x = 4;

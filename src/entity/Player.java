@@ -74,6 +74,7 @@ public class Player extends Entity {
         life = maxLife;  // Restore the player's health to the maximum.
         mana = maxMana;  // Restore the player's mana to the maximum.
         invincible = false;  // Disable invincibility, allowing the player to take damage.
+        transparent = false; // Disable transparency.
     }
 
     // Sets the default values for the player's position and speed.
@@ -211,8 +212,55 @@ public class Player extends Entity {
 
     // Update method, called every frame, processes key inputs, moves the player, and handles collisions and object interaction.
     public void update() {
+        // Handles knockback state, where the entity is pushed back upon certain events (e.g., being hit).
+        if (knockBack) {
+
+            // Check for tile collision.
+            collisionOn = false; // Reset collision state.
+            gp.cChecker.checkTile(this); // Check if the player is colliding with any tiles.
+
+            // Check for collisions with objects (like keys or doors).
+            // objIndex will hold the index of the object the player collides with.
+            gp.cChecker.checkObject(this, true);
+
+            // Check for collisions with NPC
+            // npcIndex will hold the index of the NPC the player collides with.
+            gp.cChecker.checkEntity(this, gp.npc);
+
+            // Check for collisions with monster.
+            gp.cChecker.checkEntity(this, gp.monster);
+
+            // Check for collision with interactive tiles.
+            gp.cChecker.checkEntity(this, gp.iTile);
+
+
+            if (collisionOn) {
+                // Stop knockback if a collision is detected, resetting speed and state.
+                knockBackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed;
+            } else {
+                // Apply movement based on knockback direction.
+                switch (knockBackDirection) {
+                    case "up" -> worldY -= speed;  // Push upward.
+                    case "down" -> worldY += speed; // Push downward.
+                    case "left" -> worldX -= speed; // Push to the left.
+                    case "right" -> worldX += speed; // Push to the right.
+                }
+            }
+
+            knockBackCounter++; // Increment knockback duration.
+
+            // End knockback effect after a specific time frame (e.g., 10 frames).
+            if (knockBackCounter == 10) {
+                knockBackCounter = 0;
+                knockBack = false;
+                speed = defaultSpeed; // Reset speed to default.
+            }
+
+        }
         // Check if player its attacking
-        if (attacking) {
+        else if (attacking) {
             // Call method of attacking
             attacking();
         } else if (keyH.spacePressed) {
