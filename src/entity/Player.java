@@ -259,23 +259,25 @@ public class Player extends Entity {
             }
 
         }
-        // Check if player its attacking
+        // Check if player its attacking.
         else if (attacking) {
-            // Call method of attacking
+            // Call method of attacking.
             attacking();
         } else if (keyH.spacePressed) {
             // Sets the guarding state to true when the space key is pressed.
             guarding = true;
+            // Increment the guard counter each frame when guarding.
+            guardCounter++;
         }
-        // Check if no movement keys are pressed to keep the player idle
+        // Check if no movement keys are pressed to keep the player idle.
         else if (!keyH.upPressed && !keyH.downPressed && !keyH.leftPressed && !keyH.rightPressed && !keyH.enterPressed) {
-            // Increment the stand counter each frame when idle
+            // Increment the stand counter each frame when idle.
             standCounter++;
 
-            // If the player has been idle for 20 frames, switch to the standstill sprite
+            // If the player has been idle for 20 frames, switch to the standstill sprite.
             if (standCounter == 20) {
-                spriteNum = 1; // Set sprite to represent the standing still position
-                standCounter = 0; // Reset the stand counter for future idle checks
+                spriteNum = 1; // Set sprite to represent the standing still position.
+                standCounter = 0; // Reset the stand counter for future idle checks.
             }
 
         } else {
@@ -340,6 +342,9 @@ public class Player extends Entity {
 
             // Reset the enter guarding state.
             guarding = false;
+
+            // Reset the enter guard counter.
+            guardCounter = 0;
 
             // Increment spriteCounter to control the animation frame rate.
             spriteCounter++;
@@ -477,6 +482,11 @@ public class Player extends Entity {
                 // Apply knockback if the knockBackPower is greater than 0.
                 if (knockBackPower > 0) {
                     setKnockBack(gp.monster[gp.currentMap][i], attacker, knockBackPower); // Push the monster back.
+                }
+
+                // If the monster is in an off-balance state, it receives increased damage (multiplied by 5 in this case).
+                if (gp.monster[gp.currentMap][i].offBalance) {
+                    attack *= 5;
                 }
 
                 // Calculates the damage dealt, ensuring it is at least zero (if defense is higher).

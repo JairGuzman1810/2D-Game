@@ -64,6 +64,8 @@ public class Entity {
     int dyingCounter = 0; // Tracks duration of dying animation.
     int hpBarCounter = 0; // Tracks visibility duration of the HP bar.
     int knockBackCounter = 0; // Counter to track the duration of the knockback effect.
+    public int guardCounter = 0; // Tracks the duration the player's shield is active, enabling guarding or parrying.
+    int offBalanceCounter = 0; // Tracks the duration the entity remains in a vulnerable state, receiving increased damage.
 
     // Character Status
     public int maxLife;          // Max life points the entity can have.
@@ -100,6 +102,7 @@ public class Entity {
     public String knockBackDirection;   // Direction in which the entity will be knocked back.
     public boolean guarding = false;    // Flag indicating if the entity is in a guarding state.
     public boolean transparent = false; // Flag that handles visual transparency when taking damage.
+    public boolean offBalance = false;
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -444,80 +447,89 @@ public class Entity {
     }
 
     // Updates the entity's state each frame, managing movement, collision detection, animation,
-    // and effects like knockback and invincibility.
+// and effects like knockback, guarding, and invincibility.
     public void update() {
 
-        // Handles knockback state, where the entity is pushed back upon certain events (e.g., being hit).
+        // Handles knockback state, where the entity is pushed back after being hit.
         if (knockBack) {
-
-            checkCollision(); // Check if the entity collides with something during knockback.
+            checkCollision(); // Check for collision during knockback movement.
 
             if (collisionOn) {
-                // Stop knockback if a collision is detected, resetting speed and state.
-                knockBackCounter = 0;
-                knockBack = false;
-                speed = defaultSpeed;
+                // Stop knockback if the entity collides with an obstacle.
+                knockBackCounter = 0; // Reset the knockback duration counter.
+                knockBack = false; // End the knockback state.
+                speed = defaultSpeed; // Reset the speed to its default value.
             } else {
-                // Apply movement based on knockback direction.
+                // Apply movement in the knockback direction.
                 switch (knockBackDirection) {
-                    case "up" -> worldY -= speed;  // Push upward.
-                    case "down" -> worldY += speed; // Push downward.
-                    case "left" -> worldX -= speed; // Push to the left.
-                    case "right" -> worldX += speed; // Push to the right.
+                    case "up" -> worldY -= speed;
+                    case "down" -> worldY += speed;
+                    case "left" -> worldX -= speed;
+                    case "right" -> worldX += speed;
                 }
             }
 
-            knockBackCounter++; // Increment knockback duration.
+            knockBackCounter++; // Increment knockback duration counter.
 
-            // End knockback effect after a specific time frame (e.g., 10 frames).
+            // End knockback effect after 10 frames.
             if (knockBackCounter == 10) {
                 knockBackCounter = 0;
                 knockBack = false;
-                speed = defaultSpeed; // Reset speed to default.
+                speed = defaultSpeed; // Reset speed to normal.
             }
 
         } else if (attacking) {
-            attacking();
+            attacking(); // Execute the attack behavior.
         } else {
-            // Regular entity behavior when not in knockback state.
-
-            setAction(); // Determine the entity's action (e.g., AI, movement logic).
+            // Regular behavior when the entity is not in a special state (e.g., knockback or attack).
+            setAction(); // Determine the entity's next action (e.g., AI logic).
             checkCollision(); // Check for collisions before moving.
 
-            // If no collision is detected, move in the current direction.
+            // If no collision is detected, move the entity in the current direction.
             if (!collisionOn) {
                 switch (direction) {
-                    case "up" -> worldY -= speed;  // Move up.
-                    case "down" -> worldY += speed; // Move down.
-                    case "left" -> worldX -= speed; // Move left.
-                    case "right" -> worldX += speed; // Move right.
+                    case "up" -> worldY -= speed;
+                    case "down" -> worldY += speed;
+                    case "left" -> worldX -= speed;
+                    case "right" -> worldX += speed;
                 }
             }
 
-            // Handle animation by toggling between sprites to simulate movement.
-            spriteCounter++; // Increment the sprite frame counter.
+            // Update animation frames for movement.
+            spriteCounter++; // Increment the frame counter.
 
-            // Change to the next sprite frame every 24 frames.
+            // Change the animation sprite every 24 frames for smooth movement.
             if (spriteCounter > 24) {
                 spriteNum = (spriteNum == 1) ? 2 : 1; // Toggle between sprite 1 and 2.
-                spriteCounter = 0; // Reset the sprite counter.
+                spriteCounter = 0; // Reset the frame counter.
             }
         }
 
-        // Manage invincibility duration if the entity is in an invincible state.
+        // Handle invincibility state, making the entity immune to damage temporarily.
         if (invincible) {
             invincibleCounter++; // Count frames of invincibility.
 
-            // End invincibility after 40 frames and reset the counter.
+            // End invincibility after 40 frames.
             if (invincibleCounter > 40) {
                 invincible = false; // Disable invincibility.
-                invincibleCounter = 0; // Reset the counter for reuse.
+                invincibleCounter = 0; // Reset the counter.
             }
         }
 
-        // Handle projectile cooldown by incrementing the shot availability counter up to its limit.
+        // Manage projectile cooldown to prevent rapid shooting.
         if (shotAvailableCounter < 30) {
-            shotAvailableCounter++; // Increment the counter to track shot cooldown.
+            shotAvailableCounter++; // Increment the cooldown counter.
+        }
+
+        // Handle vulnerability due to an off-balance state (e.g., after a failed parry).
+        if (offBalance) {
+            offBalanceCounter++; // Count frames of vulnerability.
+
+            // End the off-balance state after 60 frames.
+            if (offBalanceCounter > 60) {
+                offBalance = false; // Disable off-balance.
+                offBalanceCounter = 0; // Reset the counter.
+            }
         }
     }
 
@@ -574,9 +586,6 @@ public class Entity {
                 if (gp.cChecker.checkPlayer(this)) {
                     // Inflict damage to the player if collision is detected.
                     damagePlayer(attack);
-
-                    // Apply a knockback effect to the player, pushing them away from the monster.
-                    setKnockBack(gp.player, this, knockBackPower);
                 }
             } else { // If the entity is the player.
 
@@ -608,37 +617,47 @@ public class Entity {
     }
 
 
-    // Method to handle player damage when hit by a monster or projectile.
-    // This method calculates the damage, taking into account whether the player is guarding.
+    // Method to handle damage dealt to the player by a monster or projectile.
     public void damagePlayer(int attack) {
-        // Check if the player is not currently invincible before applying damage.
+
+        // Only apply damage if the player is not invincible.
         if (!gp.player.invincible) {
-            // Calculate the initial damage as the attacker's attack value minus the player's defense.
+            // Calculate damage based on the monster's attack and the player's defense.
             int damage = attack - gp.player.defense;
 
-            // Determine the opposite direction of the attacker to check if the player can guard effectively.
+            // Determine the direction opposite to the attack for guarding checks.
             String canGuardDirection = getOppositeDirection(direction);
 
-            // Check if the player is guarding and facing the correct direction to block the attack.
+            // Check if the player is guarding and facing the correct direction.
             if (gp.player.guarding && gp.player.direction.equals(canGuardDirection)) {
-                damage /= 3;
-                // Reduce damage by a third if the guard is successful.
-                gp.playSE(15); // Play a sound effect indicating successful guarding.
+                // Handle parry: if guard is triggered early (e.g., within 10 frames).
+                if (gp.player.guardCounter < 10) {
+                    damage = 0; // Negate damage completely.
+                    gp.playSE(16); // Play parry sound effect.
+                    setKnockBack(this, gp.player, knockBackPower); // Push the monster back.
+                    offBalance = true; // Set the monster to an off-balance state.
+                    spriteCounter = -60; // Trigger a special animation for the parry.
+                } else {
+                    // Handle regular guard: reduce damage by 1/3.
+                    damage /= 3;
+                    gp.playSE(15); // Play guard sound effect.
+                }
             } else {
-                // If the player is not guarding or facing the wrong direction:
-                gp.playSE(6); // Play a sound effect indicating the player took damage.
-                // Ensure a minimum damage of 1 even if the attack is less than or equal to the defense.
-                damage = Math.max(damage, 1);
+                // Handle unguarded or improperly guarded hits.
+                gp.playSE(6); // Play damage sound effect.
+                damage = Math.max(damage, 1); // Ensure a minimum of 1 damage is dealt.
             }
 
+            // If damage is dealt, apply visual and knockback effects.
             if (damage != 0) {
-                gp.player.transparent = true; // Set transparency effect on player.
+                gp.player.transparent = true; // Make the player visually transparent as feedback.
+                setKnockBack(gp.player, this, knockBackPower); // Push the player back.
             }
 
-            // Apply the calculated damage to the player's life.
+            // Subtract the damage from the player's life.
             gp.player.life -= damage;
 
-            // Set the player to invincible to prevent consecutive hits in a short time frame.
+            // Make the player invincible to prevent consecutive hits.
             gp.player.invincible = true;
         }
     }

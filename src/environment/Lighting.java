@@ -100,7 +100,7 @@ public class Lighting {
         if (dayState == day) {
             dayCounter++;
 
-            if (dayCounter > 600) {      // Transition to dusk after 600 ticks.
+            if (dayCounter > 9000) {      // Transition to dusk after 600 ticks.
                 dayState = dusk;
                 dayCounter = 0;
             }
