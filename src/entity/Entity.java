@@ -99,6 +99,7 @@ public class Entity {
     public boolean knockBack = false;   // Flag to determine if the entity is currently in a knockback state.
     public String knockBackDirection;   // Direction in which the entity will be knocked back.
     public boolean guarding = false;    // Flag indicating if the entity is in a guarding state.
+    public boolean transparent = false; // Flag that handles visual transparency when taking damage.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -607,7 +608,7 @@ public class Entity {
     }
 
     // Method to handle player damage when hit by a monster or projectile.
-// This method calculates the damage, taking into account whether the player is guarding.
+    // This method calculates the damage, taking into account whether the player is guarding.
     public void damagePlayer(int attack) {
         // Check if the player is not currently invincible before applying damage.
         if (!gp.player.invincible) {
@@ -619,7 +620,7 @@ public class Entity {
 
             // Check if the player is guarding and facing the correct direction to block the attack.
             if (gp.player.guarding && gp.player.direction.equals(canGuardDirection)) {
-                damage = Math.max(damage / 3, 1);
+                damage /= 3;
                 // Reduce damage by a third if the guard is successful.
                 gp.playSE(15); // Play a sound effect indicating successful guarding.
             } else {
@@ -627,6 +628,10 @@ public class Entity {
                 gp.playSE(6); // Play a sound effect indicating the player took damage.
                 // Ensure a minimum damage of 1 even if the attack is less than or equal to the defense.
                 damage = Math.max(damage, 1);
+            }
+
+            if (damage != 0) {
+                gp.player.transparent = true; // Set transparency effect on player.
             }
 
             // Apply the calculated damage to the player's life.

@@ -335,6 +335,7 @@ public class Player extends Entity {
             // Disable invincibility after 60 frames and reset the counter.
             if (invincibleCounter > 60) {
                 invincible = false; // End invincibility.
+                transparent = false; // End transparency.
                 invincibleCounter = 0; // Reset counter for next use.
             }
         }
@@ -516,9 +517,10 @@ public class Player extends Entity {
             // If the player is not invincible, reduce life and activate invincibility.
             if (!invincible && !gp.monster[gp.currentMap][i].dying) {
                 gp.playSE(6); // Play sound effect receive damage
-                int damage = Math.max(gp.monster[gp.currentMap][i].attack - defense, 0);
+                int damage = Math.max(gp.monster[gp.currentMap][i].attack - defense, 1);
                 life -= damage;
                 invincible = true; // Set invincibility to prevent immediate further damage.
+                transparent = true; // Set transparency effect.
             }
         }
     }
@@ -640,7 +642,7 @@ public class Player extends Entity {
         };
 
         // Apply transparency effect if the player is invincible (e.g., during a damage phase).
-        if (invincible) {
+        if (transparent) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
         }
 
