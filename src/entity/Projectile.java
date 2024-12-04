@@ -47,7 +47,14 @@ public class Projectile extends Entity {
             if (!gp.player.invincible && contactPlayer) {
                 // Calls damagePlayer to reduce player's health based on projectile attack value.
                 damagePlayer(attack);
-                generateParticle(entity.projectile, gp.player); // Generate particles when projectile hit player.
+                // Check if the player is guarding against the projectile.
+                if (gp.player.guarding) {
+                    // If the player is guarding, generate particles on the shield to indicate the projectile hit was blocked.
+                    generateParticle(entity.projectile, entity.projectile);
+                } else {
+                    // If the player is not guarding, generate particles on the player to indicate they were hit by the projectile.
+                    generateParticle(entity.projectile, gp.player);
+                }
                 // Sets projectile's state to inactive (not alive) after contact.
                 alive = false;
             }

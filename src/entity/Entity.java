@@ -520,6 +520,25 @@ public class Entity {
         }
     }
 
+    // Method to determine the opposite direction of a given direction.
+// This is used to check if the player is guarding from the correct direction of an incoming attack.
+    public String getOppositeDirection(String direction) {
+        switch (direction) {
+            case "down" -> {
+                return "up"; // If the direction is "down", the opposite is "up".
+            }
+            case "left" -> {
+                return "right"; // If the direction is "left", the opposite is "right".
+            }
+            case "right" -> {
+                return "left"; // If the direction is "right", the opposite is "left".
+            }
+            default -> {
+                return "down"; // Default to "down" if no recognized direction is provided (e.g., "up").
+            }
+        }
+    }
+
     // Controls the attack animation by toggling between two frames.
     public void attacking() {
         spriteCounter++; // Increment counter for frame control.
@@ -588,16 +607,33 @@ public class Entity {
     }
 
     // Method to handle player damage when hit by a monster or projectile.
-    // Calculates the damage based on the monster's attack and player's defense.
+// This method calculates the damage, taking into account whether the player is guarding.
     public void damagePlayer(int attack) {
-        // Check if the player is not currently invincible to allow damage.
+        // Check if the player is not currently invincible before applying damage.
         if (!gp.player.invincible) {
-            gp.playSE(6); // Play sound effect when player receives damage.
+            // Calculate the initial damage as the attacker's attack value minus the player's defense.
+            int damage = attack - gp.player.defense;
 
-            // Calculate damage as monster's attack minus player's defense, ensuring a minimum of zero damage.
-            int damage = Math.max(attack - gp.player.defense, 0);
-            gp.player.life -= damage; // Reduce player's life by the calculated damage amount.
-            gp.player.invincible = true; // Set player to invincible to prevent consecutive hits.
+            // Determine the opposite direction of the attacker to check if the player can guard effectively.
+            String canGuardDirection = getOppositeDirection(direction);
+
+            // Check if the player is guarding and facing the correct direction to block the attack.
+            if (gp.player.guarding && gp.player.direction.equals(canGuardDirection)) {
+                damage = Math.max(damage / 3, 1);
+                // Reduce damage by a third if the guard is successful.
+                gp.playSE(15); // Play a sound effect indicating successful guarding.
+            } else {
+                // If the player is not guarding or facing the wrong direction:
+                gp.playSE(6); // Play a sound effect indicating the player took damage.
+                // Ensure a minimum damage of 1 even if the attack is less than or equal to the defense.
+                damage = Math.max(damage, 1);
+            }
+
+            // Apply the calculated damage to the player's life.
+            gp.player.life -= damage;
+
+            // Set the player to invincible to prevent consecutive hits in a short time frame.
+            gp.player.invincible = true;
         }
     }
 
