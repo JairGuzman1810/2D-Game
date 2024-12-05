@@ -204,36 +204,28 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // Resets the player's position, life, and mana to their default values without restarting the entire game.
-// NPCs and monsters are also reset in their positions.
-    public void retry() {
-        player.setDefaultPosition();  // Set player back to the default starting position.
-        player.restoreLifeAndMana();  // Restore player's life and mana to maximum levels.
-
-        // Reset NPCs to their initial positions
+    // Resets the game state, restoring the player's position, health, mana, and resetting NPCs and monsters.
+// Optionally, if `restart` is true, resets all objects, interactive tiles, and lighting conditions.
+    public void resetGame(boolean restart) {
+        // Set player back to the default starting position.
+        player.setDefaultPosition();
+        // Restore player's life and mana to maximum levels.
+        player.restoreStatus();
+        // Reset NPCs to their initial positions.
         aSetter.setNPC();
-
-        // Reset monsters to their initial positions
-        aSetter.setMonster();
-    }
-
-    // Resets the game state entirely, including player attributes, inventory, objects, NPCs, monsters, and interactive tiles.
-// This is equivalent to restarting the game.
-    public void restart() {
-        player.setDefaultValues();  // Reset player's life, mana, and other default attributes.
-        player.setItems();  // Reset player's inventory to default items.
-
-        // Reset all objects in the game world
-        aSetter.setObject();
-
-        // Reset NPCs to their initial positions
-        aSetter.setNPC();
-
-        // Reset monsters to their initial positions
+        // Reset monsters to their initial positions.
         aSetter.setMonster();
 
-        // Reset interactive tiles to their default state (e.g., traps, destructibles)
-        aSetter.setInteractiveTile();
+        if (restart) {
+            // Fully reset the player to initial default attributes.
+            player.setDefaultValues();
+            // Reset all objects in the game world.
+            aSetter.setObject();
+            // Reset interactive tiles to their initial state (e.g., traps, destructibles).
+            aSetter.setInteractiveTile();
+            // Reset the lighting system to the initial "day" state.
+            eManager.lighting.resetDay();
+        }
     }
 
     // Activates full-screen mode and adjusts screen dimensions accordingly

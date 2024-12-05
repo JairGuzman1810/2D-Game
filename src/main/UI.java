@@ -810,6 +810,7 @@ public class UI {
             if (gp.keyH.enterPressed) {  // Check if the enter key is pressed
                 subState = 0;  // Reset subState
                 gp.gameState = gp.titleState;  // Change game state to title screen
+                gp.resetGame(true); // Reset game
             }
         }
 

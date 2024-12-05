@@ -52,10 +52,6 @@ public class Player extends Entity {
 
         // Set the player's initial position and speed.
         setDefaultValues();
-        getImage();
-        getAttackImage();
-        getGuardImage();
-        setItems();
     }
 
     // Sets the player's starting position in the world (worldX, worldY) in tile units.
@@ -70,46 +66,60 @@ public class Player extends Entity {
 
     // Restores the player's life and mana to their maximum values, essentially healing the player.
     // It also disables invincibility, allowing the player to take damage again.
-    public void restoreLifeAndMana() {
-        life = maxLife;  // Restore the player's health to the maximum.
-        mana = maxMana;  // Restore the player's mana to the maximum.
-        invincible = false;  // Disable invincibility, allowing the player to take damage.
-        transparent = false; // Disable transparency.
+    public void restoreStatus() {
+        life = maxLife;        // Restore the player's health to the maximum.
+        mana = maxMana;        // Restore the player's mana to the maximum.
+        invincible = false;    // Disable invincibility, allowing the player to take damage.
+        transparent = false;   // Disable transparency.
+        attacking = false;     // Ensure the player is no longer in an attacking state.
+        guarding = false;      // Ensure the player is no longer guarding.
+        knockBack = false;     // Disable knockback effects.
+        lightUpdated = true;   // Mark the light as updated since unequipping a light restores defaults.
+        speed = defaultSpeed;  // Reset the player's speed to the default value.
     }
 
-    // Sets the default values for the player's position and speed.
+    // Sets the default values for the player's position, stats, equipment, and attributes.
     public void setDefaultValues() {
         // Player's starting position in the world (worldX, worldY) in tile units.
-        worldX = gp.tileSize * 23;
-        worldY = gp.tileSize * 21;
-        // The base movement speed of the player.
-        defaultSpeed = 4;
-        // Set the player's movement speed.
-        speed = defaultSpeed;
-        // Default movement direction.
-        direction = "down";
+        worldX = gp.tileSize * 23; // Initial horizontal position (in tiles).
+        worldY = gp.tileSize * 21; // Initial vertical position (in tiles).
 
-        // Player stats
-        maxLife = 6; // Player's maximum health represented by heart images on the screen.
-        life = maxLife; // Sets the player's initial health equal to the maximum, displayed as full hearts.
-        maxMana = 4; // Player's maximum mana represented by crystal images on the screen.
-        mana = maxMana; // Sets the player's initial mana equal to the maximum, displayed as full crystals.
-        level = 1; // Player's starting level, which increases as they gain experience.
-        strength = 1; // The more strength the player has, the more damage they deal.
-        dexterity = 1; // The more dexterity the player has, the less damage they receive.
-        exp = 0; // Player's experience points, earned by defeating enemies and completing objectives.
-        nextLevelExp = 5; // The amount of experience required to reach the next level.
-        coin = 0; // The player's current number of coins, used for in-game purchases.
-        // Sets the player's current weapon to a normal sword.
-        currentWeapon = new OBJ_Sword_Normal(gp);
-        // Sets the player's current shield to a wooden shield.
-        currentShield = new OBJ_Shield_Wood(gp);
-        // Sets the player's current projectile to a fire ball.
-        projectile = new OBJ_Fireball(gp);
-        // Calculates total attack power based on strength and the equipped weapon.
-        attack = getAttack();
-        // Calculates total defense power based on dexterity and the equipped shield.
-        defense = getDefense();
+        // The base movement speed of the player.
+        defaultSpeed = 4; // Default speed value assigned to the player.
+        speed = defaultSpeed; // Set the player's current speed.
+
+        // Default movement direction.
+        direction = "down"; // Player faces downward at the start of the game.
+
+        // Player stats.
+        maxLife = 6; // Player's maximum health, represented by hearts on the UI.
+        life = maxLife; // Sets the player's starting health to full (all hearts filled).
+        maxMana = 4; // Player's maximum mana, represented by crystals on the UI.
+        mana = maxMana; // Sets the player's starting mana to full (all crystals filled).
+        level = 1; // Player's initial level.
+        strength = 1; // Affects the player's attack power (higher strength = more damage).
+        dexterity = 1; // Affects the player's defense power (higher dexterity = less damage taken).
+        exp = 0; // Starting experience points.
+        nextLevelExp = 5; // Experience required to level up.
+        coin = 0; // Initial coin count (used for in-game purchases).
+
+        // Equipment setup.
+        currentWeapon = new OBJ_Sword_Normal(gp); // The default weapon equipped by the player.
+        currentShield = new OBJ_Shield_Wood(gp); // The default shield equipped by the player.
+        currentLight = null; // No light source equipped initially.
+        projectile = new OBJ_Fireball(gp); // Default projectile assigned to the player.
+
+        // Calculated stats based on player attributes and equipment.
+        attack = getAttack(); // Calculate attack power based on strength and weapon.
+        defense = getDefense(); // Calculate defense power based on dexterity and shield.
+
+        // Initialize player images and animations.
+        getImage(); // Load movement sprites for the player.
+        getAttackImage(); // Load attack animation sprites.
+        getGuardImage(); // Load guard/block animation sprites.
+
+        // Set the player's initial inventory.
+        setItems(); // Populate the player's inventory with starting items (e.g., health potions).
     }
 
     // Sets the initial items for the player's inventory.

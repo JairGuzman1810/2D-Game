@@ -88,6 +88,13 @@ public class Lighting {
         g2.dispose(); // Release resources.
     }
 
+    // Resets the day-night cycle to its initial state.
+    public void resetDay() {
+        dayState = day;          // Set the current day-night cycle phase to "day."
+        dayCounter = 0;          // Reset the day counter to the start of the cycle.
+        filterAlpha = 0f;        // Clear any darkness effect by setting opacity to 0.
+    }
+
     // The update method checks if the player's light source has changed
     // and updates the lighting effect accordingly.
     public void update() {
@@ -100,7 +107,7 @@ public class Lighting {
         if (dayState == day) {
             dayCounter++;
 
-            if (dayCounter > 9000) {      // Transition to dusk after 600 ticks.
+            if (dayCounter > 600) {      // Transition to dusk after 600 ticks.
                 dayState = dusk;
                 dayCounter = 0;
             }
