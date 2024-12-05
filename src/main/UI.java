@@ -811,6 +811,7 @@ public class UI {
                 subState = 0;  // Reset subState
                 gp.gameState = gp.titleState;  // Change game state to title screen
                 gp.resetGame(true); // Reset game
+                gp.stopMusic(); // Stop music
             }
         }
 

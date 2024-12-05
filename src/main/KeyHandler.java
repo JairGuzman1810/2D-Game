@@ -78,6 +78,9 @@ public class KeyHandler implements KeyListener {
                         gp.playMusic(0);           // Start music
                     } else if (gp.ui.commandNum == 1) {
                         // Placeholder for additional functionality
+                        gp.saveLoad.load();          // Load player stats
+                        gp.gameState = gp.playState; // Start game if commandNum is 0
+                        gp.playMusic(0);             // Start music
                     } else {
                         System.exit(0); // Exit the game if commandNum is 2
                     }

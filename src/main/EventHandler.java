@@ -135,16 +135,24 @@ public class EventHandler {
         canTouchEvent = false;
     }
 
-    // Triggers the healing pool event, restoring player life to the maximum.
+    // Triggers the healing pool event, restoring player life to the maximum and saving progress.
     public void healingPool(int gameState) {
-        // Check if player has pressed enter key to activate healing.
+        // Check if player has pressed the enter key to activate healing.
         if (gp.keyH.enterPressed) {
             gp.playSE(2); // Play sound effect indicating healing.
-            gp.player.attackCancel = true;
-            gp.gameState = gameState; // Change game state to display dialogue.
-            gp.ui.currentDialogue = "You drink the water. \n Your HP has been recovered."; // Healing dialogue.
-            gp.player.life = gp.player.maxLife; // Restore player's life to maximum.
-            gp.aSetter.setMonster(); // Respawn the monster
+            gp.player.attackCancel = true; // Cancel any ongoing attack.
+            gp.gameState = gameState; // Change the game state to display dialogue.
+
+            // Display dialogue indicating the healing process and save confirmation.
+            gp.ui.currentDialogue = "You drink the water.\nYour HP has been recovered.\n(The progress has been saved)";
+
+            gp.player.life = gp.player.maxLife; // Restore the player's health to its maximum value.
+            gp.player.mana = gp.player.maxMana; // Restore the player's mana to its maximum value.
+
+            gp.aSetter.setMonster(); // Respawn monsters for a refreshed challenge.
+
+            // Save the game's progress, including the player's current stats and state.
+            gp.saveLoad.save();
         }
     }
 

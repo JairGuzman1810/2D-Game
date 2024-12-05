@@ -1,6 +1,7 @@
 package main;
 
 import ai.PathFinder;
+import data.SaveLoad;
 import entity.Entity;
 import entity.Player;
 import environment.EnvironmentManager;
@@ -85,7 +86,11 @@ public class GamePanel extends JPanel implements Runnable {
     // Manages environmental effects, such as lighting, for enhancing the game's atmosphere.
     EnvironmentManager eManager = new EnvironmentManager(this);
 
+    // Manages the display of the game map or minimap, providing a visual representation of the player's surroundings.
     Map map = new Map(this);
+
+    // Handles the saving and loading of game progress.
+    SaveLoad saveLoad = new SaveLoad(this);
 
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
