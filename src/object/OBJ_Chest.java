@@ -12,17 +12,10 @@ public class OBJ_Chest extends Entity {
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
-    // The loot contained inside the chest.
-    Entity loot;
-
-    // Indicates whether the chest is open.
-    boolean isOpen = false;
-
     // Constructor that sets the chest's name and loads its image.
-    public OBJ_Chest(GamePanel gp, Entity loot) {
+    public OBJ_Chest(GamePanel gp) {
         super(gp);
         this.gp = gp;
-        this.loot = loot;
 
         // Set the name of the chest.
         name = "Chest";
@@ -49,6 +42,12 @@ public class OBJ_Chest extends Entity {
 
         // Set the type of this entity to an obstacle.
         type = type_obstacle;
+    }
+
+    // Assigns the loot that the chest will contain when opened by the player.
+    // The loot can be any type of Entity, such as a weapon, potion, or coin.
+    public void setLoot(Entity loot) {
+        this.loot = loot; // Stores the given entity as the chest's loot.
     }
 
     // Handles interaction with the chest when the player interacts with it.

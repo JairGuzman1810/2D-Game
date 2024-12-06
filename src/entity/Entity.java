@@ -102,7 +102,11 @@ public class Entity {
     public String knockBackDirection;   // Direction in which the entity will be knocked back.
     public boolean guarding = false;    // Flag indicating if the entity is in a guarding state.
     public boolean transparent = false; // Flag that handles visual transparency when taking damage.
-    public boolean offBalance = false;
+    public boolean offBalance = false;  // Flag indicating if the entity is in an vulnerable state.
+    public boolean isOpen = false;             // Flag that indicates whether the chest is open.
+
+    // Chest
+    public Entity loot;                        // The loot contained inside the chest.
 
     // Item Attributes
     public int attackValue;             // Attack value provided by the current weapon or item.
@@ -187,6 +191,12 @@ public class Entity {
     // Adds the target's solidArea.y offset to account for its precise location.
     public int getGoalRow(Entity target) {
         return (target.worldY + target.solidArea.y) / gp.tileSize;
+    }
+
+    // Defines a method to assign loot to an entity.
+    // This method can be overridden by subclasses to customize loot.
+    public void setLoot(Entity loot) {
+
     }
 
     // Sets the action for the entity, such as determining its direction or behavior.

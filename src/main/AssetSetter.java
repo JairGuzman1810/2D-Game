@@ -41,7 +41,8 @@ public class AssetSetter {
         gp.obj[mapNum][2].worldY = gp.tileSize * 12;
 
         // Place a chest at tile coordinates (30, 29)
-        gp.obj[mapNum][2] = new OBJ_Chest(gp, new OBJ_Key(gp));
+        gp.obj[mapNum][2] = new OBJ_Chest(gp);
+        gp.obj[mapNum][2].setLoot(new OBJ_Key(gp));
         gp.obj[mapNum][2].worldX = gp.tileSize * 30;
         gp.obj[mapNum][2].worldY = gp.tileSize * 28;
 

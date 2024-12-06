@@ -1,6 +1,8 @@
 package data;
 
+import entity.Entity;
 import main.GamePanel;
+import object.*;
 
 import java.io.*;
 
@@ -13,6 +15,46 @@ public class SaveLoad {
     // Constructor to initialize the SaveLoad class with the current game panel.
     public SaveLoad(GamePanel gp) {
         this.gp = gp;
+    }
+
+
+    public Entity getObject(String itemName) {
+
+        switch (itemName) {
+            case "Woodcutter's Axe" -> {
+                return new OBJ_Axe(gp);
+            }
+            case "Boots" -> {
+                return new OBJ_Boots(gp);
+            }
+            case "Key" -> {
+                return new OBJ_Key(gp);
+            }
+            case "Lantern" -> {
+                return new OBJ_Lantern(gp);
+            }
+            case "Red Potion" -> {
+                return new OBJ_Potion_Red(gp);
+            }
+            case "Blue Shield" -> {
+                return new OBJ_Shield_Blue(gp);
+            }
+            case "Wood Shield" -> {
+                return new OBJ_Shield_Wood(gp);
+            }
+            case "Tent" -> {
+                return new OBJ_Tent(gp);
+            }
+            case "Door" -> {
+                return new OBJ_Door(gp);
+            }
+            case "Chest" -> {
+                return new OBJ_Chest(gp);
+            }
+            default -> {
+                return new OBJ_Sword_Normal(gp);
+            }
+        }
     }
 
     // Saves the player's progress to a "save.dat" file.
@@ -35,6 +77,12 @@ public class SaveLoad {
             ds.exp = gp.player.exp;
             ds.nextLevelExp = gp.player.nextLevelExp;
             ds.coin = gp.player.coin;
+
+            // Player inventory
+            for (int i = 0; i < gp.player.inventory.size(); i++) {
+                ds.itemNames.add(gp.player.inventory.get(i).name);
+                ds.itemAmounts.add(gp.player.inventory.get(i).amount);
+            }
 
             // Write the DataStorage object to the file.
             oos.writeObject(ds);
@@ -66,6 +114,15 @@ public class SaveLoad {
             gp.player.exp = ds.exp;
             gp.player.nextLevelExp = ds.nextLevelExp;
             gp.player.coin = ds.coin;
+
+            // Player inventory
+            gp.player.inventory.clear();
+            for (int i = 0; i < ds.itemNames.size(); i++) {
+
+                gp.player.inventory.add(getObject(ds.itemNames.get(i)));
+                gp.player.inventory.get(i).amount = ds.itemAmounts.get(i);
+
+            }
 
         } catch (Exception e) {
             // Handle exceptions that may occur during loading.

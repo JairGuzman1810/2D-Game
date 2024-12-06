@@ -124,7 +124,7 @@ public class Lighting {
 
         if (dayState == night) {
             dayCounter++;
-            if (dayCounter > 9000) {     // After a prolonged night, transition to dawn.
+            if (dayCounter > 600) {     // After a prolonged night, transition to dawn.
                 dayState = dawn;
                 dayCounter = 0;
             }
