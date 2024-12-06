@@ -88,6 +88,35 @@ public class SaveLoad {
             ds.currentWeaponSlot = gp.player.getCurrentWeaponSlot();   // Slot of the currently equipped weapon.
             ds.currentShieldSlot = gp.player.getCurrentShieldSlot();   // Slot of the currently equipped shield.
 
+            // Objects on map: Initialize arrays to track objects' positions, loot, and state.
+            ds.mapObjectNames = new String[gp.maxMap][gp.obj[1].length];  // Object names on each map.
+            ds.mapObjectWorldX = new int[gp.maxMap][gp.obj[1].length];    // X coordinates of map objects.
+            ds.mapObjectWorldY = new int[gp.maxMap][gp.obj[1].length];    // Y coordinates of map objects.
+            ds.mapObjectLootNames = new String[gp.maxMap][gp.obj[1].length]; // Loot contained in map objects.
+            ds.mapObjectOpened = new boolean[gp.maxMap][gp.obj[1].length];  // Whether map objects like chests are opened.
+
+            // Iterate through all maps to store map object details.
+            for (int mapNum = 0; mapNum < gp.maxMap; mapNum++) {
+                for (int i = 0; i < gp.obj[1].length; i++) {
+                    // If the object is null, mark it as "NA" (Not Available) in the data storage.
+                    if (gp.obj[mapNum][i] == null) {
+                        ds.mapObjectNames[mapNum][i] = "NA";
+                    } else {
+                        // Store object details (name, position, loot, and opened status).
+                        ds.mapObjectNames[mapNum][i] = gp.obj[mapNum][i].name;
+                        ds.mapObjectWorldX[mapNum][i] = gp.obj[mapNum][i].worldX;
+                        ds.mapObjectWorldY[mapNum][i] = gp.obj[mapNum][i].worldY;
+
+                        if (gp.obj[mapNum][i].loot != null) {
+                            // Store loot name if it exists.
+                            ds.mapObjectLootNames[mapNum][i] = gp.obj[mapNum][i].loot.name;
+                            // Store whether the object has been opened (like a chest).
+                            ds.mapObjectOpened[mapNum][i] = gp.obj[mapNum][i].isOpen;
+                        }
+                    }
+                }
+            }
+
             // Write the DataStorage object to the file.
             oos.writeObject(ds); // Serialize and write the data to the file.
             oos.close();         // Close the stream after writing to release resources.
@@ -136,6 +165,33 @@ public class SaveLoad {
 
             // Update player attack sprites based on the restored weapon.
             gp.player.getAttackImage();
+
+            // Restore objects on the map and their states.
+            for (int mapNum = 0; mapNum < gp.maxMap; mapNum++) {
+                for (int i = 0; i < gp.obj[i].length; i++) {
+
+                    if (ds.mapObjectNames[mapNum][i].equals("NA")) {
+                        gp.obj[mapNum][i] = null; // If the object is marked as "NA", set it to null.
+                    } else {
+                        // Retrieve and restore map object details.
+                        gp.obj[mapNum][i] = getObject(ds.mapObjectNames[mapNum][i]);
+                        gp.obj[mapNum][i].worldX = ds.mapObjectWorldX[mapNum][i];
+                        gp.obj[mapNum][i].worldY = ds.mapObjectWorldY[mapNum][i];
+
+                        // Restore the loot associated with the object, if any.
+                        if (ds.mapObjectLootNames[mapNum][i] != null) {
+                            gp.obj[mapNum][i].loot = getObject(ds.mapObjectNames[mapNum][i]);
+                        }
+
+                        // Restore whether the map object (like a chest) is opened.
+                        gp.obj[mapNum][i].isOpen = ds.mapObjectOpened[mapNum][i];
+                        if (gp.obj[mapNum][i].isOpen) {
+                            // Change chest to open sprite if it's marked as opened.
+                            gp.obj[mapNum][i].down1 = gp.obj[mapNum][i].image2;
+                        }
+                    }
+                }
+            }
 
         } catch (Exception e) {
             // Handle exceptions that may occur during loading.

@@ -26,4 +26,11 @@ public class DataStorage implements Serializable {
     ArrayList<Integer> itemAmounts = new ArrayList<>(); // Quantities of the respective items.
     int currentWeaponSlot; // Index of the current weapon in the inventory.
     int currentShieldSlot; // Index of the current shield in the inventory.
+
+    // Objects on map
+    String[][] mapObjectNames;        // Names of objects placed in the map.
+    int[][] mapObjectWorldX;          // X coordinates of map objects.
+    int[][] mapObjectWorldY;          // Y coordinates of map objects.
+    String[][] mapObjectLootNames;    // Names of loot contained in map objects (e.g., chests).
+    boolean[][] mapObjectOpened;      // Whether a map object (like a chest) has been opened or not.
 }
