@@ -159,6 +159,27 @@ public class Player extends Entity {
         return dexterity * currentShield.defenseValue;
     }
 
+    // Finds the index of the currently equipped weapon in the inventory.
+    public int getCurrentWeaponSlot() {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i) == currentWeapon) {
+                return i; // Return the index immediately when found.
+            }
+        }
+        return -1; // Return -1 if no weapon is found.
+    }
+
+    // Finds the index of the currently equipped shield in the inventory.
+    public int getCurrentShieldSlot() {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i) == currentShield) {
+                return i; // Return the index immediately when found.
+            }
+        }
+        return -1; // Return -1 if no shield is found.
+    }
+
+
     // Load the images for the player's movement in all four directions.
     public void getImage() {
         // Use the setup method to load and scale player images for different movements

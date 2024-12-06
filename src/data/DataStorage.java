@@ -3,9 +3,11 @@ package data;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
-// Stores the player's stats and inventory data and implements Serializable
-// to allow saving and loading the data into a file.
+// The DataStorage class stores the player's stats and inventory data, implementing Serializable
+// to allow saving and loading of the data into a file for persistent gameplay.
+// It holds important information such as the player's level, health, mana, strength, dexterity, experience,
+// coin count, and the player's inventory (items and their quantities). Additionally, it tracks the
+// currently equipped weapon and shield slots by storing their indices.
 public class DataStorage implements Serializable {
     // Player stats
     int level;          // Player's current level.
@@ -22,4 +24,6 @@ public class DataStorage implements Serializable {
     // Player inventory
     ArrayList<String> itemNames = new ArrayList<>();  // Names of items in the inventory.
     ArrayList<Integer> itemAmounts = new ArrayList<>(); // Quantities of the respective items.
+    int currentWeaponSlot; // Index of the current weapon in the inventory.
+    int currentShieldSlot; // Index of the current shield in the inventory.
 }
