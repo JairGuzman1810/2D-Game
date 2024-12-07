@@ -210,12 +210,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     // Resets the game state, restoring the player's position, health, mana, and resetting NPCs and monsters.
-// Optionally, if `restart` is true, resets all objects, interactive tiles, and lighting conditions.
+    // Optionally, if `restart` is true, resets all objects, interactive tiles, and lighting conditions.
     public void resetGame(boolean restart) {
         // Set player back to the default starting position.
         player.setDefaultPosition();
         // Restore player's life and mana to maximum levels.
         player.restoreStatus();
+        
+        // Reset all counters controlling the player's temporary states (e.g., invincibility, cooldowns).
+        player.resetCounter();
+
         // Reset NPCs to their initial positions.
         aSetter.setNPC();
         // Reset monsters to their initial positions.

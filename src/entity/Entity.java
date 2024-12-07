@@ -193,6 +193,19 @@ public class Entity {
         return (target.worldY + target.solidArea.y) / gp.tileSize;
     }
 
+    // Resets all counters used to track the player's or entities' temporary states.
+    // This method ensures all timing-related mechanics are initialized to their default state.
+    public void resetCounter() {
+        actionLockCounter = 0; // Resets the action lock timer.
+        invincibleCounter = 0; // Resets the invincibility timer.
+        shotAvailableCounter = 0; // Resets the projectile cooldown timer.
+        dyingCounter = 0; // Resets the dying animation timer.
+        hpBarCounter = 0; // Resets the HP bar visibility timer.
+        knockBackCounter = 0; // Resets the knockback effect timer.
+        guardCounter = 0; // Resets the guard/parry timer.
+        offBalanceCounter = 0; // Resets the off-balance state timer.
+    }
+
     // Defines a method to assign loot to an entity.
     // This method can be overridden by subclasses to customize loot.
     public void setLoot(Entity loot) {
