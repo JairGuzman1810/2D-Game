@@ -123,8 +123,9 @@ public class Entity {
     public Entity attacker;             // The entity causing the knockback effect.
 
     // Dialogue
-    String[] dialogues = new String[20]; // Array to store dialogue text, allowing multiple phrases.
-    int dialogueIndex = 0; // Current dialogue index for displaying text.
+    public String[][] dialogues = new String[20][20];   // Array to store dialogue text, allowing multiple phrases.
+    public int dialogueIndex = 0;                       // Current dialogue index for displaying text.
+    public int dialogueSet = 0;                         // Specifies the current set of dialogue for the entity.
 
     // Object Properties
     public BufferedImage image, image2, image3; // Images representing the object (e.g., key, door).
@@ -384,16 +385,12 @@ public class Entity {
     // Handles the entity speaking by displaying dialogue text to the player
     // and adjusting the entity's direction to face the player.
     public void speak() {
-        // Reset dialogue index if no more dialogue is available
-        if (dialogues[dialogueIndex] == null) {
-            dialogueIndex = 0;
-        }
 
-        // Display the current dialogue
-        gp.ui.currentDialogue = dialogues[dialogueIndex];
-        dialogueIndex++; // Move to the next dialogue for future interactions
+    }
 
-        // Face the entity towards the player’s direction
+
+    // Adjusts the entity's direction to face the player during dialogue interactions.
+    public void facePlayer() {
         switch (gp.player.direction) {
             case "up" -> direction = "down";
             case "down" -> direction = "up";
@@ -402,6 +399,14 @@ public class Entity {
         }
     }
 
+    // Starts a dialogue interaction with the specified entity, switching to dialogue mode.
+    // Assigns the NPC to the UI and selects the dialogue set to display.
+    public void startDialogue(Entity entity, int setNum) {
+        gp.gameState = gp.dialogueState; // Change the game state to dialogue mode.
+        gp.ui.npc = entity; // Assign the NPC to the UI for rendering dialogue.
+        dialogueSet = setNum; // Set the current dialogue group for the interaction.
+    }
+    
     // Handles player interactions with objects like doors or chests; override in subclasses.
     public void interact() {
         // Default: No interaction behavior. Subclasses define specific logic.

@@ -47,10 +47,17 @@ public class NPC_OldMan extends Entity {
 
     // Sets the series of dialogues for this NPC, which will display sequentially when spoken to.
     public void setDialogue() {
-        dialogues[0] = "Hello, boy.";
-        dialogues[1] = "So you've come to this island to \nfind the treasure?";
-        dialogues[2] = "I used to be a great wizard but now... \nI'm a bit too old for taking an \nadventure";
-        dialogues[3] = "Well, good luck on you.";
+        dialogues[0][0] = "Hello, boy.";
+        dialogues[0][1] = "So you've come to this island to\nfind the treasure?";
+        dialogues[0][2] = "I used to be a great wizard but now...\nI'm a bit too old for taking an\nadventure.";
+        dialogues[0][3] = "Well, good luck on you.";
+
+        dialogues[1][0] = "If you become tired, rest at the water.";
+        dialogues[1][1] = "However, the monsters reappear if you rest.\nI don't know why but that's how it works.";
+        dialogues[1][2] = "In any case, don't push yourself to hard.";
+
+        dialogues[2][0] = "I wonder how to open that door...";
+
     }
 
     @Override
@@ -93,13 +100,10 @@ public class NPC_OldMan extends Entity {
     }
 
     @Override
-    // Triggers the speak method inherited from Entity, which will manage dialogue display
-    // and align the NPC’s direction towards the player during interaction.
-    // Once the player talks to the NPC, the NPC starts moving towards a specific location on the map.
+    // Manages dialogue display and aligns the NPC to face the player during interaction.
+    // Also initiates the dialogue for the current dialogue set.
     public void speak() {
-        super.speak();
-
-        // Once the player speaks to the NPC, set onPath to true, indicating NPC will move.
-        onPath = true;
+        facePlayer(); // Ensure the NPC faces the player.
+        startDialogue(this, dialogueSet); // Begin the dialogue using the current set.
     }
 }

@@ -310,27 +310,42 @@ public class UI {
         g2.drawString(text, x, y);
     }
 
-    // Draws the dialogue screen for displaying text dialogue in the game.
+    // Displays the dialogue window and handles the logic for showing text to the player.
     public void drawDialogueScreen() {
         // Define the position and size of the dialogue window.
-        int x = gp.tileSize * 3; // X position with padding from the left.
-        int y = gp.tileSize / 2;  // Y position with padding from the top.
+        int x = gp.tileSize * 3; // Horizontal padding from the screen edge.
+        int y = gp.tileSize / 2;  // Vertical padding from the screen edge.
+        int width = gp.screenWidth - (gp.tileSize * 6); // Dialogue window width.
+        int height = gp.tileSize * 4; // Dialogue window height.
 
-        int width = gp.screenWidth - (gp.tileSize * 6); // Width of the dialogue window.
-        int height = gp.tileSize * 4; // Height of the dialogue window.
+        drawSubWindow(x, y, width, height); // Render the dialogue window.
 
-        // Draw the sub-window for the dialogue.
-        drawSubWindow(x, y, width, height);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32)); // Set font size for dialogue text.
+        x += gp.tileSize; // Adjust X for inner padding.
+        y += gp.tileSize; // Adjust Y for inner padding.
 
-        // Set the font size for the dialogue text.
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32));
-        x += gp.tileSize; // Adjust X position for padding within the window.
-        y += gp.tileSize; // Adjust Y position for padding within the window.
+        // Check if the current dialogue line exists for the NPC.
+        if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
+            currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex]; // Get the dialogue text.
 
-        // Split the current dialogue into lines and draw each line in the window.
+            if (gp.keyH.enterPressed) { // Progress dialogue when the Enter key is pressed.
+                if (gp.gameState == gp.dialogueState) {
+                    npc.dialogueIndex++; // Move to the next line of dialogue.
+                    gp.keyH.enterPressed = false; // Reset Enter key state.
+                }
+            }
+        } else {
+            npc.dialogueIndex = 0; // Reset dialogue index when all lines are shown.
+
+            if (gp.gameState == gp.dialogueState) {
+                gp.gameState = gp.playState; // Return to gameplay state after dialogue ends.
+            }
+        }
+
+        // Split the dialogue text into lines and draw each line in the dialogue window.
         for (String line : currentDialogue.split("\n")) {
-            g2.drawString(line, x, y); // Draw the line at the specified position.
-            y += 40; // Move Y position down for the next line.
+            g2.drawString(line, x, y); // Render the line at the specified position.
+            y += 40; // Move Y position down for the next line of text.
         }
     }
 
@@ -921,6 +936,8 @@ public class UI {
     // This method draws the trade selection menu (Buy, Sell, Leave)
     public void trade_select() {
 
+        npc.dialogueSet = 0;
+
         drawDialogueScreen(); // Draw the dialogue screen as the background
 
         // Set up the trade selection window's position and size
@@ -961,8 +978,7 @@ public class UI {
             g2.drawString(">", x - 24, y); // Show a cursor to indicate selection
             if (gp.keyH.enterPressed) { // If Enter is pressed, exit the trade and return to dialogue state
                 commandNum = 0;
-                gp.gameState = gp.dialogueState;
-                currentDialogue = "Come back soon, he he."; // Set dialogue for leaving
+                npc.startDialogue(npc, 1);
             }
         }
     }
@@ -1013,16 +1029,14 @@ public class UI {
                 // Check if the player has enough coins
                 if (npc.inventory.get(itemIndex).price > gp.player.coin) {
                     subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "You need more coin to buy that!"; // Not enough coins
+                    npc.startDialogue(npc, 2); // Not enough coins
                 } else {
 
                     if (gp.player.canObtainItem(npc.inventory.get(itemIndex))) {
                         gp.player.coin -= npc.inventory.get(itemIndex).price; // Deduct the price from player's coins
                     } else {
                         subState = 0;
-                        gp.gameState = gp.dialogueState;
-                        currentDialogue = "You cannot carry any more!"; // Inventory is full
+                        npc.startDialogue(npc, 3); // Inventory is full
                     }
 
                 }
@@ -1077,8 +1091,7 @@ public class UI {
                 if (gp.player.currentWeapon == gp.player.inventory.get(itemIndex) || gp.player.currentShield == gp.player.inventory.get(itemIndex)) {
                     commandNum = 0;
                     subState = 0;
-                    gp.gameState = gp.dialogueState;
-                    currentDialogue = "You cannot sell an equipped item!"; // Show error message for equipped items
+                    npc.startDialogue(npc, 4);  // Show message for equipped items
                 } else {
                     // Remove the item from the player's inventory and add its price to the player's coins
                     if (gp.player.inventory.get(itemIndex).amount > 1) {

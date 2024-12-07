@@ -141,7 +141,7 @@ public class KeyHandler implements KeyListener {
     // Handles key events in the character state
     private void handleDialogueState(int keyCode, boolean isPressed) {
         if (isPressed && keyCode == KeyEvent.VK_ENTER) {
-            gp.gameState = gp.playState; // Exits character and resumes gameplay
+            enterPressed = true;    // Go to the next dialogue.
         }
     }
 

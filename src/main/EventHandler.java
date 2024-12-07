@@ -12,6 +12,9 @@ public class EventHandler {
     // representing areas where events can be triggered.
     EventRect[][][] eventRect;
 
+    // Entity used to manage event dialogues and interactions.
+    Entity eventMaster;
+
     // Stores the last position where an event was triggered.
     int previousEventX, previousEventY;
     // Indicates if the player can trigger a new event, reset when moving away from last event.
@@ -21,10 +24,12 @@ public class EventHandler {
     // These values are used for transitioning the player to the specified location.
     int tempMap, tempCol, tempRow;
 
-    // Constructor initializes the EventHandler with the game environment and configures the event rectangle.
+    // Constructor initializes the EventHandler with the game environment and configures the event rectangles.
     public EventHandler(GamePanel gp) {
-        this.gp = gp;
-        eventRect = new EventRect[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
+        this.gp = gp; // Assign the GamePanel instance to access game properties and states.
+        eventMaster = new Entity(gp); // Entity to store dialogues and manage event-related interactions.
+
+        eventRect = new EventRect[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow]; // Initialize the 3D array for event rectangles.
 
         int map = 0;
         int col = 0;
@@ -32,7 +37,7 @@ public class EventHandler {
 
         // Initialize each EventRect in the grid, setting default size and position.
         while (map < gp.maxMap && col < gp.maxWorldCol && row < gp.maxWorldRow) {
-            eventRect[map][col][row] = new EventRect();
+            eventRect[map][col][row] = new EventRect(); // Create a new EventRect for each grid cell.
             eventRect[map][col][row].x = 23; // Starting X position for the event rectangle.
             eventRect[map][col][row].y = 23; // Starting Y position for the event rectangle.
             eventRect[map][col][row].height = 2; // Width of the event rectangle.
@@ -47,12 +52,22 @@ public class EventHandler {
                 col = 0;
                 row++;
 
+                // Move to the next map if end of row is reached.
                 if (row == gp.maxWorldRow) {
                     row = 0;
                     map++;
                 }
             }
         }
+
+        setDialogue(); // Initialize predefined dialogues for various events.
+    }
+
+    // Initializes dialogues for event interactions (e.g., pits, healing pools).
+    public void setDialogue() {
+        eventMaster.dialogues[0][0] = "You fall into a pit!";
+
+        eventMaster.dialogues[1][0] = "You drink the water.\nYour HP has been recovered.\n(The progress has been saved)";
     }
 
     // Checks for player collisions with any events (damage pits, healing pools, or teleport tiles).
@@ -129,7 +144,7 @@ public class EventHandler {
     public void damagePit(int gameState) {
         gp.gameState = gameState; // Change game state to display dialogue.
         gp.playSE(6); // Play sound effect indicating damage.
-        gp.ui.currentDialogue = "You fall into a pit!"; // Set dialogue for damage pit.
+        eventMaster.startDialogue(eventMaster, 0); // Start dialogue for damage pit.
         gp.player.life--; // Decrease player life by one.
         // Temporarily disables further event triggering until player moves away.
         canTouchEvent = false;
@@ -144,7 +159,7 @@ public class EventHandler {
             gp.gameState = gameState; // Change the game state to display dialogue.
 
             // Display dialogue indicating the healing process and save confirmation.
-            gp.ui.currentDialogue = "You drink the water.\nYour HP has been recovered.\n(The progress has been saved)";
+            eventMaster.startDialogue(eventMaster, 1); // Start dialogue for damage pit.
 
             gp.player.life = gp.player.maxLife; // Restore the player's health to its maximum value.
             gp.player.mana = gp.player.maxMana; // Restore the player's mana to its maximum value.

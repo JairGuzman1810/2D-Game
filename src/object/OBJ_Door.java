@@ -25,15 +25,19 @@ public class OBJ_Door extends Entity {
         collision = true;
         // Set the type of the object to "obstacle," as doors obstruct the player's movement.
         type = type_obstacle;
+
+        // Sets the dialogue that will be displayed when interacting with the door.
+        setDialogue();
+    }
+
+    // Sets the series of dialogues for this door, which will display sequentially when interact to.
+    public void setDialogue() {
+        dialogues[0][0] = "You need a key to open this";
     }
 
     // Handles the interaction logic for the door object.
     @Override
     public void interact() {
-        // Switch the game to dialogue state when interacting with the door.
-        gp.gameState = gp.dialogueState;
-
-        // Display a message indicating that a key is required to open the door.
-        gp.ui.currentDialogue = "You need a key to open this";
+        startDialogue(this, 0);
     }
 }

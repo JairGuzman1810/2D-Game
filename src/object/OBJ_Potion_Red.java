@@ -37,6 +37,14 @@ public class OBJ_Potion_Red extends Entity {
 
         // Indicates if the item is stackable (multiple instances of the same item can occupy one inventory slot).
         stackable = true;
+
+        // Sets the dialogue that will be displayed when interacting with the potion.
+        setDialogue();
+    }
+
+    // Sets the series of dialogues for this item, which will display sequentially when interact to.
+    public void setDialogue() {
+        dialogues[0][0] = "You drink the " + name + "!\nYour life has been recovered by " + value + ".";
     }
 
     @Override
@@ -49,7 +57,7 @@ public class OBJ_Potion_Red extends Entity {
         gp.gameState = gp.dialogueState;
 
         // Display message showing the effect of drinking the potion.
-        gp.ui.currentDialogue = "You drink the " + name + "!\nYour life has been recovered by " + value + ".";
+        startDialogue(this, 0);
 
         // Increase the entity's life by the potion's value.
         entity.life += value;

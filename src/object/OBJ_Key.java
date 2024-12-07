@@ -31,6 +31,16 @@ public class OBJ_Key extends Entity {
 
         // Indicates if the item is stackable (multiple instances of the same item can occupy one inventory slot).
         stackable = true;
+
+        // Sets the dialogue that will be displayed when interacting with the key.
+        setDialogue();
+    }
+
+    // Sets the series of dialogues for this Key, which will display sequentially when interact to.
+    public void setDialogue() {
+        dialogues[0][0] = "You use the " + name + " and open the door.";
+
+        dialogues[1][0] = "Nothing happened.";
     }
 
     // Handles the logic for using the key.
@@ -44,13 +54,13 @@ public class OBJ_Key extends Entity {
 
         if (objIndex != 999) {
             // If a door is detected, open it and display a success message.
-            gp.ui.currentDialogue = "You use the " + name + " and open the door.";
+            startDialogue(this, 0);
             gp.playSE(3); // Play the sound effect for using the key.
             gp.obj[gp.currentMap][objIndex] = null; // Remove the door from the map.
             return true;
         } else {
             // If no door is detected, display a failure message.
-            gp.ui.currentDialogue = "Nothing happened.";
+            startDialogue(this, 1);
             return false;
         }
     }

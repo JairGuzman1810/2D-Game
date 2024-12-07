@@ -64,6 +64,11 @@ public class Player extends Entity {
         direction = "down";
     }
 
+    // Sets the series of dialogues for this player, which will display sequentially when level up.
+    public void setDialogues() {
+        dialogues[0][0] = "You are level " + level + " now!\n You feel stronger!";
+    }
+
     // Restores the player's life and mana to their maximum values, essentially healing the player.
     // It also disables invincibility, allowing the player to take damage again.
     public void restoreStatus() {
@@ -120,6 +125,7 @@ public class Player extends Entity {
 
         // Set the player's initial inventory.
         setItems(); // Populate the player's inventory with starting items (e.g., health potions).
+        setDialogues();
     }
 
     // Sets the initial items for the player's inventory.
@@ -496,7 +502,6 @@ public class Player extends Entity {
         // If there's an NPC at the collision point and the enter key is pressed, start dialogue.
         if (i != 999 && gp.keyH.enterPressed) {
             attackCancel = true; // Prevent the player from attacking during the dialogue.
-            gp.gameState = gp.dialogueState; // Set the game state to allow dialogue interaction.
             gp.npc[gp.currentMap][i].speak(); // Call the speak method of the colliding NPC to display its dialogue.
         }
     }
@@ -594,7 +599,7 @@ public class Player extends Entity {
             defense = getDefense(); // Recalculate defense with updated dexterity
             gp.playSE(8); // Play sound effect for leveling up
             gp.gameState = gp.dialogueState; // Trigger dialogue state to show level up message
-            gp.ui.currentDialogue = "You are level " + level + " now!\n You feel stronger!";
+            startDialogue(this, 0);
         }
     }
 

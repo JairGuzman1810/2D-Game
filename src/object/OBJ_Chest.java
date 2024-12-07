@@ -48,40 +48,38 @@ public class OBJ_Chest extends Entity {
     // The loot can be any type of Entity, such as a weapon, potion, or coin.
     public void setLoot(Entity loot) {
         this.loot = loot; // Stores the given entity as the chest's loot.
+        setDialogues();   // Sets the dialogue that will be displayed when interacting with the chest.
+    }
+
+    // Sets the series of dialogues for this chest, which will display sequentially when interact to.
+    public void setDialogues() {
+        dialogues[0][0] = "You open the chest and find a " + loot.name + "!\n...But you cannot carry any more!";
+        dialogues[1][0] = "You open the chest and find a " + loot.name + "!\nYou obtain the " + loot.name + "!";
+        dialogues[2][0] = "It's empty.";
     }
 
     // Handles interaction with the chest when the player interacts with it.
     @Override
     public void interact() {
-
-        // Change the game state to dialogue mode.
-        gp.gameState = gp.dialogueState;
-
         if (!isOpen) {
             // Play the chest opening sound effect.
             gp.playSE(3);
 
-            // Build the dialogue for opening the chest.
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("You open the chest and find a ").append(loot.name).append("!");
 
             // Check if the player's inventory is full.
             if (!gp.player.canObtainItem(loot)) {
-                sb.append("\n... But you cannot carry any more!");
+                startDialogue(this, 0);
             } else {
-                sb.append("\nYou obtain the ").append(loot.name).append("!");
+                startDialogue(this, 1);
                 // Change the chest's appearance to the opened state.
                 down1 = image2;
                 isOpen = true;
             }
 
-            // Display the dialogue in the UI.
-            gp.ui.currentDialogue = sb.toString();
 
         } else {
             // If the chest is already open, display that it is empty.
-            gp.ui.currentDialogue = "It's empty.";
+            startDialogue(this, 2);
         }
     }
 }
