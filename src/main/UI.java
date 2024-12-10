@@ -325,6 +325,7 @@ public class UI {
 
         drawSubWindow(x, y, width, height); // Draw the dialogue background.
 
+
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32)); // Set font for text.
         x += gp.tileSize; // Adjust x for inner padding.
         y += gp.tileSize; // Adjust y for inner padding.

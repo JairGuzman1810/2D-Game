@@ -119,7 +119,6 @@ public class SaveLoad {
 
             // Write the DataStorage object to the file.
             oos.writeObject(ds); // Serialize and write the data to the file.
-            oos.close();         // Close the stream after writing to release resources.
         } catch (IOException e) {
             // Handle exceptions that may occur during the saving process.
             System.out.println("Save exception! " + e); // Print an error message if an exception occurs.
@@ -134,7 +133,6 @@ public class SaveLoad {
 
             // Read the DataStorage object from the file.
             DataStorage ds = (DataStorage) ois.readObject(); // Deserialize the saved data.
-            ois.close(); // Close the stream after reading to release resources.
 
             // Restore the player's stats from the DataStorage object.
             gp.player.level = ds.level;                   // Restore player's current level.
@@ -168,7 +166,7 @@ public class SaveLoad {
 
             // Restore objects on the map and their states.
             for (int mapNum = 0; mapNum < gp.maxMap; mapNum++) {
-                for (int i = 0; i < gp.obj[i].length; i++) {
+                for (int i = 0; i < gp.obj[1].length; i++) {
 
                     if (ds.mapObjectNames[mapNum][i].equals("NA")) {
                         gp.obj[mapNum][i] = null; // If the object is marked as "NA", set it to null.
@@ -180,7 +178,7 @@ public class SaveLoad {
 
                         // Restore the loot associated with the object, if any.
                         if (ds.mapObjectLootNames[mapNum][i] != null) {
-                            gp.obj[mapNum][i].loot = getObject(ds.mapObjectNames[mapNum][i]);
+                            gp.obj[mapNum][i].loot = getObject(ds.mapObjectLootNames[mapNum][i]);
                         }
 
                         // Restore whether the map object (like a chest) is opened.

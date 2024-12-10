@@ -48,7 +48,6 @@ public class OBJ_Chest extends Entity {
     // The loot can be any type of Entity, such as a weapon, potion, or coin.
     public void setLoot(Entity loot) {
         this.loot = loot; // Stores the given entity as the chest's loot.
-        setDialogues();   // Sets the dialogue that will be displayed when interacting with the chest.
     }
 
     // Sets the series of dialogues for this chest, which will display sequentially when interact to.
@@ -61,6 +60,7 @@ public class OBJ_Chest extends Entity {
     // Handles interaction with the chest when the player interacts with it.
     @Override
     public void interact() {
+        setDialogues();   // Sets the dialogue that will be displayed when interacting with the chest.
         if (!isOpen) {
             // Play the chest opening sound effect.
             gp.playSE(3);
