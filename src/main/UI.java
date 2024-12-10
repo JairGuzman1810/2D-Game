@@ -68,6 +68,11 @@ public class UI {
     // Reference to the NPC whose inventory is currently being accessed in the UI, allowing interaction with their items.
     public Entity npc;
 
+    // Tracks the current character index for displaying text letter by letter.
+    int charIndex = 0;
+    // Accumulates characters to form the dialogue line being displayed.
+    String combinedText = "";
+
 
     // Constructor that initializes the UI, including fonts and the key image.
     public UI(GamePanel gp) {
@@ -312,40 +317,51 @@ public class UI {
 
     // Displays the dialogue window and handles the logic for showing text to the player.
     public void drawDialogueScreen() {
-        // Define the position and size of the dialogue window.
-        int x = gp.tileSize * 3; // Horizontal padding from the screen edge.
-        int y = gp.tileSize / 2;  // Vertical padding from the screen edge.
-        int width = gp.screenWidth - (gp.tileSize * 6); // Dialogue window width.
-        int height = gp.tileSize * 4; // Dialogue window height.
+        // Define dimensions and position for the dialogue window.
+        int x = gp.tileSize * 3; // Left padding.
+        int y = gp.tileSize / 2; // Top padding.
+        int width = gp.screenWidth - (gp.tileSize * 6); // Window width.
+        int height = gp.tileSize * 4; // Window height.
 
-        drawSubWindow(x, y, width, height); // Render the dialogue window.
+        drawSubWindow(x, y, width, height); // Draw the dialogue background.
 
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32)); // Set font size for dialogue text.
-        x += gp.tileSize; // Adjust X for inner padding.
-        y += gp.tileSize; // Adjust Y for inner padding.
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32)); // Set font for text.
+        x += gp.tileSize; // Adjust x for inner padding.
+        y += gp.tileSize; // Adjust y for inner padding.
 
-        // Check if the current dialogue line exists for the NPC.
+        // Check if the current dialogue line exists.
         if (npc.dialogues[npc.dialogueSet][npc.dialogueIndex] != null) {
-            currentDialogue = npc.dialogues[npc.dialogueSet][npc.dialogueIndex]; // Get the dialogue text.
+            // Convert the dialogue line to a character array for letter-by-letter display.
+            char[] characters = npc.dialogues[npc.dialogueSet][npc.dialogueIndex].toCharArray();
 
-            if (gp.keyH.enterPressed) { // Progress dialogue when the Enter key is pressed.
+            if (charIndex < characters.length) {
+                gp.playSE(17); // Play a sound effect for dialogue typing.
+                String s = String.valueOf(characters[charIndex]); // Get the current character.
+                combinedText += s; // Append the character to the displayed text.
+                currentDialogue = combinedText; // Update the displayed dialogue text.
+                charIndex++; // Move to the next character.
+            }
+
+            if (gp.keyH.enterPressed) { // Advance dialogue when the Enter key is pressed.
+                charIndex = 0; // Reset the character index for the next line.
+                combinedText = ""; // Clear accumulated text.
                 if (gp.gameState == gp.dialogueState) {
-                    npc.dialogueIndex++; // Move to the next line of dialogue.
+                    npc.dialogueIndex++; // Move to the next dialogue line.
                     gp.keyH.enterPressed = false; // Reset Enter key state.
                 }
             }
         } else {
-            npc.dialogueIndex = 0; // Reset dialogue index when all lines are shown.
+            npc.dialogueIndex = 0; // Reset dialogue index after finishing all lines.
 
             if (gp.gameState == gp.dialogueState) {
-                gp.gameState = gp.playState; // Return to gameplay state after dialogue ends.
+                gp.gameState = gp.playState; // Return to gameplay state after dialogue.
             }
         }
 
-        // Split the dialogue text into lines and draw each line in the dialogue window.
+        // Render each line of the current dialogue, splitting by line breaks.
         for (String line : currentDialogue.split("\n")) {
-            g2.drawString(line, x, y); // Render the line at the specified position.
-            y += 40; // Move Y position down for the next line of text.
+            g2.drawString(line, x, y); // Draw the line at the specified position.
+            y += 40; // Adjust y position for the next line.
         }
     }
 

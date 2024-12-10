@@ -82,6 +82,9 @@ public class Sound {
 
         // Index 16: Parry attack sound.
         soundURL[16] = getClass().getResource("/sound/parry.wav");
+
+        // Index 17: Speak sound.
+        soundURL[17] = getClass().getResource("/sound/speak.wav");
     }
 
 
