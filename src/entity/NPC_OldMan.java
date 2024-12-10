@@ -27,6 +27,8 @@ public class NPC_OldMan extends Entity {
         solidArea.width = 32;  // Width of the player collision area.
         solidArea.height = 32; // Height of the player collision area.
 
+        dialogueSet = -1;   // Initialize dialogue set to -1 to start with the first set during interaction.
+
         getImage(); // Loads images for the NPC's directional movement animations.
 
         setDialogue(); // Sets the dialogue that will be displayed when speaking with the NPC.
@@ -100,10 +102,19 @@ public class NPC_OldMan extends Entity {
     }
 
     @Override
-    // Manages dialogue display and aligns the NPC to face the player during interaction.
-    // Also initiates the dialogue for the current dialogue set.
+    // Handles the logic for managing and displaying dialogues during interaction with the NPC.
+    // The NPC will align its direction to face the player, initiate the dialogue for the current dialogue set,
+    // and progress through the dialogue sets sequentially.
     public void speak() {
-        facePlayer(); // Ensure the NPC faces the player.
-        startDialogue(this, dialogueSet); // Begin the dialogue using the current set.
+        facePlayer(); // Ensure the NPC is visually oriented toward the player.
+
+        startDialogue(this, dialogueSet); // Begin displaying the dialogue associated with the current set.
+
+        dialogueSet++; // Move to the next dialogue set after the current one is displayed.
+
+        // If there are no more dialogues in the next set, revert to the last valid dialogue set.
+        if (dialogues[dialogueSet][0] == null) {
+            dialogueSet--;
+        }
     }
 }
