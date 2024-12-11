@@ -7,6 +7,9 @@ import main.GamePanel;
 // When used, it illuminates the area around the player by increasing the light radius.
 public class OBJ_Lantern extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Lantern";
+
     // Constructor initializes the lantern's attributes such as name, image, description, price, and light radius.
     public OBJ_Lantern(GamePanel gp) {
         super(gp);
@@ -15,7 +18,7 @@ public class OBJ_Lantern extends Entity {
         type = type_light;
 
         // Assigns a name to the lantern, which is used in the inventory and interactions.
-        name = "Lantern";
+        name = objName;
 
         // Loads the image for the lantern from the resources folder.
         down1 = setup("/objects/lantern", gp.tileSize, gp.tileSize);

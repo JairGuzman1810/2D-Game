@@ -7,6 +7,9 @@ import main.GamePanel;
 // When consumed by an entity, it increases the entity's life points by a fixed amount.
 public class OBJ_Potion_Red extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Red Potion";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -24,7 +27,7 @@ public class OBJ_Potion_Red extends Entity {
         type = type_consumable;
 
         // Set the name of the potion.
-        name = "Red Potion";
+        name = objName;
 
         // Load the potion image from resources.
         down1 = setup("/objects/potion_red", gp.tileSize, gp.tileSize);

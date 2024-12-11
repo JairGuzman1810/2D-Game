@@ -125,7 +125,6 @@ public class Player extends Entity {
 
         // Set the player's initial inventory.
         setItems(); // Populate the player's inventory with starting items (e.g., health potions).
-        setDialogues();
     }
 
     // Sets the initial items for the player's inventory.
@@ -588,18 +587,19 @@ public class Player extends Entity {
 
     // Method to handle leveling up the player based on experience gained.
     public void checkLevelUp() {
-        // Check if player experience meets or exceeds the required for next level.
+        // Check if the player's current experience points are greater than or equal to the required points for the next level.
         if (exp >= nextLevelExp) {
-            level++; // Increase player level
-            nextLevelExp *= 2; // Set experience threshold for next level
-            maxLife += 2; // Increase maximum life points
-            strength++; // Increase player strength
-            dexterity++; // Increase player dexterity
-            attack = getAttack(); // Recalculate attack with updated strength
-            defense = getDefense(); // Recalculate defense with updated dexterity
-            gp.playSE(8); // Play sound effect for leveling up
-            gp.gameState = gp.dialogueState; // Trigger dialogue state to show level up message
-            startDialogue(this, 0);
+            level++; // Increment the player's level by 1.
+            nextLevelExp *= 2; // Double the experience required for the next level.
+            maxLife += 2; // Increase the player's maximum life points by 2.
+            strength++; // Increase the player's strength attribute by 1.
+            dexterity++; // Increase the player's dexterity attribute by 1.
+            attack = getAttack(); // Update the player's attack value based on the new strength.
+            defense = getDefense(); // Update the player's defense value based on the new dexterity.
+            gp.playSE(8); // Play a sound effect to indicate the player has leveled up.
+            gp.gameState = gp.dialogueState; // Change the game state to dialogue, triggering a level-up message.
+            setDialogues(); // Set the level-up dialogue message.
+            startDialogue(this, 0); // Display the dialogue for the player.
         }
     }
 
@@ -687,24 +687,29 @@ public class Player extends Entity {
         return itemIndex; // Return the item's index or 999.
     }
 
-    // Checks if an item can be added to the inventory.
+    // Checks if an item can be added to the player's inventory.
+    // Uses the EntityGenerator to create a new instance of the item and determines if it can be stacked or added to the inventory.
     public boolean canObtainItem(Entity item) {
-        // If the item is stackable, check for it in the inventory.
-        if (item.stackable) {
-            int index = searchItemInInventory(item.name);
+
+        // Creates a new instance of the item using the EntityGenerator.
+        Entity newItem = gp.eGenerator.getObject(item.name);
+
+        // If the item is stackable, search for it in the inventory.
+        if (newItem.stackable) {
+            int index = searchItemInInventory(newItem.name);
             if (index != 999) {
-                inventory.get(index).amount++; // Increase the item's amount.
-                return true; // Successfully updated.
+                inventory.get(index).amount++; // Increment the quantity of the existing item.
+                return true; // Item successfully stacked.
             }
         }
 
-        // If inventory has space, add the item.
+        // If the inventory has space, add the new item.
         if (inventory.size() < maxInventorySize) {
-            inventory.add(item);
-            return true; // Successfully added.
+            inventory.add(newItem);
+            return true; // Item successfully added.
         }
 
-        return false; // Inventory is full, cannot add.
+        return false; // Inventory is full, item cannot be added.
     }
 
 

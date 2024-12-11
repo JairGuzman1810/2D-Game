@@ -7,6 +7,9 @@ import main.GamePanel;
 // current and maximum life and use as pick up item for recovering life.
 public class OBJ_Heart extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Heart";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -22,7 +25,7 @@ public class OBJ_Heart extends Entity {
         type = type_pickupOnly;
 
         // Set the name of the heart object.
-        name = "Heart";
+        name = objName;
         // Load the hearts image from resources.
         down1 = setup("/objects/heart_full", gp.tileSize, gp.tileSize);
         image = setup("/objects/heart_full", gp.tileSize, gp.tileSize);

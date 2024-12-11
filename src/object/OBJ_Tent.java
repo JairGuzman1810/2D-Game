@@ -6,6 +6,9 @@ import main.GamePanel;
 // OBJ_Tent defines the tent object in the game, which allows the player to skip to the next morning by sleeping.
 public class OBJ_Tent extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Tent";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -16,7 +19,7 @@ public class OBJ_Tent extends Entity {
         this.gp = gp;
 
         // Set the name of the tent object.
-        name = "Tent";
+        name = objName;
 
         // Load the tent image from resources with the appropriate tile size.
         down1 = setup("/objects/tent", gp.tileSize, gp.tileSize);

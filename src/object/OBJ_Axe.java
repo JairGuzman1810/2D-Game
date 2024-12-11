@@ -7,6 +7,9 @@ import main.GamePanel;
 // When equipped by an entity, it increases the entity's attack value.
 public class OBJ_Axe extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Woodcutter's Axe";
+
     // Constructor that sets up the axe's name, image, and attack value.
     public OBJ_Axe(GamePanel gp) {
         super(gp);
@@ -15,7 +18,7 @@ public class OBJ_Axe extends Entity {
         type = type_axe;
 
         // Set the name of the axe.
-        name = "Woodcutter's Axe";
+        name = objName;
 
         // Load the axe image from resources.
         down1 = setup("/objects/axe", gp.tileSize, gp.tileSize);

@@ -10,6 +10,10 @@ import java.awt.*;
 // This projectile has a limited lifespan and consumes mana when used.
 public class OBJ_Fireball extends Projectile {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Fireball";
+
+    // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
     // Constructor that initializes the fireball's attributes such as name, speed, attack power, and lifespan.
@@ -20,7 +24,7 @@ public class OBJ_Fireball extends Projectile {
         this.gp = gp;
 
         // Set the name of the projectile.
-        name = "Fireball";
+        name = objName;
 
         // Define the speed of the fireball.
         speed = 5;

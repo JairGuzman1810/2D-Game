@@ -7,6 +7,9 @@ import main.GamePanel;
 // current and maximum mana and use as pick up item for recovering mana.
 public class OBJ_ManaCrystal extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Mana Crystal";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -22,7 +25,7 @@ public class OBJ_ManaCrystal extends Entity {
         type = type_pickupOnly;
 
         // Set the name of the mana object.
-        name = "Mana";
+        name = objName;
 
         // Load the mana image from resources.
         down1 = setup("/objects/manacrystal_full", gp.tileSize, gp.tileSize);

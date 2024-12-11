@@ -92,6 +92,9 @@ public class GamePanel extends JPanel implements Runnable {
     // Handles the saving and loading of game progress.
     SaveLoad saveLoad = new SaveLoad(this);
 
+    // Responsible for creating instances of objects or entities in the game world.
+    public EntityGenerator eGenerator = new EntityGenerator(this);
+
     // Game thread that runs the game loop. This separates game logic from the UI thread.
     Thread gameThread;
 
@@ -216,7 +219,7 @@ public class GamePanel extends JPanel implements Runnable {
         player.setDefaultPosition();
         // Restore player's life and mana to maximum levels.
         player.restoreStatus();
-        
+
         // Reset all counters controlling the player's temporary states (e.g., invincibility, cooldowns).
         player.resetCounter();
 

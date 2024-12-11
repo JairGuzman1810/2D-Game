@@ -6,6 +6,8 @@ import main.GamePanel;
 // OBJ_Door defines the door object in the game, which can block the player's path.
 public class OBJ_Door extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Door";
 
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
@@ -18,7 +20,7 @@ public class OBJ_Door extends Entity {
         this.gp = gp;
 
         // Set the name of the door object.
-        name = "Door";
+        name = objName;
         // Load the door image from resources.
         down1 = setup("/objects/door", gp.tileSize, gp.tileSize);
         // Set collision property to true, indicating that the door can block the player's path.

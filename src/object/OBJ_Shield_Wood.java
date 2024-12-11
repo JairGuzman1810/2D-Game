@@ -7,6 +7,9 @@ import main.GamePanel;
 // When equipped by an entity, it increases the entity's defense value.
 public class OBJ_Shield_Wood extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Wood Shield";
+
     // Constructor that sets up the shield's name, image, and defense value.
     public OBJ_Shield_Wood(GamePanel gp) {
         super(gp);
@@ -15,7 +18,7 @@ public class OBJ_Shield_Wood extends Entity {
         type = type_shield;
 
         // Set the name of the shield.
-        name = "Wood Shield";
+        name = objName;
 
         // Load the wooden shield image from resources.
         down1 = setup("/objects/shield_wood", gp.tileSize, gp.tileSize);

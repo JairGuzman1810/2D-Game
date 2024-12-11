@@ -6,6 +6,9 @@ import main.GamePanel;
 // OBJ_Key defines the key object in the game, which can be collected by the player.
 public class OBJ_Key extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Key";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -18,7 +21,7 @@ public class OBJ_Key extends Entity {
         type = type_consumable;
 
         // Set the name of the key object.
-        name = "Key";
+        name = objName;
 
         // Load the key image from resources.
         down1 = setup("/objects/key", gp.tileSize, gp.tileSize);

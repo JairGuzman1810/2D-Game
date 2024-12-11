@@ -9,6 +9,9 @@ import java.awt.*;
 // Players can interact with it to obtain items or rewards.
 public class OBJ_Chest extends Entity {
 
+    // String identifier for the class, representing the specific name of this object type.
+    public static final String objName = "Chest";
+
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
@@ -18,7 +21,7 @@ public class OBJ_Chest extends Entity {
         this.gp = gp;
 
         // Set the name of the chest.
-        name = "Chest";
+        name = objName;
         // Load the chest image from resources.
         image = setup("/objects/chest", gp.tileSize, gp.tileSize);
 
