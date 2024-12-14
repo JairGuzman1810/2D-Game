@@ -44,8 +44,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     // WORLD SETTINGS
     // The total number of tile columns and rows in the entire game world.
-    public final int maxWorldCol = 50;  // 50 columns of tiles in the world.
-    public final int maxWorldRow = 50;  // 50 rows of tiles in the world.
+    public int maxWorldCol;  // Columns of tiles in the world.
+    public int maxWorldRow;  // Rows of tiles in the world.
     public final int maxMap = 10;       // The maximum number of maps in the game.
     public int currentMap = 0;          // Tracks the index of the current map being displayed and interacted with.
 

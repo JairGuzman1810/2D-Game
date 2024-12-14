@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,79 +29,72 @@ public class TileManager {
     // 2D array representing the map layout, where each element corresponds to a tile type.
     public int[][][] mapTileNum;
 
+    // List of file names for the tile images.
+    ArrayList<String> fileNames = new ArrayList<>();
+    // List of collision statuses corresponding to the tiles.
+    ArrayList<String> collisionStatus = new ArrayList<>();
+
     // Constructor that initializes the TileManager with a reference to GamePanel.
     // It also prepares the tile images and loads the map layout.
     public TileManager(GamePanel gp) {
         this.gp = gp; // Assign the GamePanel reference to this TileManager instance.
-        tiles = new Tile[50]; // Initialize the tile array with a fixed size (50 tiles).
-        mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow]; // Set up the map array based on the world dimensions.
-        getTileImage(); // Load the tile images from resources.
-        loadMap("/maps/worldV3.txt", 0); // Load the map layout from a specified text file.
-        loadMap("/maps/interior01.txt", 1); // Load the hut map.
+
+        // Load tile data file containing tile names and collision statuses.
+        InputStream is = getClass().getResourceAsStream("/maps/tiledata.txt");
+        assert is != null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line; // Temporary variable for reading file lines.
+
+        try {
+            // Read tile names and collision statuses into their respective lists.
+            while ((line = br.readLine()) != null) {
+                fileNames.add(line);
+                collisionStatus.add(br.readLine());
+            }
+            br.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Handle errors by throwing a runtime exception.
+        }
+
+        // Initialize the tile array based on the number of file names.
+        tiles = new Tile[fileNames.size()];
+        getTileImage(); // Load images for all tiles.
+
+        // Load world map dimensions from a text file.
+        is = getClass().getResourceAsStream("/maps/worldmap.txt");
+        assert is != null;
+        br = new BufferedReader(new InputStreamReader(is));
+
+        try {
+            String lineMap = br.readLine(); // Read the first line containing tile dimensions.
+            String[] maxTile = lineMap.split(" ");
+
+            // Set maximum columns and rows for the game world.
+            gp.maxWorldCol = maxTile.length;
+            gp.maxWorldRow = maxTile.length;
+
+            // Initialize the map array with the dimensions and map layers.
+            mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
+
+            br.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Handle errors during map dimension loading.
+        }
+
+        // Load different maps into the map array.
+        loadMap("/maps/worldmap.txt", 0); // Load the main map layout.
+        loadMap("/maps/indoor01.txt", 1); // Load an additional map layout.
     }
 
-    // The getTileImage method loads the images for each type of tile from the resources.
+    // Loads tile images and sets their collision properties based on data.
     public void getTileImage() {
-        // Initialize each tile by calling the setup method, which loads the corresponding image
-        // and defines its collision properties.
+        for (int i = 0; i < fileNames.size(); i++) {
+            String fileName = fileNames.get(i); // Get tile image file name.
+            boolean collision = collisionStatus.get(i).equals("true"); // Determine collision status.
 
-        // Placeholder tiles - these are temporary until actual images are defined.
-        setup(0, "grass00", false);
-        setup(1, "grass00", false);
-        setup(2, "grass00", false);
-        setup(3, "grass00", false);
-        setup(4, "grass00", false);
-        setup(5, "grass00", false);
-        setup(6, "grass00", false);
-        setup(7, "grass00", false);
-        setup(8, "grass00", false);
-        setup(9, "grass00", false);
-
-        // Grass tiles with no collision properties.
-        setup(10, "grass00", false);
-        setup(11, "grass01", false);
-
-        // Water tiles with collision properties.
-        setup(12, "water00", true);
-        setup(13, "water01", true);
-        setup(14, "water02", true);
-        setup(15, "water03", true);
-        setup(16, "water04", true);
-        setup(17, "water05", true);
-        setup(18, "water06", true);
-        setup(19, "water07", true);
-        setup(20, "water08", true);
-        setup(21, "water09", true);
-        setup(22, "water10", true);
-        setup(23, "water11", true);
-        setup(24, "water12", true);
-        setup(25, "water13", true);
-
-        // Road tiles with no collision properties.
-        setup(26, "road00", false);
-        setup(27, "road01", false);
-        setup(28, "road02", false);
-        setup(29, "road03", false);
-        setup(30, "road04", false);
-        setup(31, "road05", false);
-        setup(32, "road06", false);
-        setup(33, "road07", false);
-        setup(34, "road08", false);
-        setup(35, "road09", false);
-        setup(36, "road10", false);
-        setup(37, "road11", false);
-        setup(38, "road12", false);
-
-        // Other tiles with specified properties.
-        setup(39, "earth", false); // Earth tile with no collision properties.
-        setup(40, "wall", true);   // Wall tile with collision properties.
-        setup(41, "tree", true);   // Tree tile with collision properties.
-
-        setup(42, "hut", false);   // Hut tile with no collision properties.
-        setup(43, "floor01", false);   // Floor tile with no collision properties.
-        setup(44, "table01", true);   // Table tile with collision properties.
-
-
+            setup(i, fileName, collision); // Initialize the tile with its properties.
+        }
     }
 
 
@@ -112,7 +106,7 @@ public class TileManager {
             // Initialize the tile object at the specified index.
             tiles[index] = new Tile();
             // Load the image from the resources and scale it to the desired size.
-            tiles[index].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/" + imageName + ".png")));
+            tiles[index].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/" + imageName)));
             tiles[index].image = uTool.scaleImage(tiles[index].image, gp.tileSize, gp.tileSize);
             // Set the collision property for this tile.
             tiles[index].collision = collision;

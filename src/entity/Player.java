@@ -2,10 +2,10 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Axe;
 import object.OBJ_Fireball;
 import object.OBJ_Key;
 import object.OBJ_Shield_Wood;
-import object.OBJ_Sword_Normal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -109,7 +109,7 @@ public class Player extends Entity {
         coin = 0; // Initial coin count (used for in-game purchases).
 
         // Equipment setup.
-        currentWeapon = new OBJ_Sword_Normal(gp); // The default weapon equipped by the player.
+        currentWeapon = new OBJ_Axe(gp); // The default weapon equipped by the player.
         currentShield = new OBJ_Shield_Wood(gp); // The default shield equipped by the player.
         currentLight = null; // No light source equipped initially.
         projectile = new OBJ_Fireball(gp); // Default projectile assigned to the player.

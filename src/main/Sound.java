@@ -93,11 +93,14 @@ public class Sound {
         try {
             // Open the audio input stream from the specified URL.
             AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
-            clip = AudioSystem.getClip(); // Get a Clip instance for playback.
-            clip.open(ais); // Open the audio stream in the Clip.
-            // Sets FloatControl for volume adjustment on the clip and applies the current volume.
-            fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            checkVolume();
+            Clip newClip = AudioSystem.getClip(); // Get a new Clip instance.
+            newClip.open(ais); // Open the audio stream in the new Clip.
+
+            // Apply FloatControl for volume adjustment on the new clip.
+            FloatControl newFc = (FloatControl) newClip.getControl(FloatControl.Type.MASTER_GAIN);
+            setVolume(newFc); // Apply volume to the new FloatControl.
+
+            clip = newClip; // Assign to the class-level clip variable if needed.
         } catch (Exception e) {
             // Log a warning if the sound file could not be loaded or played.
             logger.log(Level.WARNING, "Sound not found!", e);
@@ -144,5 +147,20 @@ public class Sound {
 
         // Applies calculated volume to FloatControl.
         fc.setValue(volume);
+    }
+
+    // Sets the volume of the sound clip based on the volume scale (0-5).
+    // Applies predefined dB levels or defaults to -5 dB if out of range.
+    private void setVolume(FloatControl fc) {
+        float adjustedVolume = switch (volumeScale) {
+            case 0 -> -80f; // Mute
+            case 1 -> -20f; // Low volume
+            case 2 -> -12f; // Moderate volume
+            case 3 -> -5f; // Default volume level
+            case 4 -> 1f; // High volume
+            case 5 -> 6f; // Maximum volume
+            default -> -5f;
+        };
+        fc.setValue(adjustedVolume);
     }
 }

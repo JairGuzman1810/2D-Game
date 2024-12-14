@@ -12,27 +12,27 @@ import java.util.Random;
 // MON_GreenSlime represents a green slime monster entity within the game,
 // inheriting properties and behaviors from the Entity class. This monster
 // type has unique attributes such as life, speed, and movement animations.
-public class MON_GreenSlime extends Entity {
+public class MON_RedSlime extends Entity {
 
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
     // Constructs the Green Slime with specific attributes and initializes
     // its image and solid area for collision detection.
-    public MON_GreenSlime(GamePanel gp) {
+    public MON_RedSlime(GamePanel gp) {
         super(gp);
 
         this.gp = gp;
 
         type = type_monster;                    // Sets type to type_monster, indicating a monster entity.
-        name = "Green Slime";                   // Assigns the name of this monster type.
-        defaultSpeed = 1;                       // The base movement speed of the slime.
+        name = "Red Slime";                     // Assigns the name of this monster type.
+        defaultSpeed = 2;                       // The base movement speed of the slime.
         speed = defaultSpeed;                   // Current movement speed, initially set to the defaultSpeed.
-        maxLife = 4;                            // Sets maximum life for the slime.
+        maxLife = 8;                            // Sets maximum life for the slime.
         life = maxLife;                         // Initializes life to maxLife.
-        attack = 5;                             // Sets the attack power of the slime.
+        attack = 7;                             // Sets the attack power of the slime.
         defense = 0;                            // Sets the defense level of the slime.
-        exp = 2;                                // Experience points awarded to the player when this monster is defeated.
+        exp = 5;                                // Experience points awarded to the player when this monster is defeated.
         projectile = new OBJ_Rock(gp);         // Initializes a Rock projectile that the slime can shoot.
         // Defines the solid area for collision detection, setting its position
         // and size, which helps prevent the entity from moving through obstacles.
@@ -49,14 +49,14 @@ public class MON_GreenSlime extends Entity {
     // Loads the images for each direction (up, down, left, right) to represent
     // the green slime's movement using the setup method to load and scale each image.
     public void getImage() {
-        up1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        up2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        down1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        down2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        left1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        left2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
-        right1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
-        right2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
+        up1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        up2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        down1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        down2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        left1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        left2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
+        right1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
+        right2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
     }
 
     @Override
@@ -72,6 +72,9 @@ public class MON_GreenSlime extends Entity {
 
             // Calculate the path to the player's position and follow it.
             searchPath(getGoalCol(gp.player), getGoalRow(gp.player));
+
+            // Attempt to shoot at the player if conditions (like distance and timing) are met.
+            checkIsShooting(200, 30);
 
         } else {
             // If the slime is not in aggro mode, it performs random movements.

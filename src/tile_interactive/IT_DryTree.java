@@ -24,7 +24,7 @@ public class IT_DryTree extends InteractiveTile {
         // Load the tree's image and set destructibility and initial life.
         down1 = setup("/tiles_interactive/drytree", gp.tileSize, gp.tileSize); // Load the image for the dry tree.
         destructible = true; // Mark the tree as destructible.
-        life = 3; // The tree has 3 life points before being destroyed.
+        life = 1; // The tree has 3 life points before being destroyed.
     }
 
     @Override
