@@ -88,9 +88,14 @@ public class EventHandler {
             if (hit(0, 27, 16, "right")) damagePit(gp.dialogueState); // Damage pit event.
             else if (hit(0, 23, 19, "any")) damagePit(gp.dialogueState); // Another damage pit event.
             else if (hit(0, 23, 12, "up")) healingPool(gp.dialogueState); // Healing pool event.
-            else if (hit(0, 10, 40, "any")) teleport(1, 12, 13); // Teleport event.
-            else if (hit(1, 12, 13, "any")) teleport(0, 10, 40); // Teleport event.
+            else if (hit(0, 10, 40, "any")) teleport(1, 12, 13); // Teleport event to merchant hunt.
+            else if (hit(1, 12, 13, "any")) teleport(0, 10, 40); // Teleport event to outside of merchant hut.
             else if (hit(1, 12, 9, "up")) speak(gp.npc[1][0]); // Initiate dialogue with an NPC when facing up.
+            else if (hit(0, 12, 9, "any")) teleport(2, 9, 41); // Teleport event to dungeon.
+            else if (hit(2, 9, 41, "any")) teleport(0, 12, 9); // Teleport event to outside of dungeon.
+            else if (hit(2, 8, 7, "any")) teleport(3, 26, 41); // Teleport event to B2 dungeon.
+            else if (hit(3, 26, 41, "any")) teleport(2, 8, 7); // Teleport event to B1 dungeon.
+
         }
     }
 

@@ -84,7 +84,9 @@ public class TileManager {
 
         // Load different maps into the map array.
         loadMap("/maps/worldmap.txt", 0); // Load the main map layout.
-        loadMap("/maps/indoor01.txt", 1); // Load an additional map layout.
+        loadMap("/maps/indoor01.txt", 1); // Load merchant hunt layout.
+        loadMap("/maps/dungeon01.txt", 2); // Load dungeon B1 layout.
+        loadMap("/maps/dungeon02.txt", 3); // Load dungeon B2 layout.
     }
 
     // Loads tile images and sets their collision properties based on data.

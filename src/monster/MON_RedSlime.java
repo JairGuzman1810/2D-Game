@@ -9,15 +9,17 @@ import object.OBJ_Rock;
 
 import java.util.Random;
 
-// MON_GreenSlime represents a green slime monster entity within the game,
+// MON_RedSlime represents a red slime monster entity within the game,
 // inheriting properties and behaviors from the Entity class. This monster
 // type has unique attributes such as life, speed, and movement animations.
+// The red slime is capable of shooting projectiles, entering aggro mode
+// to chase the player.
 public class MON_RedSlime extends Entity {
 
     // Reference to the GamePanel, which holds game-related settings and properties.
     GamePanel gp;
 
-    // Constructs the Green Slime with specific attributes and initializes
+    // Constructs the Red Slime with specific attributes and initializes
     // its image and solid area for collision detection.
     public MON_RedSlime(GamePanel gp) {
         super(gp);
@@ -47,7 +49,7 @@ public class MON_RedSlime extends Entity {
     }
 
     // Loads the images for each direction (up, down, left, right) to represent
-    // the green slime's movement using the setup method to load and scale each image.
+    // the red slime's movement using the setup method to load and scale each image.
     public void getImage() {
         up1 = setup("/monster/redslime_down_1", gp.tileSize, gp.tileSize);
         up2 = setup("/monster/redslime_down_2", gp.tileSize, gp.tileSize);
@@ -60,7 +62,7 @@ public class MON_RedSlime extends Entity {
     }
 
     @Override
-    // Handles the Green Slime's behavior. If `onPath` is true, the slime chases the player.
+    // Handles the Red Slime's behavior. If `onPath` is true, the slime chases the player.
     // Otherwise, it moves randomly and may enter aggro mode or perform a ranged attack.
     public void setAction() {
 
