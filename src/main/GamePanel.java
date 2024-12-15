@@ -149,6 +149,13 @@ public class GamePanel extends JPanel implements Runnable {
     // Constant for map state.
     public final int mapState = 10;
 
+    // Area
+    public int currentArea; // Represents the area the player is currently in.
+    public int nextArea; // Represents the area the player will transition to next.
+    public final int outside = 50; // Constant value representing the "outside" area.
+    public final int indoor = 51; // Constant value representing the "indoor" area.
+    public final int dungeon = 52; // Constant value representing the "dungeon" area.
+
     // Constructor to initialize the GamePanel settings.
     public GamePanel() {
         // Set the size of the panel to match the screen dimensions.
@@ -200,6 +207,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Set default state to title state.
         gameState = titleState;
+
+        // Sets the initial area to "outside."
+        currentArea = outside;
 
         // Prepares a temporary screen for full-screen rendering
         tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB_PRE);
@@ -507,5 +517,10 @@ public class GamePanel extends JPanel implements Runnable {
     public void playSE(int i) {
         se.setFile(i);
         se.play(); // Plays the sound effect without looping.
+    }
+
+    // Updates the current area to the next area after a transition.
+    public void changeArea() {
+        currentArea = nextArea; // Assign the next area to the current area after the transition is complete.
     }
 }

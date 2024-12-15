@@ -933,6 +933,9 @@ public class UI {
             // Update the previous event coordinates to reflect the player's new position
             gp.eHandler.previousEventX = gp.player.worldX;
             gp.eHandler.previousEventY = gp.player.worldY;
+
+            // Update the current area to the next area after the transition.
+            gp.changeArea();
         }
     }
 

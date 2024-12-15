@@ -142,14 +142,23 @@ public class Lighting {
 
     // Draw the darkness filter on the screen.
     public void draw(Graphics2D g2) {
-        // Set the alpha composite for the darkness overlay.
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
-        g2.drawImage(darknessFilter, 0, 0, null);
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)); // Reset composite.
+        // If the player is in the outside area, apply the darkness overlay with the specified transparency.
+        if (gp.currentArea == gp.outside) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha));
+        }
+
+        // Draw the darkness filter for areas that require it (outside or dungeon).
+        if (gp.currentArea == gp.outside || gp.currentArea == gp.dungeon) {
+            g2.drawImage(darknessFilter, 0, 0, null);
+        }
+
+        // Reset the alpha composite to full opacity for subsequent drawings.
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
         // Display the current day state (Day, Dusk, Night, or Dawn) on the screen.
-        String situation = "";
+        String situation = ""; // Holds the string representation of the current day state.
 
+        // Set the situation string based on the current day state.
         switch (dayState) {
             case day -> situation = "Day";
             case dusk -> situation = "Dusk";
@@ -157,8 +166,13 @@ public class Lighting {
             case dawn -> situation = "Dawn";
         }
 
-        g2.setColor(Color.white);        // Set text color.
-        g2.setFont(g2.getFont().deriveFont(50f)); // Set font size.
-        g2.drawString(situation, 800, 500); // Draw the current state on the screen.
+        // Set text color to white.
+        g2.setColor(Color.white);
+
+        // Set font size to 50 for drawing the day state text.
+        g2.setFont(g2.getFont().deriveFont(50f));
+
+        // Draw the current day state (e.g., Day, Night) at a specific position on the screen.
+        g2.drawString(situation, 800, 500);
     }
 }

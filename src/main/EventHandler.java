@@ -88,13 +88,14 @@ public class EventHandler {
             if (hit(0, 27, 16, "right")) damagePit(gp.dialogueState); // Damage pit event.
             else if (hit(0, 23, 19, "any")) damagePit(gp.dialogueState); // Another damage pit event.
             else if (hit(0, 23, 12, "up")) healingPool(gp.dialogueState); // Healing pool event.
-            else if (hit(0, 10, 40, "any")) teleport(1, 12, 13); // Teleport event to merchant hunt.
-            else if (hit(1, 12, 13, "any")) teleport(0, 10, 40); // Teleport event to outside of merchant hut.
+            else if (hit(0, 10, 40, "any")) teleport(1, 12, 13, gp.indoor); // Teleport event to merchant hunt.
+            else if (hit(1, 12, 13, "any"))
+                teleport(0, 10, 40, gp.outside); // Teleport event to outside merchant hut.
             else if (hit(1, 12, 9, "up")) speak(gp.npc[1][0]); // Initiate dialogue with an NPC when facing up.
-            else if (hit(0, 12, 9, "any")) teleport(2, 9, 41); // Teleport event to dungeon.
-            else if (hit(2, 9, 41, "any")) teleport(0, 12, 9); // Teleport event to outside of dungeon.
-            else if (hit(2, 8, 7, "any")) teleport(3, 26, 41); // Teleport event to B2 dungeon.
-            else if (hit(3, 26, 41, "any")) teleport(2, 8, 7); // Teleport event to B1 dungeon.
+            else if (hit(0, 12, 9, "any")) teleport(2, 9, 41, gp.dungeon); // Teleport event to dungeon.
+            else if (hit(2, 9, 41, "any")) teleport(0, 12, 9, gp.outside); // Teleport event to outside of dungeon.
+            else if (hit(2, 8, 7, "any")) teleport(3, 26, 41, gp.dungeon); // Teleport event to B2 dungeon.
+            else if (hit(3, 26, 41, "any")) teleport(2, 8, 7, gp.dungeon); // Teleport event to B1 dungeon.
 
         }
     }
@@ -136,8 +137,9 @@ public class EventHandler {
     }
 
     // Triggers the teleport event, moving the player to a new map and position.
-    public void teleport(int map, int col, int row) {
+    public void teleport(int map, int col, int row, int area) {
         gp.gameState = gp.transitionState; // Change the game state to a transition state.
+        gp.nextArea = area; // Set the next area to the provided area, indicating where the player will be after the teleport.
         tempMap = map; // Store the target map for the teleportation.
         tempCol = col; // Store the target column for the teleportation.
         tempRow = row; // Store the target row for the teleportation.
